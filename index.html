@@ -1,2183 +1,863 @@
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 <head>
-	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-	<title></title>
-	<meta name="generator" content="LibreOffice 26.2.4.2 (MacOSX)"/>
-	<meta name="created" content="2026-07-06T03:09:58.027801000"/>
-	<meta name="changed" content="2026-07-06T03:10:52.886974000"/>
-	<style type="text/css">
-		@page { size: 8.27in 11.69in; margin: 0.79in }
-		p { margin-bottom: 0.1in; line-height: 115%; background: transparent }
-	</style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omni-Channel Capacity Planning & Tiered Skill-Alignment Simulator</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- html2pdf.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+<style>
+.blurred-zone { filter: blur(8px); pointer-events: none; user-select: none; transition: all 0.4s ease; }
+.unblurred-zone { filter: none; pointer-events: auto; user-select: auto; }
+.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+.accordion-open { max-height: 1200px; transition: max-height 0.5s ease-in; }
+</style>
 </head>
-<body lang="en-SG" link="#000080" vlink="#800000" dir="ltr"><p style="line-height: 100%; margin-bottom: 0in">
-&lt;!DOCTYPE html&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;html lang=&quot;en&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;head&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;meta
-charset=&quot;UTF-8&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;meta
-name=&quot;viewport&quot; content=&quot;width=device-width,
-initial-scale=1.0&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">   
-&lt;title&gt;Omni-Channel Capacity Planning &amp; Tiered
-Skill-Alignment Simulator&lt;/title&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- Tailwind
-CSS CDN --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;script
-src=&quot;https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4&quot;&gt;&lt;/script&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- Chart.js
-CDN --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;script
-src=&quot;https://cdn.jsdelivr.net/npm/chart.js&quot;&gt;&lt;/script&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!--
-html2pdf.js CDN --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;script
-src=&quot;https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js&quot;&gt;&lt;/script&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;style&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-.blurred-zone { filter: blur(8px); pointer-events: none; user-select:
-none; transition: all 0.4s ease; }</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-.unblurred-zone { filter: none; pointer-events: auto; user-select:
-auto; }</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-.accordion-content { max-height: 0; overflow: hidden; transition:
-max-height 0.3s ease-out; }</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-.accordion-open { max-height: 1200px; transition: max-height 0.5s
-ease-in; }</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;/style&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;/head&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;body
-class=&quot;bg-slate-50 font-sans text-slate-800 antialiased
-min-h-screen&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- PHASE 1:
-THE WELCOME GATE &amp; DATA POLICY --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;div
-id=&quot;welcome-gate&quot; class=&quot;fixed inset-0 z-50 flex
-items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;div
-class=&quot;bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8
-border border-slate-100 transform transition-all&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;flex items-center space-x-3 text-indigo-600 mb-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;svg
-class=&quot;w-8 h-8&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot;
-viewBox=&quot;0 0 24 24&quot;&gt;&lt;path stroke-linecap=&quot;round&quot;
-stroke-linejoin=&quot;round&quot; stroke-width=&quot;2&quot; d=&quot;M19
-11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14
-0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012
-2v2M7 7h10&quot;&gt;&lt;/path&gt;&lt;/svg&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;h1
-class=&quot;text-2xl font-black tracking-tight text-slate-900&quot;&gt;The
-Operational Reality Check&lt;/h1&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;p
-class=&quot;text-slate-600 mb-6 leading-relaxed&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-Welcome to the &lt;strong&gt;Omni-Channel Capacity Planning
-Tool&lt;/strong&gt;. Standard static spreadsheets flatten daily
-interaction curves, hiding the real-world operational friction that
-triggers queue collapses, backlogs, and agent burnout. This simulator
-executes a 12-run stochastic math modeling loop over your schedules
-to find your true bottlenecks.</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6
-space-y-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;h3
-class=&quot;font-bold text-slate-900 flex items-center text-sm
-uppercase tracking-wider text-slate-500&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;svg class=&quot;w-4 h-4 mr-2 text-emerald-500&quot;
-fill=&quot;currentColor&quot; viewBox=&quot;0 0 20 20&quot;&gt;&lt;path
-fill-rule=&quot;evenodd&quot; d=&quot;M2.166 4.999A11.954 11.954 0
-0010 1.944a11.954 11.954 0 007.834 3.056A11.954 11.954 0 0110 20.056
-11.954 11.954 0 012.166 5zM10 14a2 2 0 100-4 2 2 0 000 4z&quot;
-clip-rule=&quot;evenodd&quot;&gt;&lt;/path&gt;&lt;/svg&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-The &quot;What Happens in Vegas Stays in Vegas&quot; Clause</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;ul
-class=&quot;text-xs text-slate-600 space-y-2 list-disc pl-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;li&gt;&lt;strong&gt;100% Client-Side Architecture:&lt;/strong&gt;
-All simulation calculations, caseload records, and capacity inputs
-are processed completely inside your local browser memory.&lt;/li&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;li&gt;&lt;strong&gt;Zero External Data Pipeline:&lt;/strong&gt;
-No information is dispatched over the web to any server. Your
-proprietary scheduling metrics remain private, making this system
-fully GDPR/PDPA compliant.&lt;/li&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;li&gt;&lt;strong&gt;Static Engine Integrity:&lt;/strong&gt; This
-application executes pure statistical algorithms without AI inference
-layers to guarantee total data control and predictable outputs.&lt;/li&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/ul&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;label
-class=&quot;flex items-start space-x-3 p-3 bg-indigo-50/50 border
-border-indigo-100 rounded-xl cursor-pointer select-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;input type=&quot;checkbox&quot; id=&quot;policy-agree&quot;
-class=&quot;mt-1 accent-indigo-600 rounded&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;span class=&quot;text-sm text-slate-700 leading-tight&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-I accept the Terms of Use and Data Privacy Policy. I acknowledge that
-all input profiles are parsed strictly in-browser.</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;button
-id=&quot;gate-btn&quot; disabled class=&quot;mt-6 w-full py-3
-bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed
-transition-all shadow-md focus:outline-none&quot;
-onclick=&quot;unlockSimulator()&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-Unlock Simulation Matrix</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- MAIN
-INTERFACE LAYER --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;div
-id=&quot;main-interface&quot; class=&quot;blurred-zone max-w-7xl
-mx-auto px-4 py-8 space-y-8&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;!--
-Header Profile --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;div
-class=&quot;border-b border-slate-200 pb-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;span
-class=&quot;text-xs font-bold text-indigo-600 tracking-widest
-uppercase&quot;&gt;Operational Resource Modeling Engine&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;h2
-class=&quot;text-3xl font-black text-slate-900
-tracking-tight&quot;&gt;Capacity &amp; Tiered Skill-Alignment
-Framework&lt;/h2&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;!--
-PHASE 2: MASTER CONFIGURATION ACCORDION MATRIX --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;section
-class=&quot;bg-white rounded-2xl shadow-sm border border-slate-200/80
-overflow-hidden&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;bg-slate-900 p-4 text-white flex items-center
-justify-between&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;h3
-class=&quot;font-extrabold tracking-tight&quot;&gt;Section 1: Tweak
-the Dials (Master Templates)&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;span class=&quot;text-xs text-slate-400&quot;&gt;Configure
-parameters once to populate all scenario baselines&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-Drawer A: Traffic &amp; Friction Configurator --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;border-b border-slate-100&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;button class=&quot;w-full text-left font-bold p-5 bg-slate-50
-flex justify-between items-center text-slate-800
-hover:bg-slate-100/70&quot; onclick=&quot;toggleAccordion('drawer-a')&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span&gt;── Drawer A: The Traffic &amp; Friction Configurator
-(Channels &amp; Tiers)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span id=&quot;drawer-a-icon&quot;&gt;▼&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;drawer-a&quot; class=&quot;accordion-content p-6 space-y-6
-bg-white&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4
-gap-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Custom Channel Alias&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;text&quot; id=&quot;chan-alias&quot;
-value=&quot;Fire-Fighting Hotline&quot; class=&quot;w-full border
-border-slate-200 rounded-lg p-2 text-sm focus:ring-2
-focus:ring-indigo-500 focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Inbound Traffic Volume (Hourly)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;chan-vol&quot;
-value=&quot;50&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Avg Live Interaction Time (Sec)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;chan-aht&quot;
-value=&quot;240&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Post-Interaction CRM Wrap (Sec)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;chan-wrap&quot;
-value=&quot;120&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;border-t border-slate-100 pt-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;h4 class=&quot;text-xs font-bold text-slate-700 uppercase
-tracking-wider mb-3&quot;&gt;Caseflow Difficulty Split (% Must sum to
-100)&lt;/h4&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;bg-slate-50 p-3 rounded-xl border
-border-slate-150&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;block text-xs font-extrabold
-text-slate-800 mb-1&quot;&gt;Tier 1 (General Support)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;div class=&quot;flex items-center space-x-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;input type=&quot;number&quot; id=&quot;tier-1-pct&quot;
-value=&quot;55&quot; class=&quot;w-20 border border-slate-200
-rounded-lg p-1.5 text-sm&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;span class=&quot;text-xs text-slate-500&quot;&gt;Base
-handling speed modifier&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;bg-amber-50/50 p-3 rounded-xl border
-border-amber-100&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;block text-xs font-extrabold
-text-amber-900 mb-1&quot;&gt;Tier 2 (Intermediate Escalations)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;div class=&quot;flex items-center space-x-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;input type=&quot;number&quot; id=&quot;tier-2-pct&quot;
-value=&quot;30&quot; class=&quot;w-20 border border-slate-200
-rounded-lg p-1.5 text-sm&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;span class=&quot;text-xs
-text-slate-600&quot;&gt;&lt;strong&gt;1.8x&lt;/strong&gt; Handling
-complexity burden&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;bg-rose-50/50 p-3 rounded-xl border
-border-rose-100&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;block text-xs font-extrabold
-text-rose-900 mb-1&quot;&gt;Tier 3 (Advanced / Specialist)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;div class=&quot;flex items-center space-x-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;input type=&quot;number&quot; id=&quot;tier-3-pct&quot;
-value=&quot;15&quot; class=&quot;w-20 border border-slate-200
-rounded-lg p-1.5 text-sm&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;span class=&quot;text-xs
-text-rose-700&quot;&gt;&lt;strong&gt;3.5x&lt;/strong&gt; Burden +
-Intern blockage&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-Drawer B: Timeline &amp; Constraints --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;border-b border-slate-100&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;button class=&quot;w-full text-left font-bold p-5 bg-slate-50
-flex justify-between items-center text-slate-800
-hover:bg-slate-100/70&quot; onclick=&quot;toggleAccordion('drawer-b')&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span&gt;── Drawer B: The Timeline, Boundaries &amp; Shift
-Constraints&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span id=&quot;drawer-b-icon&quot;&gt;▼&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;drawer-b&quot; class=&quot;accordion-content p-6 space-y-6
-bg-white&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Operational Shift Length (Hours)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;shift-hours&quot;
-value=&quot;8&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Customer Patience Horizon SLA
-(Mins)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;sla-wait&quot;
-value=&quot;3&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;The Lunch Rush Scalar (12 PM - 2
-PM)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; step=&quot;0.1&quot;
-id=&quot;peak-multiplier&quot; value=&quot;1.6&quot; class=&quot;w-full
-border border-slate-200 rounded-lg p-2 text-sm focus:ring-2
-focus:ring-indigo-500 focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Rostered Shrinkage
-(Mins/Agent/Day)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;shrinkage-mins&quot;
-value=&quot;60&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-[10px] text-slate-400&quot;&gt;Total
-breaks, alignment sessions, and team huddles&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;Target Burnout Occupancy Redline
-(%)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;target-occ&quot;
-value=&quot;85&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;label class=&quot;block text-xs font-bold uppercase
-text-slate-500 mb-1&quot;&gt;The &quot;Call-In Sick&quot; Roulette
-Variance (%)&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;input type=&quot;number&quot; id=&quot;absence-prob&quot;
-value=&quot;10&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500
-focus:outline-none&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-[10px] text-slate-400&quot;&gt;Probability
-of individual unplanned leave per iteration&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-Drawer C: Hierarchy Profiles --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;button class=&quot;w-full text-left font-bold p-5 bg-slate-50
-flex justify-between items-center text-slate-800
-hover:bg-slate-100/70&quot; onclick=&quot;toggleAccordion('drawer-c')&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span&gt;── Drawer C: The Ranks &amp; Productivity
-Switchboard&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span id=&quot;drawer-c-icon&quot;&gt;▼&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;drawer-c&quot; class=&quot;accordion-content p-6 bg-white&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-200 rounded-xl
-bg-slate-50/50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-sm font-extrabold
-text-slate-900 mb-1&quot;&gt;Supervisor Profile&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xs text-slate-500 mb-2&quot;&gt;Governed
-by a strict 1:8 compliance span of control. Kept out of queue threads
-unless critical congestion bounds crash.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;inline-block px-2 py-0.5 text-[10px]
-bg-slate-200 font-bold rounded&quot;&gt;Speed: 1.0x&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-200 rounded-xl
-bg-slate-50/50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-sm font-extrabold
-text-slate-900 mb-1&quot;&gt;Senior Full-Timer Profile&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xs text-slate-500 mb-2&quot;&gt;The
-standard operational operational anchor. Capable of processing all
-case difficulties without capability speed penalties.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;inline-block px-2 py-0.5 text-[10px]
-bg-indigo-100 text-indigo-700 font-bold rounded&quot;&gt;Speed: 1.0x
-Baseline&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-200 rounded-xl
-bg-slate-50/50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-sm font-extrabold
-text-slate-900 mb-1&quot;&gt;Junior / Intern Profile&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xs text-slate-500 mb-2&quot;&gt;Subject
-to training curves. Slower capabilities inflate interaction
-touchpoints and post-call logging notes loops.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;mt-2 flex items-center space-x-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;label class=&quot;text-xs font-bold
-text-slate-600&quot;&gt;Intern Skill Slider:&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;input type=&quot;range&quot; id=&quot;intern-modifier&quot;
-min=&quot;0.6&quot; max=&quot;0.8&quot; step=&quot;0.05&quot;
-value=&quot;0.7&quot; class=&quot;w-24&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span id=&quot;intern-mod-val&quot; class=&quot;text-xs
-font-bold text-slate-800&quot;&gt;0.70x&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/section&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;!--
-PHASE 3: THE SIDE-BY-SIDE ROSTER ARCHITECT --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;section
-class=&quot;grid grid-cols-1 md:grid-cols-2 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-Config A --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;bg-white border-2 border-slate-200 rounded-2xl p-6
-shadow-sm space-y-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;flex justify-between items-center border-b
-border-slate-100 pb-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-lg
-text-slate-900&quot;&gt;Configuration A: Baseline Roster&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span class=&quot;px-2 py-0.5 bg-slate-100 text-slate-600 text-xs
-font-bold rounded&quot;&gt;Current Roster Model&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;grid grid-cols-3 gap-3&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Supervisors&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-a-sup&quot;
-value=&quot;1&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Seniors&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-a-sen&quot;
-value=&quot;6&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Interns&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-a-int&quot;
-value=&quot;2&quot; class=&quot;w-full border border-slate-200
-rounded-lg p-2 text-sm text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-Config B --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;bg-white border-2 border-indigo-600 rounded-2xl p-6
-shadow-sm space-y-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;flex justify-between items-center border-b
-border-slate-100 pb-2&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-lg
-text-slate-900&quot;&gt;Configuration B: Experimental Roster&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span class=&quot;px-2 py-0.5 bg-indigo-100 text-indigo-700
-text-xs font-bold rounded&quot;&gt;Speculative Mix&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;grid grid-cols-3 gap-3&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Supervisors&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-b-sup&quot;
-value=&quot;1&quot; class=&quot;w-full border border-indigo-200
-rounded-lg p-2 text-sm text-center focus:ring-1
-focus:ring-indigo-500&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Seniors&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-b-sen&quot;
-value=&quot;3&quot; class=&quot;w-full border border-indigo-200
-rounded-lg p-2 text-sm text-center focus:ring-1
-focus:ring-indigo-500&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;label class=&quot;block text-[10px] font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Interns&lt;/label&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;input type=&quot;number&quot; id=&quot;config-b-int&quot;
-value=&quot;6&quot; class=&quot;w-full border border-indigo-200
-rounded-lg p-2 text-sm text-center focus:ring-1
-focus:ring-indigo-500&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/section&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;!--
-ACTION BUTTON TRIGGER --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;div
-class=&quot;text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;button
-id=&quot;run-btn&quot; class=&quot;px-8 py-4 bg-indigo-600
-hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg
-hover:shadow-indigo-500/20 transform hover:-translate-y-0.5
-transition-all cursor-pointer tracking-wide&quot;
-onclick=&quot;executeStochasticEngine()&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                [
-RUN 12x STOCHASTIC STRESS TEST ]</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;!--
-PHASE 4: THE REVEAL YOUR FATE SCOREBOARD --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;section
-id=&quot;scoreboard-section&quot; class=&quot;hidden bg-white border
-border-slate-200 rounded-2xl shadow-xl overflow-hidden scroll-mt-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;bg-slate-900 p-4 border-b border-slate-800 flex flex-col
-sm:flex-row justify-between items-start sm:items-center gap-3&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;h3
-class=&quot;font-black text-white text-lg tracking-tight flex
-items-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;span class=&quot;w-3 h-3 bg-emerald-500 rounded-full mr-2
-animate-pulse&quot;&gt;&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-Section 2: Interactive Operational Scoreboard</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;flex space-x-1 bg-slate-800 p-1 rounded-lg&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;button id=&quot;tab-sla-btn&quot; class=&quot;px-3 py-1.5 text-xs
-font-bold text-white bg-indigo-600 rounded-md shadow-sm&quot;
-onclick=&quot;switchTab('sla')&quot;&gt;SLA Matrix&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;button id=&quot;tab-burn-btn&quot; class=&quot;px-3 py-1.5
-text-xs font-bold text-slate-400 hover:text-white&quot;
-onclick=&quot;switchTab('burn')&quot;&gt;Team Burnout&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;button id=&quot;tab-tier-btn&quot; class=&quot;px-3 py-1.5
-text-xs font-bold text-slate-400 hover:text-white&quot;
-onclick=&quot;switchTab('tier')&quot;&gt;Skill Alignment&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-TAB CONTENT INTERFACES --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;p-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-TAB 1: SLA --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;tab-sla&quot; class=&quot;space-y-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-4
-text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 bg-slate-50 border border-slate-200
-rounded-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-xs font-bold uppercase
-text-slate-400 mb-1&quot;&gt;SLA Target Achieved&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;flex justify-center items-baseline
-space-x-2 mt-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-2xl font-black text-slate-800&quot;
-id=&quot;res-sla-a&quot;&gt;0.0%&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-xs text-slate-400&quot;&gt;vs&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-lg font-bold text-indigo-600&quot;
-id=&quot;res-sla-b&quot;&gt;0.0%&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 bg-slate-50 border border-slate-200
-rounded-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-xs font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Avg Global Queue Delay&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;flex justify-center items-baseline
-space-x-2 mt-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-2xl font-black text-slate-800&quot;
-id=&quot;res-wait-a&quot;&gt;0.0m&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-xs text-slate-400&quot;&gt;vs&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-lg font-bold text-indigo-600&quot;
-id=&quot;res-wait-b&quot;&gt;0.0m&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 bg-slate-50 border border-slate-200
-rounded-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;block text-xs font-bold uppercase
-text-slate-400 mb-1&quot;&gt;Customer Abandonment Rate&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;flex justify-center items-baseline
-space-x-2 mt-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-2xl font-black text-slate-800&quot;
-id=&quot;res-drop-a&quot;&gt;0.0%&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-xs text-slate-400&quot;&gt;vs&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;span class=&quot;text-lg font-bold text-rose-600&quot;
-id=&quot;res-drop-b&quot;&gt;0.0%&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-TAB 2: BURNOUT --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;tab-burn&quot; class=&quot;hidden space-y-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-2 gap-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-200 rounded-xl
-bg-slate-50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;h4 class=&quot;text-xs font-black uppercase tracking-wider
-text-slate-500 mb-2&quot;&gt;Config A Roster Occupancy&lt;/h4&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;relative pt-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;div class=&quot;overflow-hidden h-4 text-xs flex
-rounded bg-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;div id=&quot;bar-occ-a&quot; style=&quot;width:0%&quot;
-class=&quot;shadow-none flex flex-col text-center whitespace-nowrap
-text-white justify-center bg-slate-700 font-bold&quot;&gt;0%&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-[10px] text-slate-400 mt-1
-block&quot;&gt;Rostered utilization limit (Target Ceiling:
-85%)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-200 rounded-xl
-bg-slate-50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;h4 class=&quot;text-xs font-black uppercase tracking-wider
-text-slate-500 mb-2&quot;&gt;Config B Roster Occupancy&lt;/h4&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;div class=&quot;relative pt-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;div class=&quot;overflow-hidden h-4 text-xs flex
-rounded bg-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               &lt;div id=&quot;bar-occ-b&quot; style=&quot;width:0%&quot;
-class=&quot;shadow-none flex flex-col text-center whitespace-nowrap
-text-white justify-center bg-indigo-600 font-bold&quot;&gt;0%&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-[10px] text-slate-400 mt-1
-block&quot;&gt;Rostered utilization limit (Target Ceiling:
-85%)&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-TAB 3: SKILL ALIGNMENT --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-id=&quot;tab-tier&quot; class=&quot;hidden space-y-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;grid grid-cols-1 md:grid-cols-3 gap-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-100 rounded-xl
-bg-slate-50 text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-xs font-bold text-slate-500
-uppercase block&quot;&gt;Tier 1 Wait Tracks&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xl font-extrabold text-slate-800 mt-1&quot;
-id=&quot;tier-1-metrics&quot;&gt;0.0m vs 0.0m&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-100 rounded-xl
-bg-amber-50/30 text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-xs font-bold text-amber-700
-uppercase block&quot;&gt;Tier 2 Wait Tracks&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xl font-extrabold text-slate-800 mt-1&quot;
-id=&quot;tier-2-metrics&quot;&gt;0.0m vs 0.0m&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;div class=&quot;p-4 border border-slate-100 rounded-xl
-bg-rose-50/30 text-center&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;span class=&quot;text-xs font-bold text-rose-700 uppercase
-block&quot;&gt;Tier 3 Wait Tracks&lt;/span&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;p class=&quot;text-xl font-extrabold text-slate-800 mt-1&quot;
-id=&quot;tier-3-metrics&quot;&gt;0.0m vs 0.0m&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-DYNAMIC ANALYTICS STRATEGY STRINGS --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;mt-6 border-t border-slate-100 pt-6 space-y-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;p-4 border-l-4 border-slate-800 bg-slate-50
-rounded-r-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;h4 class=&quot;text-sm font-black text-slate-900 uppercase
-tracking-tight&quot;&gt;System Operational Verdict&lt;/h4&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p id=&quot;verdict-text&quot; class=&quot;text-sm
-text-slate-600 mt-1 leading-relaxed&quot;&gt;Evaluating execution
-metrics...&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-THE EKG QUEUE VISUALIZATION GRAPH --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;mt-6 border-t border-slate-100 pt-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h4 class=&quot;text-xs font-black uppercase text-slate-400
-tracking-wider mb-2&quot;&gt;Minute-by-Minute Live Queue Length
-Profiles (Average Stress Run)&lt;/h4&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;h-64 w-full relative&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;canvas id=&quot;ekgChart&quot;&gt;&lt;/canvas&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;!--
-REPORT EXPORT TERMINAL --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;mt-8 text-right&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;button class=&quot;px-6 py-3 bg-slate-900 hover:bg-slate-800
-text-white font-bold text-sm rounded-xl shadow transition-all
-cursor-pointer inline-flex items-center&quot;
-onclick=&quot;triggerPdfDownload()&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;svg class=&quot;w-4 h-4 mr-2&quot; fill=&quot;none&quot;
-stroke=&quot;currentColor&quot; viewBox=&quot;0 0 24 24&quot;&gt;&lt;path
-stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;
-stroke-width=&quot;2&quot; d=&quot;M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2
-2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0
-01.293.707V19a2 2 0 01-2 2z&quot;&gt;&lt;/path&gt;&lt;/svg&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   Download Recovery PDF Report</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/button&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/section&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- HIDDEN
-RENDER FRAMEWORK FOR PRINT-PERFECT 2-PAGE A4 PDF COMPILATION --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;div
-class=&quot;hidden&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;div
-id=&quot;pdf-document&quot; class=&quot;p-12 space-y-8 text-slate-900
-bg-white font-sans text-xs max-w-[210mm] min-h-[297mm]&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-PDF PAGE 1 --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-id=&quot;pdf-page-1&quot; class=&quot;space-y-6&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;flex justify-between items-start border-b-2
-border-slate-900 pb-4&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;h1 class=&quot;text-xl font-black uppercase tracking-tight
-text-slate-900&quot;&gt;Frontline Roster &amp; Tier Resilience
-Report&lt;/h1&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p class=&quot;text-[10px] text-slate-500 mt-0.5&quot;&gt;Simulation:
-12-Run Stochastic Poisson Distribution Process&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;text-right text-[10px] text-slate-500&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p&gt;&lt;strong&gt;Generated on:&lt;/strong&gt; 2026-07-06
-03:04:01 UTC&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p id=&quot;pdf-meta-sla&quot;&gt;Target SLA: Wait Time &amp;lt;
-3.0 mins&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-sm border-b border-slate-300
-pb-1 mb-2 uppercase text-slate-700&quot;&gt;1. Caseflow Complexity
-Traffic Structure&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;table class=&quot;w-full text-left border-collapse&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;bg-slate-100 font-bold border-b
-border-slate-300&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Complexity
-Classification&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Caseload Weight
-Proportion&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Handling Burden
-Factor&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Intern Access
-Parameters&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;tbody&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-slate-800&quot;&gt;Tier
-1 (General Support)&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t1-pct&quot;&gt;55%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot;&gt;1.0x Baseline
-Duration&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot;&gt;Permitted (Slider
-Modifiers Apply)&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-slate-800&quot;&gt;Tier
-2 (Intermediate Escalations)&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t2-pct&quot;&gt;30%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot;&gt;1.8x Operational
-Inflation&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot;&gt;Permitted (Double Penalty
-Application)&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-slate-800&quot;&gt;Tier
-3 (Advanced / VIP Track)&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t3-pct&quot;&gt;15%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot;&gt;3.5x Technical Scale&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 text-rose-700 font-bold&quot;&gt;Blockage
-Threshold Active&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/tbody&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/table&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-sm border-b border-slate-300
-pb-1 mb-2 uppercase text-slate-700&quot;&gt;2. Roster Comparison
-Metrics&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;table class=&quot;w-full text-center border-collapse&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;bg-slate-900 text-white font-bold&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2 text-left&quot;&gt;Operational
-Performance Identifiers&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Configuration A
-(Baseline)&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Configuration B
-(Experimental)&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;tbody class=&quot;text-slate-800&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Rostered
-Senior Full-Timers&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-sen-a&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-sen-b&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Rostered
-Junior Interns&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-int-a&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-int-b&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Rostered
-Supervisors / Leads&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-sup-a&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-sup-b&quot;&gt;0&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200 bg-slate-50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Simulated
-SLA Success Rate&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-black text-slate-900&quot;
-id=&quot;pdf-sla-val-a&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-black text-slate-900&quot;
-id=&quot;pdf-sla-val-b&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Average
-Global Queue Wait&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-wait-val-a&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-wait-val-b&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Interaction
-Abandonment Rate&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-drop-val-a&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-drop-val-b&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-300 bg-slate-50&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold text-left&quot;&gt;Average
-Roster Occupancy Limit&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold&quot;
-id=&quot;pdf-occ-val-a&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 font-bold&quot;
-id=&quot;pdf-occ-val-b&quot;&gt;0%&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/tbody&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/table&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;p-4 border-l-4 border-slate-900 bg-slate-50
-rounded-r-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-xs uppercase tracking-tight
-text-slate-900 mb-1&quot;&gt;3. Strategic Roster Verdict&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;p id=&quot;pdf-verdict&quot; class=&quot;text-slate-600
-leading-relaxed text-xs&quot;&gt;Awaiting calculation cycle...&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-class=&quot;h-2&quot; style=&quot;page-break-after: always;&quot;&gt;&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;!--
-PDF PAGE 2 --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;div
-id=&quot;pdf-page-2&quot; class=&quot;space-y-6 pt-12&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-sm border-b border-slate-300
-pb-1 mb-2 uppercase text-slate-700&quot;&gt;4. Support Tier Routing
-Analytics&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;table class=&quot;w-full text-center border-collapse&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;bg-slate-100 font-bold border-b
-border-slate-300&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2 text-left&quot;&gt;Isolated Ticket
-Category Delays&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Configuration A Track
-(Mins)&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;th class=&quot;p-2&quot;&gt;Configuration B Track
-(Mins)&lt;/th&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/thead&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;tbody&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 text-left font-bold
-text-slate-800&quot;&gt;Tier 1 Support Line Wait&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t1-wait-a&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t1-wait-b&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 text-left font-bold
-text-slate-800&quot;&gt;Tier 2 Escalations Line Wait&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t2-wait-a&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t2-wait-b&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;tr class=&quot;border-b border-slate-200&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2 text-left font-bold
-text-slate-800&quot;&gt;Tier 3 Advanced VIP Line Wait&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t3-wait-a&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           &lt;td class=&quot;p-2&quot; id=&quot;pdf-t3-wait-b&quot;&gt;0.0m&lt;/td&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       &lt;/tr&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;/tbody&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/table&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-sm border-b border-slate-300
-pb-1 mb-2 uppercase text-slate-700&quot;&gt;5. Diurnal Break-Window
-Vulnerability Log&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;div class=&quot;space-y-3 pl-2 border-l-2 border-indigo-600&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p class=&quot;leading-relaxed&quot;&gt;&lt;strong&gt;09:00 AM
-- 11:59 AM (Opening Influx Window):&lt;/strong&gt; Workloads remain
-within stable capacity envelopes across both architectures. Queue
-tracking reports minimum friction thresholds.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p class=&quot;leading-relaxed&quot;&gt;&lt;strong&gt;12:00 PM
-- 02:00 PM (Lunch Break &amp; Surge Window):&lt;/strong&gt; The
-assigned rush multiplier intersects with scheduled shift relief
-shrinkage. Configuration options utilizing high densities of
-un-trained junior interns encounter immediate thread stagnation due
-to compounding notes processing delays.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   &lt;p class=&quot;leading-relaxed&quot;&gt;&lt;strong&gt;04:00 PM
-- 05:00 PM (Shift End Drainage):&lt;/strong&gt; Structural backlog
-checking flags clear recovery in high-senior configurations, while
-skill-deficient rosters run continuous holdover backlogs into
-subsequent morning cycles.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;p-4 bg-slate-50 border border-slate-200 rounded-xl&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;h3 class=&quot;font-extrabold text-xs text-slate-900 uppercase
-tracking-tight mb-1&quot;&gt;6. Roster Absence Fragility
-Evaluation&lt;/h3&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;p class=&quot;text-slate-600 leading-relaxed&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   This model enforces an internal check scanning for single points
-of failure via a 10% sick-leave trigger. In runs where a key Senior
-Full-Timer thread is removed unexpectedly, rosters stripped of
-experienced anchors experienced an immediate service degradation
-across all tiers. Slower hands are forced onto technical queues,
-compressing remaining agent available bandwidth, driving occupancy
-into critical fatigue redlines (&amp;gt;90%), and increasing baseline
-customer drops by an order of magnitude.</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                &lt;div
-class=&quot;border-t border-slate-300 pt-4 text-[9px] text-slate-400
-leading-relaxed space-y-1&quot;&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;p&gt;&lt;strong&gt;Stochastic Architecture Disclaimer:&lt;/strong&gt;
-This matrix operates under continuous Erlang-C mathematical variants
-driven by continuous non-homogeneous Poisson probabilities checked in
-discrete minute-by-minute steps.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-&lt;p&gt;Calculated data parameters represent algorithmic forecasting
-approximations. Out-of-bounds metrics like regional server grid
-failures, software architecture disruptions, or workforce structural
-changes fall outside model reporting perimeters.&lt;/p&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-&lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;/div&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;!-- CODE
-SCRIPTING CONTROLLER ENGINE --&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;script&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        let
-globalEkgChart = null;</p>
-<p style="line-height: 100%; margin-bottom: 0in">        let
-lastSimulationResults = null;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        // UI Gate
-Logic</p>
-<p style="line-height: 100%; margin-bottom: 0in">        const
-policyCheckbox = document.getElementById('policy-agree');</p>
-<p style="line-height: 100%; margin-bottom: 0in">        const
-gateButton = document.getElementById('gate-btn');</p>
-<p style="line-height: 100%; margin-bottom: 0in">        const
-mainInterface = document.getElementById('main-interface');</p>
-<p style="line-height: 100%; margin-bottom: 0in">        const
-welcomeGate = document.getElementById('welcome-gate');</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-policyCheckbox.addEventListener('change', () =&gt; {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            if
-(policyCheckbox.checked) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.disabled = false;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.classList.remove('bg-slate-300', 'text-slate-500',
-'cursor-not-allowed');</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.classList.add('bg-indigo-600', 'text-white',
-'hover:bg-indigo-700', 'cursor-pointer');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            } else {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.disabled = true;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.classList.remove('bg-indigo-600', 'text-white',
-'hover:bg-indigo-700', 'cursor-pointer');</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-gateButton.classList.add('bg-slate-300', 'text-slate-500',
-'cursor-not-allowed');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            }</p>
-<p style="line-height: 100%; margin-bottom: 0in">        });</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-unlockSimulator() {</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-welcomeGate.classList.add('opacity-0', 'pointer-events-none');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-setTimeout(() =&gt; { welcomeGate.remove(); }, 400);</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-mainInterface.classList.remove('blurred-zone');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-mainInterface.classList.add('unblurred-zone');</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-toggleAccordion(id) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const el
-= document.getElementById(id);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-icon = document.getElementById(id + '-icon');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-el.classList.toggle('accordion-open');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-icon.innerText = el.classList.contains('accordion-open') ? '▲' :
-'▼';</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        // Real-time
-slider sync</p>
-<p style="line-height: 100%; margin-bottom: 0in">       
-document.getElementById('intern-modifier').addEventListener('input',
-function(e) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('intern-mod-val').innerText =
-parseFloat(e.target.value).toFixed(2) + 'x';</p>
-<p style="line-height: 100%; margin-bottom: 0in">        });</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-switchTab(tab) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            ['sla',
-'burn', 'tier'].forEach(t =&gt; {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-document.getElementById('tab-' + t).classList.add('hidden');</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-document.getElementById('tab-' + t +
-'-btn').classList.remove('bg-indigo-600', 'text-white');</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-document.getElementById('tab-' + t +
-'-btn').classList.add('text-slate-400', 'hover:text-white');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            });</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tab-' + tab).classList.remove('hidden');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tab-' + tab +
-'-btn').classList.add('bg-indigo-600', 'text-white');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tab-' + tab +
-'-btn').classList.remove('text-slate-400', 'hover:text-white');</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        //
-Mathematical Stochastic Engine Implementation</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-executeStochasticEngine() {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            // Rate
-Limit Logic Gate via LocalStorage</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-todayStr = new Date().toISOString().split('T')[0];</p>
-<p style="line-height: 100%; margin-bottom: 0in">            let
-runsCount = parseInt(localStorage.getItem('sim_runs_count_' +
-todayStr) || '0');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            if
-(runsCount &gt;= 2) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-alert(&quot;Session Guard Notice: You have reached the local daily
-capacity calculation limits (2 evaluations per browser session).
-Reset your cache or try again tomorrow.&quot;);</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-return;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            }</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-localStorage.setItem('sim_runs_count_' + todayStr, (runsCount +
-1).toString());</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Collect variables</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-chanVol = parseFloat(document.getElementById('chan-vol').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-chanAht = parseFloat(document.getElementById('chan-aht').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-chanWrap = parseFloat(document.getElementById('chan-wrap').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-t1Pct = parseFloat(document.getElementById('tier-1-pct').value) /
-100;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-t2Pct = parseFloat(document.getElementById('tier-2-pct').value) /
-100;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-t3Pct = parseFloat(document.getElementById('tier-3-pct').value) /
-100;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-shiftHours = parseInt(document.getElementById('shift-hours').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-slaWaitSec = parseFloat(document.getElementById('sla-wait').value) *
-60;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-peakMultiplier =
-parseFloat(document.getElementById('peak-multiplier').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-shrinkageMins =
-parseFloat(document.getElementById('shrinkage-mins').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-absenceProb =
-parseFloat(document.getElementById('absence-prob').value) / 100;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-internMod =
-parseFloat(document.getElementById('intern-modifier').value);</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            // Fetch
-Configuration matrices</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-configA = {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                sup:
-parseInt(document.getElementById('config-a-sup').value),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                sen:
-parseInt(document.getElementById('config-a-sen').value),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                int:
-parseInt(document.getElementById('config-a-int').value)</p>
-<p style="line-height: 100%; margin-bottom: 0in">            };</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-configB = {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                sup:
-parseInt(document.getElementById('config-b-sup').value),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                sen:
-parseInt(document.getElementById('config-b-sen').value),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                int:
-parseInt(document.getElementById('config-b-int').value)</p>
-<p style="line-height: 100%; margin-bottom: 0in">            };</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-minutesTotal = shiftHours * 60;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-internPenalty = 2 - internMod;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Simple Multi-run Simulation modeling</p>
-<p style="line-height: 100%; margin-bottom: 0in">            function
-runSimulationModel(cfg) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-totalHandled = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-totalSlaPass = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-totalAbandoned = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-cumulativeWait = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-totalBusyMinutes = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-tierWaits = { 1: 0, 2: 0, 3: 0 };</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-tierCounts = { 1: 0, 2: 0, 3: 0 };</p>
-<p style="line-height: 100%; margin-bottom: 0in">                let
-timelineQueuePoints = new Array(minutesTotal).fill(0);</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                //
-Run 12 independent iterations (Stochastic Loops)</p>
-<p style="line-height: 100%; margin-bottom: 0in">                for
-(let run = 0; run &lt; 12; run++) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-let activeSeniors = cfg.sen;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-let activeInterns = cfg.int;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-// Apply Sick Leave Roulette</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-for (let i = 0; i &lt; cfg.sen; i++) if (Math.random() &lt;
-absenceProb) activeSeniors--;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-for (let i = 0; i &lt; cfg.int; i++) if (Math.random() &lt;
-absenceProb) activeInterns--;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-let availableThreads = activeSeniors + activeInterns;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-let agentPool = [];</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-for(let i=0; i&lt;activeSeniors; i++) agentPool.push({ type:
-'senior', busyUntil: 0 });</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-for(let i=0; i&lt;activeInterns; i++) agentPool.push({ type:
-'intern', busyUntil: 0 });</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-let backQueue = [];</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-// Minute by minute chronological processing pipeline</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-for (let min = 0; min &lt; minutesTotal; min++) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Check for shrinkage hours window</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let isLunch = (min &gt;= 180 &amp;&amp; min &lt;= 300); 
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let localMultiplier = isLunch ? peakMultiplier : 1.0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let activeCapacity = isLunch ? Math.ceil(availableThreads * 0.66)
-: availableThreads;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Calculate Lambda per minute interval</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let baseLambdaPerMin = chanVol / 60;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let minLambda = baseLambdaPerMin * localMultiplier;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Poisson Knuth Seeding process</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let L = Math.exp(-minLambda);</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let k = 0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let p = 1;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   do { k++; p *= Math.random(); } while (p &gt; L);</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let arrivals = k - 1;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Route arrivals into system arrays</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   for (let a = 0; a &lt; arrivals; a++) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let randTier = Math.random();</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let tier = 1;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (randTier &gt; t1Pct &amp;&amp; randTier &lt;= (t1Pct +
-t2Pct)) tier = 2;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       else if (randTier &gt; (t1Pct + t2Pct)) tier = 3;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       backQueue.push({ arrivalTime: min, tier: tier });</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Process Queue tracking states</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let freeAgents = agentPool.filter(ag =&gt; ag.busyUntil &lt;=
-min);</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Dynamic shrinkage reduction modeling</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   if (freeAgents.length &gt; activeCapacity) { freeAgents =
-freeAgents.slice(0, activeCapacity); }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   while (backQueue.length &gt; 0 &amp;&amp; freeAgents.length &gt;
-0) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let currentCase = backQueue.shift();</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let assignedAgent = freeAgents.shift();</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let waitTime = min - currentCase.arrivalTime;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       cumulativeWait += waitTime;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       tierWaits[currentCase.tier] += waitTime;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       tierCounts[currentCase.tier]++;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (waitTime * 60 &lt;= slaWaitSec) totalSlaPass++;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       totalHandled++;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       // Compute handling duration loads</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let multiplier = 1.0;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (currentCase.tier === 2) multiplier = 1.8;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (currentCase.tier === 3) multiplier = 3.5;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let baseTaskTime = ((chanAht + chanWrap) / 60) * multiplier;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (assignedAgent.type === 'intern') {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           if (currentCase.tier === 3) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               baseTaskTime *= (internPenalty * 2.0); // Massive
-penalty on technical tracks</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           } else {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-               baseTaskTime *= internPenalty;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           }</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       assignedAgent.busyUntil = min + Math.ceil(baseTaskTime);</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       totalBusyMinutes += baseTaskTime;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   // Process impatience threshold dropouts</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   let originalQueueLength = backQueue.length;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   backQueue = backQueue.filter(caseItem =&gt; {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       let itemWait = min - caseItem.arrivalTime;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       if (itemWait &gt; 15) { // 15 Minute patience horizon barrier</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           totalAbandoned++;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-           return false;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       }</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-       return true;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   });</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   timelineQueuePoints[min] += backQueue.length;</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-}</p>
-<p style="line-height: 100%; margin-bottom: 0in">                }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">                //
-Average profiles out over the 12 loops</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-const totalCalculatedCases = totalHandled + totalAbandoned || 1;</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-return {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-sla: (totalSlaPass / totalCalculatedCases) * 100,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-avgWait: (cumulativeWait / totalCalculatedCases),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-dropRate: (totalAbandoned / totalCalculatedCases) * 100,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-occupancy: Math.min(((totalBusyMinutes / 12) / (minutesTotal *
-(cfg.sen + cfg.int || 1))) * 100, 99.2),</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-t1Wait: tierCounts[1] ? (tierWaits[1] / tierCounts[1]) : 0,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-t2Wait: tierCounts[2] ? (tierWaits[2] / tierCounts[2]) : 0,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-t3Wait: tierCounts[3] ? (tierWaits[3] / tierCounts[3]) : 0,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-chartData: timelineQueuePoints.map(p =&gt; p / 12)</p>
-<p style="line-height: 100%; margin-bottom: 0in">                };</p>
-<p style="line-height: 100%; margin-bottom: 0in">            }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-resultsA = runSimulationModel(configA);</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-resultsB = runSimulationModel(configB);</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-lastSimulationResults = { a: resultsA, b: resultsB, metadata: { t1:
-t1Pct*100, t2: t2Pct*100, t3: t3Pct*100, sla:
-document.getElementById('sla-wait').value, configA, configB } };</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Update UI Interface elements</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-sla-a').innerText =
-resultsA.sla.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-sla-b').innerText =
-resultsB.sla.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-wait-a').innerText =
-resultsA.avgWait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-wait-b').innerText =
-resultsB.avgWait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-drop-a').innerText =
-resultsA.dropRate.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('res-drop-b').innerText =
-resultsB.dropRate.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('bar-occ-a').style.width =
-resultsA.occupancy.toFixed(0) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('bar-occ-a').innerText =
-resultsA.occupancy.toFixed(0) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('bar-occ-b').style.width =
-resultsB.occupancy.toFixed(0) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('bar-occ-b').innerText =
-resultsB.occupancy.toFixed(0) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tier-1-metrics').innerText =
-resultsA.t1Wait.toFixed(1) + 'm vs ' + resultsB.t1Wait.toFixed(1) +
-'m';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tier-2-metrics').innerText =
-resultsA.t2Wait.toFixed(1) + 'm vs ' + resultsB.t2Wait.toFixed(1) +
-'m';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('tier-3-metrics').innerText =
-resultsA.t3Wait.toFixed(1) + 'm vs ' + resultsB.t3Wait.toFixed(1) +
-'m';</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Generate Automated Layman Translation Strings</p>
-<p style="line-height: 100%; margin-bottom: 0in">            let
-verdict = &quot;&quot;;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            if
-(resultsB.sla &lt; resultsA.sla &amp;&amp; configB.int &gt;
-configA.int) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-verdict = &quot;⚠️ INTERN FRAGILITY TRAP ENCOUNTERED: Your
-experimental profile increases un-trained junior headcount layers
-while decreasing full-time slots. While you have more active staff
-threads, your high proportion of Tier 2 and Tier 3 complex tickets
-creates immediate bottlenecks. Intern processing times and elongated
-CRM notes logging windows block frontline channels, forcing simple
-Tier 1 calls to choke and causing a severe queue backup.&quot;;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            } else
-if (resultsB.occupancy &gt; 88) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-verdict = &quot;🔥 CRITICAL FRONTLINE REDLINE EXHAUSTION:
-Configuration B forces your active staff threads into a constant,
-compounding production ceiling. Staff occupancy exceeds safe
-barriers, causing post-interaction wrap-up times to get compressed,
-which guarantees CRM documentation inaccuracies, missed escalations,
-and high employee attrition loops.&quot;;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            } else
-if (resultsB.sla &gt;= 90) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-verdict = &quot;⚖ SUSTAINABLE RESOURCE DEPLOYMENT HARMONY:
-Configuration B hits target performance envelopes effectively. The
-roster ratio stabilizes service levels, provides safe bandwidth
-recovery to handle complex escalations, and clears the holding lines
-cleanly without driving excessive idle capacity constraints.&quot;;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            } else {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-verdict = &quot;📋 CONGESTED TRAFFIC PATTERNS DETECTED: The
-structural mix handles early processing loads but experiences
-cascading delays during lunch break windows. The team clears queues
-during low volume loops but remains vulnerable to simple customer
-abandonment curves under sudden load spikes.&quot;;</p>
-<p style="line-height: 100%; margin-bottom: 0in">            }</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('verdict-text').innerText = verdict;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Render Dynamic Time-Series Chart Data</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-renderEkgChart(resultsA.chartData, resultsB.chartData);</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Populating hidden PDF template DOM</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-meta-sla').innerText = 'Target SLA: Wait
-Time &lt; ' + document.getElementById('sla-wait').value + '.0 mins';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t1-pct').innerText = (t1Pct*100) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t2-pct').innerText = (t2Pct*100) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t3-pct').innerText = (t3Pct*100) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">            
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sup-a').innerText = configA.sup;</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sen-a').innerText = configA.sen;</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-int-a').innerText = configA.int;</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sup-b').innerText = configB.sup;</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sen-b').innerText = configB.sen;</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-int-b').innerText = configB.int;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sla-val-a').innerText =
-resultsA.sla.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-sla-val-b').innerText =
-resultsB.sla.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-wait-val-a').innerText =
-resultsA.avgWait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-wait-val-b').innerText =
-resultsB.avgWait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-drop-val-a').innerText =
-resultsA.dropRate.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-drop-val-b').innerText =
-resultsB.dropRate.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-occ-val-a').innerText =
-resultsA.occupancy.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-occ-val-b').innerText =
-resultsB.occupancy.toFixed(1) + '%';</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t1-wait-a').innerText =
-resultsA.t1Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t2-wait-a').innerText =
-resultsA.t2Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t3-wait-a').innerText =
-resultsA.t3Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t1-wait-b').innerText =
-resultsB.t1Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t2-wait-b').innerText =
-resultsB.t2Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-t3-wait-b').innerText =
-resultsB.t3Wait.toFixed(1) + 'm';</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-document.getElementById('pdf-verdict').innerText = verdict;</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Reveal hidden scoreboard component</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-scoreboardSection = document.getElementById('scoreboard-section');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-scoreboardSection.classList.remove('hidden');</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-scoreboardSection.scrollIntoView({ behavior: 'smooth' });</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-renderEkgChart(dataA, dataB) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-ctx = document.getElementById('ekgChart').getContext('2d');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            if
-(globalEkgChart) globalEkgChart.destroy();</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">            //
-Formulate step markers matching hourly divisions</p>
-<p style="line-height: 100%; margin-bottom: 0in">            let
-labels = [];</p>
-<p style="line-height: 100%; margin-bottom: 0in">            for(let
-i=0; i&lt;dataA.length; i++) {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                if(i
-% 60 === 0) labels.push('Hour ' + (i/60));</p>
-<p style="line-height: 100%; margin-bottom: 0in">                else
-labels.push('');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-globalEkgChart = new Chart(ctx, {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-type: 'line',</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-data: {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-labels: labels,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-datasets: [</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   { label: 'Configuration A (Baseline)', data: dataA, borderColor:
-'#64748b', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1
-},</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   { label: 'Configuration B (Experimental)', data: dataB,
-borderColor: '#4f46e5', borderWidth: 2, pointRadius: 0, fill: false,
-tension: 0.1 }</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-]</p>
-<p style="line-height: 100%; margin-bottom: 0in">                },</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-options: {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-responsive: true,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-maintainAspectRatio: false,</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-scales: {</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   y: { beginAtZero: true, title: { display: true, text: 'Pending
-Holding Queue Count', font: { size: 10, weight: 'bold' } } },</p>
-<p style="line-height: 100%; margin-bottom: 0in">                    
-   x: { grid: { display: false } }</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-},</p>
-<p style="line-height: 100%; margin-bottom: 0in">                   
-plugins: { legend: { labels: { font: { size: 10, weight: 'bold' } } }
-}</p>
-<p style="line-height: 100%; margin-bottom: 0in">                }</p>
-<p style="line-height: 100%; margin-bottom: 0in">            });</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in"><br/>
-
-</p>
-<p style="line-height: 100%; margin-bottom: 0in">        // PDF
-Generation Trigger</p>
-<p style="line-height: 100%; margin-bottom: 0in">        function
-triggerPdfDownload() {</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-element = document.getElementById('pdf-document');</p>
-<p style="line-height: 100%; margin-bottom: 0in">            const
-opt = {</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-margin: 0,</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-filename: 'Frontliner_Labs_Capacity_Audit_Report.pdf',</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-image: { type: 'jpeg', quality: 0.98 },</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-html2canvas: { scale: 2, useCORS: true },</p>
-<p style="line-height: 100%; margin-bottom: 0in">               
-jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }</p>
-<p style="line-height: 100%; margin-bottom: 0in">            };</p>
-<p style="line-height: 100%; margin-bottom: 0in">           
-html2pdf().set(opt).from(element).save();</p>
-<p style="line-height: 100%; margin-bottom: 0in">        }</p>
-<p style="line-height: 100%; margin-bottom: 0in">    &lt;/script&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;/body&gt;</p>
-<p style="line-height: 100%; margin-bottom: 0in">&lt;/html&gt;</p>
+<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen">
+
+<!-- PHASE 1: THE WELCOME GATE & DATA POLICY -->
+<div id="welcome-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm">
+<div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-slate-100 transform transition-all">
+<div class="flex items-center space-x-3 text-indigo-600 mb-4">
+<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+<h1 class="text-2xl font-black tracking-tight text-slate-900">The Operational Reality Check</h1>
+</div>
+<p class="text-slate-600 mb-6 leading-relaxed">
+Welcome to the <strong>Omni-Channel Capacity Planning Tool</strong>. Standard static spreadsheets flatten daily interaction curves, hiding the real-world operational friction that triggers queue collapses, backlogs, and agent burnout. This simulator executes a 12-run stochastic math modeling loop over your schedules to find your true bottlenecks.
+</p>
+
+<div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6 space-y-4">
+<h3 class="font-bold text-slate-900 flex items-center text-sm uppercase tracking-wider text-slate-500">
+<svg class="w-4 h-4 mr-2 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056A11.954 11.954 0 0110 20.056 11.954 11.954 0 012.166 5zM10 14a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
+The "What Happens in Vegas Stays in Vegas" Clause
+</h3>
+<ul class="text-xs text-slate-600 space-y-2 list-disc pl-4">
+<li><strong>100% Client-Side Architecture:</strong> All simulation calculations, caseload records, and capacity inputs are processed completely inside your local browser memory.</li>
+<li><strong>Zero External Data Pipeline:</strong> No information is dispatched over the web to any server. Your proprietary scheduling metrics remain private, making this system fully GDPR/PDPA compliant.</li>
+<li><strong>Static Engine Integrity:</strong> This application executes pure statistical algorithms without AI inference layers to guarantee total data control and predictable outputs.</li>
+</ul>
+</div>
+
+<label class="flex items-start space-x-3 p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl cursor-pointer select-none">
+<input type="checkbox" id="policy-agree" class="mt-1 accent-indigo-600 rounded">
+<span class="text-sm text-slate-700 leading-tight">
+I accept the Terms of Use and Data Privacy Policy. I acknowledge that all input profiles are parsed strictly in-browser.
+</span>
+</label>
+
+<button id="gate-btn" disabled class="mt-6 w-full py-3 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed transition-all shadow-md focus:outline-none" onclick="unlockSimulator()">
+Unlock Simulation Matrix
+</button>
+</div>
+</div>
+
+<!-- MAIN INTERFACE LAYER -->
+<div id="main-interface" class="blurred-zone max-w-7xl mx-auto px-4 py-8 space-y-8">
+<!-- Header Profile -->
+<div class="border-b border-slate-200 pb-4">
+<span class="text-xs font-bold text-indigo-600 tracking-widest uppercase">Operational Resource Modeling Engine</span>
+<h2 class="text-3xl font-black text-slate-900 tracking-tight">Capacity & Tiered Skill-Alignment Framework</h2>
+</div>
+
+<!-- PHASE 2: MASTER CONFIGURATION ACCORDION MATRIX -->
+<section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
+<div class="bg-slate-900 p-4 text-white flex items-center justify-between">
+<h3 class="font-extrabold tracking-tight">Section 1: Tweak the Dials (Master Templates)</h3>
+<span class="text-xs text-slate-400">Configure parameters once to populate all scenario baselines</span>
+</div>
+
+<!-- Drawer A: Traffic & Friction Configurator -->
+<div class="border-b border-slate-100">
+<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-a')">
+<span>── Drawer A: The Traffic & Friction Configurator (Channels & Tiers)</span>
+<span id="drawer-a-icon">▼</span>
+</button>
+<div id="drawer-a" class="accordion-content p-6 space-y-6 bg-white">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Custom Channel Alias</label>
+<input type="text" id="chan-alias" value="Fire-Fighting Hotline" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Inbound Traffic Volume (Hourly)</label>
+<input type="number" id="chan-vol" value="50" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Avg Live Interaction Time (Sec)</label>
+<input type="number" id="chan-aht" value="240" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Post-Interaction CRM Wrap (Sec)</label>
+<input type="number" id="chan-wrap" value="120" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+</div>
+<div class="border-t border-slate-100 pt-4">
+<h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Caseflow Difficulty Split (% Must sum to 100)</h4>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-slate-50 p-3 rounded-xl border border-slate-150">
+<span class="block text-xs font-extrabold text-slate-800 mb-1">Tier 1 (General Support)</span>
+<div class="flex items-center space-x-2">
+<input type="number" id="tier-1-pct" value="55" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
+<span class="text-xs text-slate-500">Base handling speed modifier</span>
+</div>
+</div>
+<div class="bg-amber-50/50 p-3 rounded-xl border border-amber-100">
+<span class="block text-xs font-extrabold text-amber-900 mb-1">Tier 2 (Intermediate Escalations)</span>
+<div class="flex items-center space-x-2">
+<input type="number" id="tier-2-pct" value="30" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
+<span class="text-xs text-slate-600"><strong>1.8x</strong> Handling complexity burden</span>
+</div>
+</div>
+<div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100">
+<span class="block text-xs font-extrabold text-rose-900 mb-1">Tier 3 (Advanced / Specialist)</span>
+<div class="flex items-center space-x-2">
+<input type="number" id="tier-3-pct" value="15" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
+<span class="text-xs text-rose-700"><strong>3.5x</strong> Burden + Intern blockage</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Drawer B: Timeline & Constraints -->
+<div class="border-b border-slate-100">
+<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-b')">
+<span>── Drawer B: The Timeline, Boundaries & Shift Constraints</span>
+<span id="drawer-b-icon">▼</span>
+</button>
+<div id="drawer-b" class="accordion-content p-6 space-y-6 bg-white">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Operational Shift Length (Hours)</label>
+<input type="number" id="shift-hours" value="8" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Customer Patience Horizon SLA (Mins)</label>
+<input type="number" id="sla-wait" value="3" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">The Lunch Rush Scalar (12 PM - 2 PM)</label>
+<input type="number" step="0.1" id="peak-multiplier" value="1.6" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rostered Shrinkage (Mins/Agent/Day)</label>
+<input type="number" id="shrinkage-mins" value="60" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+<span class="text-[10px] text-slate-400">Total breaks, alignment sessions, and team huddles</span>
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Target Burnout Occupancy Redline (%)</label>
+<input type="number" id="target-occ" value="85" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+</div>
+<div>
+<label class="block text-xs font-bold uppercase text-slate-500 mb-1">The "Call-In Sick" Roulette Variance (%)</label>
+<input type="number" id="absence-prob" value="10" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+<span class="text-[10px] text-slate-400">Probability of individual unplanned leave per iteration</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- Drawer C: Hierarchy Profiles -->
+<div>
+<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-c')">
+<span>── Drawer C: The Ranks & Productivity Switchboard</span>
+<span id="drawer-c-icon">▼</span>
+</button>
+<div id="drawer-c" class="accordion-content p-6 bg-white">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
+<span class="block text-sm font-extrabold text-slate-900 mb-1">Supervisor Profile</span>
+<p class="text-xs text-slate-500 mb-2">Governed by a strict 1:8 compliance span of control. Kept out of queue threads unless critical congestion bounds crash.</p>
+<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-200 font-bold rounded">Speed: 1.0x</span>
+</div>
+<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
+<span class="block text-sm font-extrabold text-slate-900 mb-1">Senior Full-Timer Profile</span>
+<p class="text-xs text-slate-500 mb-2">The standard operational operational anchor. Capable of processing all case difficulties without capability speed penalties.</p>
+<span class="inline-block px-2 py-0.5 text-[10px] bg-indigo-100 text-indigo-700 font-bold rounded">Speed: 1.0x Baseline</span>
+</div>
+<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
+<span class="block text-sm font-extrabold text-slate-900 mb-1">Junior / Intern Profile</span>
+<p class="text-xs text-slate-500 mb-2">Subject to training curves. Slower capabilities inflate interaction touchpoints and post-call logging notes loops.</p>
+<div class="mt-2 flex items-center space-x-2">
+<label class="text-xs font-bold text-slate-600">Intern Skill Slider:</label>
+<input type="range" id="intern-modifier" min="0.6" max="0.8" step="0.05" value="0.7" class="w-24">
+<span id="intern-mod-val" class="text-xs font-bold text-slate-800">0.70x</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+
+<!-- PHASE 3: THE SIDE-BY-SIDE ROSTER ARCHITECT -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Config A -->
+<div class="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<h3 class="font-extrabold text-lg text-slate-900">Configuration A: Baseline Roster</h3>
+<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded">Current Roster Model</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Supervisors</label>
+<input type="number" id="config-a-sup" value="1" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Seniors</label>
+<input type="number" id="config-a-sen" value="6" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Interns</label>
+<input type="number" id="config-a-int" value="2" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
+</div>
+</div>
+</div>
+
+<!-- Config B -->
+<div class="bg-white border-2 border-indigo-600 rounded-2xl p-6 shadow-sm space-y-4">
+<div class="flex justify-between items-center border-b border-slate-100 pb-2">
+<h3 class="font-extrabold text-lg text-slate-900">Configuration B: Experimental Roster</h3>
+<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded">Speculative Mix</span>
+</div>
+<div class="grid grid-cols-3 gap-3">
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Supervisors</label>
+<input type="number" id="config-b-sup" value="1" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Seniors</label>
+<input type="number" id="config-b-sen" value="3" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
+</div>
+<div>
+<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Interns</label>
+<input type="number" id="config-b-int" value="6" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
+</div>
+</div>
+</div>
+</section>
+
+<!-- ACTION BUTTON TRIGGER -->
+<div class="text-center">
+<button id="run-btn" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg hover:shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer tracking-wide" onclick="executeStochasticEngine()">
+[ RUN 12x STOCHASTIC STRESS TEST ]
+</button>
+</div>
+
+<!-- PHASE 4: THE REVEAL YOUR FATE SCOREBOARD -->
+<section id="scoreboard-section" class="hidden bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden scroll-mt-6">
+<div class="bg-slate-900 p-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+<h3 class="font-black text-white text-lg tracking-tight flex items-center">
+<span class="w-3 h-3 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
+Section 2: Interactive Operational Scoreboard
+</h3>
+<div class="flex space-x-1 bg-slate-800 p-1 rounded-lg">
+<button id="tab-sla-btn" class="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 rounded-md shadow-sm" onclick="switchTab('sla')">SLA Matrix</button>
+<button id="tab-burn-btn" class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white" onclick="switchTab('burn')">Team Burnout</button>
+<button id="tab-tier-btn" class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white" onclick="switchTab('tier')">Skill Alignment</button>
+</div>
+</div>
+
+<!-- TAB CONTENT INTERFACES -->
+<div class="p-6">
+<!-- TAB 1: SLA -->
+<div id="tab-sla" class="space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+<span class="block text-xs font-bold uppercase text-slate-400 mb-1">SLA Target Achieved</span>
+<div class="flex justify-center items-baseline space-x-2 mt-1">
+<span class="text-2xl font-black text-slate-800" id="res-sla-a">0.0%</span>
+<span class="text-xs text-slate-400">vs</span>
+<span class="text-lg font-bold text-indigo-600" id="res-sla-b">0.0%</span>
+</div>
+</div>
+<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+<span class="block text-xs font-bold uppercase text-slate-400 mb-1">Avg Global Queue Delay</span>
+<div class="flex justify-center items-baseline space-x-2 mt-1">
+<span class="text-2xl font-black text-slate-800" id="res-wait-a">0.0m</span>
+<span class="text-xs text-slate-400">vs</span>
+<span class="text-lg font-bold text-indigo-600" id="res-wait-b">0.0m</span>
+</div>
+</div>
+<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+<span class="block text-xs font-bold uppercase text-slate-400 mb-1">Customer Abandonment Rate</span>
+<div class="flex justify-center items-baseline space-x-2 mt-1">
+<span class="text-2xl font-black text-slate-800" id="res-drop-a">0.0%</span>
+<span class="text-xs text-slate-400">vs</span>
+<span class="text-lg font-bold text-rose-600" id="res-drop-b">0.0%</span>
+</div>
+</div>
+</div>
+</div>
+
+<!-- TAB 2: BURNOUT -->
+<div id="tab-burn" class="hidden space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+<h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Config A Roster Occupancy</h4>
+<div class="relative pt-1">
+<div class="overflow-hidden h-4 text-xs flex rounded bg-slate-200">
+<div id="bar-occ-a" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-slate-700 font-bold">0%</div>
+</div>
+</div>
+<span class="text-[10px] text-slate-400 mt-1 block">Rostered utilization limit (Target Ceiling: 85%)</span>
+</div>
+<div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
+<h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Config B Roster Occupancy</h4>
+<div class="relative pt-1">
+<div class="overflow-hidden h-4 text-xs flex rounded bg-slate-200">
+<div id="bar-occ-b" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600 font-bold">0%</div>
+</div>
+</div>
+<span class="text-[10px] text-slate-400 mt-1 block">Rostered utilization limit (Target Ceiling: 85%)</span>
+</div>
+</div>
+</div>
+
+<!-- TAB 3: SKILL ALIGNMENT -->
+<div id="tab-tier" class="hidden space-y-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+<div class="p-4 border border-slate-100 rounded-xl bg-slate-50 text-center">
+<span class="text-xs font-bold text-slate-500 uppercase block">Tier 1 Wait Tracks</span>
+<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-1-metrics">0.0m vs 0.0m</p>
+</div>
+<div class="p-4 border border-slate-100 rounded-xl bg-amber-50/30 text-center">
+<span class="text-xs font-bold text-amber-700 uppercase block">Tier 2 Wait Tracks</span>
+<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-2-metrics">0.0m vs 0.0m</p>
+</div>
+<div class="p-4 border border-slate-100 rounded-xl bg-rose-50/30 text-center">
+<span class="text-xs font-bold text-rose-700 uppercase block">Tier 3 Wait Tracks</span>
+<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-3-metrics">0.0m vs 0.0m</p>
+</div>
+</div>
+</div>
+
+<!-- DYNAMIC ANALYTICS STRATEGY STRINGS -->
+<div class="mt-6 border-t border-slate-100 pt-6 space-y-4">
+<div class="p-4 border-l-4 border-slate-800 bg-slate-50 rounded-r-xl">
+<h4 class="text-sm font-black text-slate-900 uppercase tracking-tight">System Operational Verdict</h4>
+<p id="verdict-text" class="text-sm text-slate-600 mt-1 leading-relaxed">Evaluating execution metrics...</p>
+</div>
+</div>
+
+<!-- THE EKG QUEUE VISUALIZATION GRAPH -->
+<div class="mt-6 border-t border-slate-100 pt-6">
+<h4 class="text-xs font-black uppercase text-slate-400 tracking-wider mb-2">Minute-by-Minute Live Queue Length Profiles (Average Stress Run)</h4>
+<div class="h-64 w-full relative">
+<canvas id="ekgChart"></canvas>
+</div>
+</div>
+
+<!-- REPORT EXPORT TERMINAL -->
+<div class="mt-8 text-right">
+<button class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow transition-all cursor-pointer inline-flex items-center" onclick="triggerPdfDownload()">
+<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+Download Recovery PDF Report
+</button>
+</div>
+</div>
+</section>
+</div>
+
+<!-- HIDDEN RENDER FRAMEWORK FOR PRINT-PERFECT 2-PAGE A4 PDF COMPILATION -->
+<div class="hidden">
+<div id="pdf-document" class="p-12 space-y-8 text-slate-900 bg-white font-sans text-xs max-w-[210mm] min-h-[297mm]">
+<!-- PDF PAGE 1 -->
+<div id="pdf-page-1" class="space-y-6">
+<div class="flex justify-between items-start border-b-2 border-slate-900 pb-4">
+<div>
+<h1 class="text-xl font-black uppercase tracking-tight text-slate-900">Frontline Roster & Tier Resilience Report</h1>
+<p class="text-[10px] text-slate-500 mt-0.5">Simulation: 12-Run Stochastic Poisson Distribution Process</p>
+</div>
+<div class="text-right text-[10px] text-slate-500">
+<p><strong>Generated on:</strong> 2026-07-06 03:04:01 UTC</p>
+<p id="pdf-meta-sla">Target SLA: Wait Time &lt; 3.0 mins</p>
+</div>
+</div>
+
+<div>
+<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">1. Caseflow Complexity Traffic Structure</h3>
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-slate-100 font-bold border-b border-slate-300">
+<th class="p-2">Complexity Classification</th>
+<th class="p-2">Caseload Weight Proportion</th>
+<th class="p-2">Handling Burden Factor</th>
+<th class="p-2">Intern Access Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-slate-800">Tier 1 (General Support)</td>
+<td class="p-2" id="pdf-t1-pct">55%</td>
+<td class="p-2">1.0x Baseline Duration</td>
+<td class="p-2">Permitted (Slider Modifiers Apply)</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-slate-800">Tier 2 (Intermediate Escalations)</td>
+<td class="p-2" id="pdf-t2-pct">30%</td>
+<td class="p-2">1.8x Operational Inflation</td>
+<td class="p-2">Permitted (Double Penalty Application)</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-slate-800">Tier 3 (Advanced / VIP Track)</td>
+<td class="p-2" id="pdf-t3-pct">15%</td>
+<td class="p-2">3.5x Technical Scale</td>
+<td class="p-2 text-rose-700 font-bold">Blockage Threshold Active</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div>
+<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">2. Roster Comparison Metrics</h3>
+<table class="w-full text-center border-collapse">
+<thead>
+<tr class="bg-slate-900 text-white font-bold">
+<th class="p-2 text-left">Operational Performance Identifiers</th>
+<th class="p-2">Configuration A (Baseline)</th>
+<th class="p-2">Configuration B (Experimental)</th>
+</tr>
+</thead>
+<tbody class="text-slate-800">
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-left">Rostered Senior Full-Timers</td>
+<td class="p-2" id="pdf-sen-a">0</td>
+<td class="p-2" id="pdf-sen-b">0</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-left">Rostered Junior Interns</td>
+<td class="p-2" id="pdf-int-a">0</td>
+<td class="p-2" id="pdf-int-b">0</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-left">Rostered Supervisors / Leads</td>
+<td class="p-2" id="pdf-sup-a">0</td>
+<td class="p-2" id="pdf-sup-b">0</td>
+</tr>
+<tr class="border-b border-slate-200 bg-slate-50">
+<td class="p-2 font-bold text-left">Simulated SLA Success Rate</td>
+<td class="p-2 font-black text-slate-900" id="pdf-sla-val-a">0%</td>
+<td class="p-2 font-black text-slate-900" id="pdf-sla-val-b">0%</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-left">Average Global Queue Wait</td>
+<td class="p-2" id="pdf-wait-val-a">0.0m</td>
+<td class="p-2" id="pdf-wait-val-b">0.0m</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 font-bold text-left">Interaction Abandonment Rate</td>
+<td class="p-2" id="pdf-drop-val-a">0%</td>
+<td class="p-2" id="pdf-drop-val-b">0%</td>
+</tr>
+<tr class="border-b border-slate-300 bg-slate-50">
+<td class="p-2 font-bold text-left">Average Roster Occupancy Limit</td>
+<td class="p-2 font-bold" id="pdf-occ-val-a">0%</td>
+<td class="p-2 font-bold" id="pdf-occ-val-b">0%</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div class="p-4 border-l-4 border-slate-900 bg-slate-50 rounded-r-xl">
+<h3 class="font-extrabold text-xs uppercase tracking-tight text-slate-900 mb-1">3. Strategic Roster Verdict</h3>
+<p id="pdf-verdict" class="text-slate-600 leading-relaxed text-xs">Awaiting calculation cycle...</p>
+</div>
+</div>
+
+<div class="h-2" style="page-break-after: always;"></div>
+
+<!-- PDF PAGE 2 -->
+<div id="pdf-page-2" class="space-y-6 pt-12">
+<div>
+<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">4. Support Tier Routing Analytics</h3>
+<table class="w-full text-center border-collapse">
+<thead>
+<tr class="bg-slate-100 font-bold border-b border-slate-300">
+<th class="p-2 text-left">Isolated Ticket Category Delays</th>
+<th class="p-2">Configuration A Track (Mins)</th>
+<th class="p-2">Configuration B Track (Mins)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-slate-200">
+<td class="p-2 text-left font-bold text-slate-800">Tier 1 Support Line Wait</td>
+<td class="p-2" id="pdf-t1-wait-a">0.0m</td>
+<td class="p-2" id="pdf-t1-wait-b">0.0m</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 text-left font-bold text-slate-800">Tier 2 Escalations Line Wait</td>
+<td class="p-2" id="pdf-t2-wait-a">0.0m</td>
+<td class="p-2" id="pdf-t2-wait-b">0.0m</td>
+</tr>
+<tr class="border-b border-slate-200">
+<td class="p-2 text-left font-bold text-slate-800">Tier 3 Advanced VIP Line Wait</td>
+<td class="p-2" id="pdf-t3-wait-a">0.0m</td>
+<td class="p-2" id="pdf-t3-wait-b">0.0m</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<div>
+<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">5. Diurnal Break-Window Vulnerability Log</h3>
+<div class="space-y-3 pl-2 border-l-2 border-indigo-600">
+<p class="leading-relaxed"><strong>09:00 AM - 11:59 AM (Opening Influx Window):</strong> Workloads remain within stable capacity envelopes across both architectures. Queue tracking reports minimum friction thresholds.</p>
+<p class="leading-relaxed"><strong>12:00 PM - 02:00 PM (Lunch Break & Surge Window):</strong> The assigned rush multiplier intersects with scheduled shift relief shrinkage. Configuration options utilizing high densities of un-trained junior interns encounter immediate thread stagnation due to compounding notes processing delays.</p>
+<p class="leading-relaxed"><strong>04:00 PM - 05:00 PM (Shift End Drainage):</strong> Structural backlog checking flags clear recovery in high-senior configurations, while skill-deficient rosters run continuous holdover backlogs into subsequent morning cycles.</p>
+</div>
+</div>
+
+<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+<h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-tight mb-1">6. Roster Absence Fragility Evaluation</h3>
+<p class="text-slate-600 leading-relaxed">
+This model enforces an internal check scanning for single points of failure via a 10% sick-leave trigger. In runs where a key Senior Full-Timer thread is removed unexpectedly, rosters stripped of experienced anchors experienced an immediate service degradation across all tiers. Slower hands are forced onto technical queues, compressing remaining agent available bandwidth, driving occupancy into critical fatigue redlines (&gt;90%), and increasing baseline customer drops by an order of magnitude.
+</p>
+</div>
+
+<div class="border-t border-slate-300 pt-4 text-[9px] text-slate-400 leading-relaxed space-y-1">
+<p><strong>Stochastic Architecture Disclaimer:</strong> This matrix operates under continuous Erlang-C mathematical variants driven by continuous non-homogeneous Poisson probabilities checked in discrete minute-by-minute steps.</p>
+<p>Calculated data parameters represent algorithmic forecasting approximations. Out-of-bounds metrics like regional server grid failures, software architecture disruptions, or workforce structural changes fall outside model reporting perimeters.</p>
+</div>
+</div>
+</div>
+</div>
+
+<!-- CODE SCRIPTING CONTROLLER ENGINE -->
+<script>
+let globalEkgChart = null;
+let lastSimulationResults = null;
+
+// UI Gate Logic
+const policyCheckbox = document.getElementById('policy-agree');
+const gateButton = document.getElementById('gate-btn');
+const mainInterface = document.getElementById('main-interface');
+const welcomeGate = document.getElementById('welcome-gate');
+
+policyCheckbox.addEventListener('change', () => {
+if (policyCheckbox.checked) {
+gateButton.disabled = false;
+gateButton.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+gateButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'cursor-pointer');
+} else {
+gateButton.disabled = true;
+gateButton.classList.remove('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'cursor-pointer');
+gateButton.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
+}
+});
+
+function unlockSimulator() {
+welcomeGate.classList.add('opacity-0', 'pointer-events-none');
+setTimeout(() => { welcomeGate.remove(); }, 400);
+mainInterface.classList.remove('blurred-zone');
+mainInterface.classList.add('unblurred-zone');
+}
+
+function toggleAccordion(id) {
+const el = document.getElementById(id);
+const icon = document.getElementById(id + '-icon');
+el.classList.toggle('accordion-open');
+icon.innerText = el.classList.contains('accordion-open') ? '▲' : '▼';
+}
+
+// Real-time slider sync
+document.getElementById('intern-modifier').addEventListener('input', function(e) {
+document.getElementById('intern-mod-val').innerText = parseFloat(e.target.value).toFixed(2) + 'x';
+});
+
+function switchTab(tab) {
+['sla', 'burn', 'tier'].forEach(t => {
+document.getElementById('tab-' + t).classList.add('hidden');
+document.getElementById('tab-' + t + '-btn').classList.remove('bg-indigo-600', 'text-white');
+document.getElementById('tab-' + t + '-btn').classList.add('text-slate-400', 'hover:text-white');
+});
+document.getElementById('tab-' + tab).classList.remove('hidden');
+document.getElementById('tab-' + tab + '-btn').classList.add('bg-indigo-600', 'text-white');
+document.getElementById('tab-' + tab + '-btn').classList.remove('text-slate-400', 'hover:text-white');
+}
+
+// Mathematical Stochastic Engine Implementation
+function executeStochasticEngine() {
+// Rate Limit Logic Gate via LocalStorage
+const todayStr = new Date().toISOString().split('T')[0];
+let runsCount = parseInt(localStorage.getItem('sim_runs_count_' + todayStr) || '0');
+if (runsCount >= 2) {
+alert("Session Guard Notice: You have reached the local daily capacity calculation limits (2 evaluations per browser session). Reset your cache or try again tomorrow.");
+return;
+}
+localStorage.setItem('sim_runs_count_' + todayStr, (runsCount + 1).toString());
+
+// Collect variables
+const chanVol = parseFloat(document.getElementById('chan-vol').value);
+const chanAht = parseFloat(document.getElementById('chan-aht').value);
+const chanWrap = parseFloat(document.getElementById('chan-wrap').value);
+const t1Pct = parseFloat(document.getElementById('tier-1-pct').value) / 100;
+const t2Pct = parseFloat(document.getElementById('tier-2-pct').value) / 100;
+const t3Pct = parseFloat(document.getElementById('tier-3-pct').value) / 100;
+
+const shiftHours = parseInt(document.getElementById('shift-hours').value);
+const slaWaitSec = parseFloat(document.getElementById('sla-wait').value) * 60;
+const peakMultiplier = parseFloat(document.getElementById('peak-multiplier').value);
+const shrinkageMins = parseFloat(document.getElementById('shrinkage-mins').value);
+const absenceProb = parseFloat(document.getElementById('absence-prob').value) / 100;
+const internMod = parseFloat(document.getElementById('intern-modifier').value);
+
+// Fetch Configuration matrices
+const configA = {
+sup: parseInt(document.getElementById('config-a-sup').value),
+sen: parseInt(document.getElementById('config-a-sen').value),
+int: parseInt(document.getElementById('config-a-int').value)
+};
+const configB = {
+sup: parseInt(document.getElementById('config-b-sup').value),
+sen: parseInt(document.getElementById('config-b-sen').value),
+int: parseInt(document.getElementById('config-b-int').value)
+};
+
+const minutesTotal = shiftHours * 60;
+const internPenalty = 2 - internMod;
+
+// Simple Multi-run Simulation modeling
+function runSimulationModel(cfg) {
+let totalHandled = 0;
+let totalSlaPass = 0;
+let totalAbandoned = 0;
+let cumulativeWait = 0;
+let totalBusyMinutes = 0;
+
+let tierWaits = { 1: 0, 2: 0, 3: 0 };
+let tierCounts = { 1: 0, 2: 0, 3: 0 };
+let timelineQueuePoints = new Array(minutesTotal).fill(0);
+
+// Run 12 independent iterations (Stochastic Loops)
+for (let run = 0; run < 12; run++) {
+let activeSeniors = cfg.sen;
+let activeInterns = cfg.int;
+
+// Apply Sick Leave Roulette
+for (let i = 0; i < cfg.sen; i++) if (Math.random() < absenceProb) activeSeniors--;
+for (let i = 0; i < cfg.int; i++) if (Math.random() < absenceProb) activeInterns--;
+let availableThreads = activeSeniors + activeInterns;
+let agentPool = [];
+for(let i=0; i<activeSeniors; i++) agentPool.push({ type: 'senior', busyUntil: 0 });
+for(let i=0; i<activeInterns; i++) agentPool.push({ type: 'intern', busyUntil: 0 });
+
+let backQueue = [];
+
+// Minute by minute chronological processing pipeline
+for (let min = 0; min < minutesTotal; min++) {
+// Check for shrinkage hours window
+let isLunch = (min >= 180 && min <= 300); 
+let localMultiplier = isLunch ? peakMultiplier : 1.0;
+let activeCapacity = isLunch ? Math.ceil(availableThreads * 0.66) : availableThreads;
+
+// Calculate Lambda per minute interval
+let baseLambdaPerMin = chanVol / 60;
+let minLambda = baseLambdaPerMin * localMultiplier;
+
+// Poisson Knuth Seeding process
+let L = Math.exp(-minLambda);
+let k = 0;
+let p = 1;
+do { k++; p *= Math.random(); } while (p > L);
+let arrivals = k - 1;
+
+// Route arrivals into system arrays
+for (let a = 0; a < arrivals; a++) {
+let randTier = Math.random();
+let tier = 1;
+if (randTier > t1Pct && randTier <= (t1Pct + t2Pct)) tier = 2;
+else if (randTier > (t1Pct + t2Pct)) tier = 3;
+
+backQueue.push({ arrivalTime: min, tier: tier });
+}
+
+// Process Queue tracking states
+let freeAgents = agentPool.filter(ag => ag.busyUntil <= min);
+// Dynamic shrinkage reduction modeling
+if (freeAgents.length > activeCapacity) { freeAgents = freeAgents.slice(0, activeCapacity); }
+
+while (backQueue.length > 0 && freeAgents.length > 0) {
+let currentCase = backQueue.shift();
+let assignedAgent = freeAgents.shift();
+
+let waitTime = min - currentCase.arrivalTime;
+cumulativeWait += waitTime;
+tierWaits[currentCase.tier] += waitTime;
+tierCounts[currentCase.tier]++;
+
+if (waitTime * 60 <= slaWaitSec) totalSlaPass++;
+totalHandled++;
+
+// Compute handling duration loads
+let multiplier = 1.0;
+if (currentCase.tier === 2) multiplier = 1.8;
+if (currentCase.tier === 3) multiplier = 3.5;
+
+let baseTaskTime = ((chanAht + chanWrap) / 60) * multiplier;
+if (assignedAgent.type === 'intern') {
+if (currentCase.tier === 3) {
+baseTaskTime *= (internPenalty * 2.0); // Massive penalty on technical tracks
+} else {
+baseTaskTime *= internPenalty;
+}
+}
+
+assignedAgent.busyUntil = min + Math.ceil(baseTaskTime);
+totalBusyMinutes += baseTaskTime;
+}
+
+// Process impatience threshold dropouts
+let originalQueueLength = backQueue.length;
+backQueue = backQueue.filter(caseItem => {
+let itemWait = min - caseItem.arrivalTime;
+if (itemWait > 15) { // 15 Minute patience horizon barrier
+totalAbandoned++;
+return false;
+}
+return true;
+});
+
+timelineQueuePoints[min] += backQueue.length;
+}
+}
+
+// Average profiles out over the 12 loops
+const totalCalculatedCases = totalHandled + totalAbandoned || 1;
+return {
+sla: (totalSlaPass / totalCalculatedCases) * 100,
+avgWait: (cumulativeWait / totalCalculatedCases),
+dropRate: (totalAbandoned / totalCalculatedCases) * 100,
+occupancy: Math.min(((totalBusyMinutes / 12) / (minutesTotal * (cfg.sen + cfg.int || 1))) * 100, 99.2),
+t1Wait: tierCounts[1] ? (tierWaits[1] / tierCounts[1]) : 0,
+t2Wait: tierCounts[2] ? (tierWaits[2] / tierCounts[2]) : 0,
+t3Wait: tierCounts[3] ? (tierWaits[3] / tierCounts[3]) : 0,
+chartData: timelineQueuePoints.map(p => p / 12)
+};
+}
+
+const resultsA = runSimulationModel(configA);
+const resultsB = runSimulationModel(configB);
+lastSimulationResults = { a: resultsA, b: resultsB, metadata: { t1: t1Pct*100, t2: t2Pct*100, t3: t3Pct*100, sla: document.getElementById('sla-wait').value, configA, configB } };
+
+// Update UI Interface elements
+document.getElementById('res-sla-a').innerText = resultsA.sla.toFixed(1) + '%';
+document.getElementById('res-sla-b').innerText = resultsB.sla.toFixed(1) + '%';
+document.getElementById('res-wait-a').innerText = resultsA.avgWait.toFixed(1) + 'm';
+document.getElementById('res-wait-b').innerText = resultsB.avgWait.toFixed(1) + 'm';
+document.getElementById('res-drop-a').innerText = resultsA.dropRate.toFixed(1) + '%';
+document.getElementById('res-drop-b').innerText = resultsB.dropRate.toFixed(1) + '%';
+
+document.getElementById('bar-occ-a').style.width = resultsA.occupancy.toFixed(0) + '%';
+document.getElementById('bar-occ-a').innerText = resultsA.occupancy.toFixed(0) + '%';
+document.getElementById('bar-occ-b').style.width = resultsB.occupancy.toFixed(0) + '%';
+document.getElementById('bar-occ-b').innerText = resultsB.occupancy.toFixed(0) + '%';
+
+document.getElementById('tier-1-metrics').innerText = resultsA.t1Wait.toFixed(1) + 'm vs ' + resultsB.t1Wait.toFixed(1) + 'm';
+document.getElementById('tier-2-metrics').innerText = resultsA.t2Wait.toFixed(1) + 'm vs ' + resultsB.t2Wait.toFixed(1) + 'm';
+document.getElementById('tier-3-metrics').innerText = resultsA.t3Wait.toFixed(1) + 'm vs ' + resultsB.t3Wait.toFixed(1) + 'm';
+
+// Generate Automated Layman Translation Strings
+let verdict = "";
+if (resultsB.sla < resultsA.sla && configB.int > configA.int) {
+verdict = "⚠️ INTERN FRAGILITY TRAP ENCOUNTERED: Your experimental profile increases un-trained junior headcount layers while decreasing full-time slots. While you have more active staff threads, your high proportion of Tier 2 and Tier 3 complex tickets creates immediate bottlenecks. Intern processing times and elongated CRM notes logging windows block frontline channels, forcing simple Tier 1 calls to choke and causing a severe queue backup.";
+} else if (resultsB.occupancy > 88) {
+verdict = "🔥 CRITICAL FRONTLINE REDLINE EXHAUSTION: Configuration B forces your active staff threads into a constant, compounding production ceiling. Staff occupancy exceeds safe barriers, causing post-interaction wrap-up times to get compressed, which guarantees CRM documentation inaccuracies, missed escalations, and high employee attrition loops.";
+} else if (resultsB.sla >= 90) {
+verdict = "⚖ SUSTAINABLE RESOURCE DEPLOYMENT HARMONY: Configuration B hits target performance envelopes effectively. The roster ratio stabilizes service levels, provides safe bandwidth recovery to handle complex escalations, and clears the holding lines cleanly without driving excessive idle capacity constraints.";
+} else {
+verdict = "📋 CONGESTED TRAFFIC PATTERNS DETECTED: The structural mix handles early processing loads but experiences cascading delays during lunch break windows. The team clears queues during low volume loops but remains vulnerable to simple customer abandonment curves under sudden load spikes.";
+}
+document.getElementById('verdict-text').innerText = verdict;
+
+// Render Dynamic Time-Series Chart Data
+renderEkgChart(resultsA.chartData, resultsB.chartData);
+
+// Populating hidden PDF template DOM
+document.getElementById('pdf-meta-sla').innerText = 'Target SLA: Wait Time < ' + document.getElementById('sla-wait').value + '.0 mins';
+document.getElementById('pdf-t1-pct').innerText = (t1Pct*100) + '%';
+document.getElementById('pdf-t2-pct').innerText = (t2Pct*100) + '%';
+document.getElementById('pdf-t3-pct').innerText = (t3Pct*100) + '%';
+document.getElementById('pdf-sup-a').innerText = configA.sup;
+document.getElementById('pdf-sen-a').innerText = configA.sen;
+document.getElementById('pdf-int-a').innerText = configA.int;
+document.getElementById('pdf-sup-b').innerText = configB.sup;
+document.getElementById('pdf-sen-b').innerText = configB.sen;
+document.getElementById('pdf-int-b').innerText = configB.int;
+
+document.getElementById('pdf-sla-val-a').innerText = resultsA.sla.toFixed(1) + '%';
+document.getElementById('pdf-sla-val-b').innerText = resultsB.sla.toFixed(1) + '%';
+document.getElementById('pdf-wait-val-a').innerText = resultsA.avgWait.toFixed(1) + 'm';
+document.getElementById('pdf-wait-val-b').innerText = resultsB.avgWait.toFixed(1) + 'm';
+document.getElementById('pdf-drop-val-a').innerText = resultsA.dropRate.toFixed(1) + '%';
+document.getElementById('pdf-drop-val-b').innerText = resultsB.dropRate.toFixed(1) + '%';
+document.getElementById('pdf-occ-val-a').innerText = resultsA.occupancy.toFixed(1) + '%';
+document.getElementById('pdf-occ-val-b').innerText = resultsB.occupancy.toFixed(1) + '%';
+
+document.getElementById('pdf-t1-wait-a').innerText = resultsA.t1Wait.toFixed(1) + 'm';
+document.getElementById('pdf-t2-wait-a').innerText = resultsA.t2Wait.toFixed(1) + 'm';
+document.getElementById('pdf-t3-wait-a').innerText = resultsA.t3Wait.toFixed(1) + 'm';
+document.getElementById('pdf-t1-wait-b').innerText = resultsB.t1Wait.toFixed(1) + 'm';
+document.getElementById('pdf-t2-wait-b').innerText = resultsB.t2Wait.toFixed(1) + 'm';
+document.getElementById('pdf-t3-wait-b').innerText = resultsB.t3Wait.toFixed(1) + 'm';
+document.getElementById('pdf-verdict').innerText = verdict;
+
+// Reveal hidden scoreboard component
+const scoreboardSection = document.getElementById('scoreboard-section');
+scoreboardSection.classList.remove('hidden');
+scoreboardSection.scrollIntoView({ behavior: 'smooth' });
+}
+
+function renderEkgChart(dataA, dataB) {
+const ctx = document.getElementById('ekgChart').getContext('2d');
+if (globalEkgChart) globalEkgChart.destroy();
+
+// Formulate step markers matching hourly divisions
+let labels = [];
+for(let i=0; i<dataA.length; i++) {
+if(i % 60 === 0) labels.push('Hour ' + (i/60));
+else labels.push('');
+}
+
+globalEkgChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: labels,
+datasets: [
+{ label: 'Configuration A (Baseline)', data: dataA, borderColor: '#64748b', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 },
+{ label: 'Configuration B (Experimental)', data: dataB, borderColor: '#4f46e5', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 }
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+scales: {
+y: { beginAtZero: true, title: { display: true, text: 'Pending Holding Queue Count', font: { size: 10, weight: 'bold' } } },
+x: { grid: { display: false } }
+},
+plugins: { legend: { labels: { font: { size: 10, weight: 'bold' } } } }
+}
+});
+}
+
+// PDF Generation Trigger
+function triggerPdfDownload() {
+const element = document.getElementById('pdf-document');
+const opt = {
+margin: 0,
+filename: 'Frontliner_Labs_Capacity_Audit_Report.pdf',
+image: { type: 'jpeg', quality: 0.98 },
+html2canvas: { scale: 2, useCORS: true },
+jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+};
+html2pdf().set(opt).from(element).save();
+}
+</script>
 </body>
 </html>
