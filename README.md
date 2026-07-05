@@ -43,3 +43,5 @@ Your operational numbers, schedules, and ticket counts belong to your business.
 Need to justify a hiring request to your Director? The tool compiles your exact simulation results into a clean, presentation-ready **2-page A4 PDF report**. 
 *   **Page 1** outlines the side-by-side comparison of your baseline vs. experimental roster alongside a professional strategic verdict.
 *   **Page 2** details how your queue behaves hour-by-hour and outlines how vulnerable your team is if an agent calls in sick.
+
+Release: Pre-Alpha
