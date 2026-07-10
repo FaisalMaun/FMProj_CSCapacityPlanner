@@ -1,863 +1,939 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Omni-Channel Capacity Planning & Tiered Skill-Alignment Simulator</title>
-<!-- Tailwind CSS CDN -->
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<!-- Chart.js CDN -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- html2pdf.js CDN -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-<style>
-.blurred-zone { filter: blur(8px); pointer-events: none; user-select: none; transition: all 0.4s ease; }
-.unblurred-zone { filter: none; pointer-events: auto; user-select: auto; }
-.accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
-.accordion-open { max-height: 1200px; transition: max-height 0.5s ease-in; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WFM Capacity Planner & Stress Tester</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; color: black; font-size: 10pt; }
+            .card { border: 1px solid #ccc; box-shadow: none !important; break-inside: avoid; }
+        }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-50 font-sans text-slate-800 antialiased min-h-screen">
-
-<!-- PHASE 1: THE WELCOME GATE & DATA POLICY -->
-<div id="welcome-gate" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/80 p-4 backdrop-blur-sm">
-<div class="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-slate-100 transform transition-all">
-<div class="flex items-center space-x-3 text-indigo-600 mb-4">
-<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-<h1 class="text-2xl font-black tracking-tight text-slate-900">The Operational Reality Check</h1>
-</div>
-<p class="text-slate-600 mb-6 leading-relaxed">
-Welcome to the <strong>Omni-Channel Capacity Planning Tool</strong>. Standard static spreadsheets flatten daily interaction curves, hiding the real-world operational friction that triggers queue collapses, backlogs, and agent burnout. This simulator executes a 12-run stochastic math modeling loop over your schedules to find your true bottlenecks.
-</p>
-
-<div class="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6 space-y-4">
-<h3 class="font-bold text-slate-900 flex items-center text-sm uppercase tracking-wider text-slate-500">
-<svg class="w-4 h-4 mr-2 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944a11.954 11.954 0 007.834 3.056A11.954 11.954 0 0110 20.056 11.954 11.954 0 012.166 5zM10 14a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path></svg>
-The "What Happens in Vegas Stays in Vegas" Clause
-</h3>
-<ul class="text-xs text-slate-600 space-y-2 list-disc pl-4">
-<li><strong>100% Client-Side Architecture:</strong> All simulation calculations, caseload records, and capacity inputs are processed completely inside your local browser memory.</li>
-<li><strong>Zero External Data Pipeline:</strong> No information is dispatched over the web to any server. Your proprietary scheduling metrics remain private, making this system fully GDPR/PDPA compliant.</li>
-<li><strong>Static Engine Integrity:</strong> This application executes pure statistical algorithms without AI inference layers to guarantee total data control and predictable outputs.</li>
-</ul>
-</div>
-
-<label class="flex items-start space-x-3 p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl cursor-pointer select-none">
-<input type="checkbox" id="policy-agree" class="mt-1 accent-indigo-600 rounded">
-<span class="text-sm text-slate-700 leading-tight">
-I accept the Terms of Use and Data Privacy Policy. I acknowledge that all input profiles are parsed strictly in-browser.
-</span>
-</label>
-
-<button id="gate-btn" disabled class="mt-6 w-full py-3 bg-slate-300 text-slate-500 font-bold rounded-xl cursor-not-allowed transition-all shadow-md focus:outline-none" onclick="unlockSimulator()">
-Unlock Simulation Matrix
-</button>
-</div>
-</div>
-
-<!-- MAIN INTERFACE LAYER -->
-<div id="main-interface" class="blurred-zone max-w-7xl mx-auto px-4 py-8 space-y-8">
-<!-- Header Profile -->
-<div class="border-b border-slate-200 pb-4">
-<span class="text-xs font-bold text-indigo-600 tracking-widest uppercase">Operational Resource Modeling Engine</span>
-<h2 class="text-3xl font-black text-slate-900 tracking-tight">Capacity & Tiered Skill-Alignment Framework</h2>
-</div>
-
-<!-- PHASE 2: MASTER CONFIGURATION ACCORDION MATRIX -->
-<section class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden">
-<div class="bg-slate-900 p-4 text-white flex items-center justify-between">
-<h3 class="font-extrabold tracking-tight">Section 1: Tweak the Dials (Master Templates)</h3>
-<span class="text-xs text-slate-400">Configure parameters once to populate all scenario baselines</span>
-</div>
-
-<!-- Drawer A: Traffic & Friction Configurator -->
-<div class="border-b border-slate-100">
-<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-a')">
-<span>── Drawer A: The Traffic & Friction Configurator (Channels & Tiers)</span>
-<span id="drawer-a-icon">▼</span>
-</button>
-<div id="drawer-a" class="accordion-content p-6 space-y-6 bg-white">
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Custom Channel Alias</label>
-<input type="text" id="chan-alias" value="Fire-Fighting Hotline" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Inbound Traffic Volume (Hourly)</label>
-<input type="number" id="chan-vol" value="50" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Avg Live Interaction Time (Sec)</label>
-<input type="number" id="chan-aht" value="240" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Post-Interaction CRM Wrap (Sec)</label>
-<input type="number" id="chan-wrap" value="120" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-</div>
-<div class="border-t border-slate-100 pt-4">
-<h4 class="text-xs font-bold text-slate-700 uppercase tracking-wider mb-3">Caseflow Difficulty Split (% Must sum to 100)</h4>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="bg-slate-50 p-3 rounded-xl border border-slate-150">
-<span class="block text-xs font-extrabold text-slate-800 mb-1">Tier 1 (General Support)</span>
-<div class="flex items-center space-x-2">
-<input type="number" id="tier-1-pct" value="55" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
-<span class="text-xs text-slate-500">Base handling speed modifier</span>
-</div>
-</div>
-<div class="bg-amber-50/50 p-3 rounded-xl border border-amber-100">
-<span class="block text-xs font-extrabold text-amber-900 mb-1">Tier 2 (Intermediate Escalations)</span>
-<div class="flex items-center space-x-2">
-<input type="number" id="tier-2-pct" value="30" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
-<span class="text-xs text-slate-600"><strong>1.8x</strong> Handling complexity burden</span>
-</div>
-</div>
-<div class="bg-rose-50/50 p-3 rounded-xl border border-rose-100">
-<span class="block text-xs font-extrabold text-rose-900 mb-1">Tier 3 (Advanced / Specialist)</span>
-<div class="flex items-center space-x-2">
-<input type="number" id="tier-3-pct" value="15" class="w-20 border border-slate-200 rounded-lg p-1.5 text-sm">
-<span class="text-xs text-rose-700"><strong>3.5x</strong> Burden + Intern blockage</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Drawer B: Timeline & Constraints -->
-<div class="border-b border-slate-100">
-<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-b')">
-<span>── Drawer B: The Timeline, Boundaries & Shift Constraints</span>
-<span id="drawer-b-icon">▼</span>
-</button>
-<div id="drawer-b" class="accordion-content p-6 space-y-6 bg-white">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Operational Shift Length (Hours)</label>
-<input type="number" id="shift-hours" value="8" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Customer Patience Horizon SLA (Mins)</label>
-<input type="number" id="sla-wait" value="3" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">The Lunch Rush Scalar (12 PM - 2 PM)</label>
-<input type="number" step="0.1" id="peak-multiplier" value="1.6" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Rostered Shrinkage (Mins/Agent/Day)</label>
-<input type="number" id="shrinkage-mins" value="60" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-<span class="text-[10px] text-slate-400">Total breaks, alignment sessions, and team huddles</span>
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">Target Burnout Occupancy Redline (%)</label>
-<input type="number" id="target-occ" value="85" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-</div>
-<div>
-<label class="block text-xs font-bold uppercase text-slate-500 mb-1">The "Call-In Sick" Roulette Variance (%)</label>
-<input type="number" id="absence-prob" value="10" class="w-full border border-slate-200 rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
-<span class="text-[10px] text-slate-400">Probability of individual unplanned leave per iteration</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- Drawer C: Hierarchy Profiles -->
-<div>
-<button class="w-full text-left font-bold p-5 bg-slate-50 flex justify-between items-center text-slate-800 hover:bg-slate-100/70" onclick="toggleAccordion('drawer-c')">
-<span>── Drawer C: The Ranks & Productivity Switchboard</span>
-<span id="drawer-c-icon">▼</span>
-</button>
-<div id="drawer-c" class="accordion-content p-6 bg-white">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
-<span class="block text-sm font-extrabold text-slate-900 mb-1">Supervisor Profile</span>
-<p class="text-xs text-slate-500 mb-2">Governed by a strict 1:8 compliance span of control. Kept out of queue threads unless critical congestion bounds crash.</p>
-<span class="inline-block px-2 py-0.5 text-[10px] bg-slate-200 font-bold rounded">Speed: 1.0x</span>
-</div>
-<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
-<span class="block text-sm font-extrabold text-slate-900 mb-1">Senior Full-Timer Profile</span>
-<p class="text-xs text-slate-500 mb-2">The standard operational operational anchor. Capable of processing all case difficulties without capability speed penalties.</p>
-<span class="inline-block px-2 py-0.5 text-[10px] bg-indigo-100 text-indigo-700 font-bold rounded">Speed: 1.0x Baseline</span>
-</div>
-<div class="p-4 border border-slate-200 rounded-xl bg-slate-50/50">
-<span class="block text-sm font-extrabold text-slate-900 mb-1">Junior / Intern Profile</span>
-<p class="text-xs text-slate-500 mb-2">Subject to training curves. Slower capabilities inflate interaction touchpoints and post-call logging notes loops.</p>
-<div class="mt-2 flex items-center space-x-2">
-<label class="text-xs font-bold text-slate-600">Intern Skill Slider:</label>
-<input type="range" id="intern-modifier" min="0.6" max="0.8" step="0.05" value="0.7" class="w-24">
-<span id="intern-mod-val" class="text-xs font-bold text-slate-800">0.70x</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-
-<!-- PHASE 3: THE SIDE-BY-SIDE ROSTER ARCHITECT -->
-<section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<!-- Config A -->
-<div class="bg-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm space-y-4">
-<div class="flex justify-between items-center border-b border-slate-100 pb-2">
-<h3 class="font-extrabold text-lg text-slate-900">Configuration A: Baseline Roster</h3>
-<span class="px-2 py-0.5 bg-slate-100 text-slate-600 text-xs font-bold rounded">Current Roster Model</span>
-</div>
-<div class="grid grid-cols-3 gap-3">
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Supervisors</label>
-<input type="number" id="config-a-sup" value="1" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
-</div>
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Seniors</label>
-<input type="number" id="config-a-sen" value="6" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
-</div>
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Interns</label>
-<input type="number" id="config-a-int" value="2" class="w-full border border-slate-200 rounded-lg p-2 text-sm text-center">
-</div>
-</div>
-</div>
-
-<!-- Config B -->
-<div class="bg-white border-2 border-indigo-600 rounded-2xl p-6 shadow-sm space-y-4">
-<div class="flex justify-between items-center border-b border-slate-100 pb-2">
-<h3 class="font-extrabold text-lg text-slate-900">Configuration B: Experimental Roster</h3>
-<span class="px-2 py-0.5 bg-indigo-100 text-indigo-700 text-xs font-bold rounded">Speculative Mix</span>
-</div>
-<div class="grid grid-cols-3 gap-3">
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Supervisors</label>
-<input type="number" id="config-b-sup" value="1" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
-</div>
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Seniors</label>
-<input type="number" id="config-b-sen" value="3" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
-</div>
-<div>
-<label class="block text-[10px] font-bold uppercase text-slate-400 mb-1">Interns</label>
-<input type="number" id="config-b-int" value="6" class="w-full border border-indigo-200 rounded-lg p-2 text-sm text-center focus:ring-1 focus:ring-indigo-500">
-</div>
-</div>
-</div>
-</section>
-
-<!-- ACTION BUTTON TRIGGER -->
-<div class="text-center">
-<button id="run-btn" class="px-8 py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-xl shadow-lg hover:shadow-indigo-500/20 transform hover:-translate-y-0.5 transition-all cursor-pointer tracking-wide" onclick="executeStochasticEngine()">
-[ RUN 12x STOCHASTIC STRESS TEST ]
-</button>
-</div>
-
-<!-- PHASE 4: THE REVEAL YOUR FATE SCOREBOARD -->
-<section id="scoreboard-section" class="hidden bg-white border border-slate-200 rounded-2xl shadow-xl overflow-hidden scroll-mt-6">
-<div class="bg-slate-900 p-4 border-b border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-<h3 class="font-black text-white text-lg tracking-tight flex items-center">
-<span class="w-3 h-3 bg-emerald-500 rounded-full mr-2 animate-pulse"></span>
-Section 2: Interactive Operational Scoreboard
-</h3>
-<div class="flex space-x-1 bg-slate-800 p-1 rounded-lg">
-<button id="tab-sla-btn" class="px-3 py-1.5 text-xs font-bold text-white bg-indigo-600 rounded-md shadow-sm" onclick="switchTab('sla')">SLA Matrix</button>
-<button id="tab-burn-btn" class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white" onclick="switchTab('burn')">Team Burnout</button>
-<button id="tab-tier-btn" class="px-3 py-1.5 text-xs font-bold text-slate-400 hover:text-white" onclick="switchTab('tier')">Skill Alignment</button>
-</div>
-</div>
-
-<!-- TAB CONTENT INTERFACES -->
-<div class="p-6">
-<!-- TAB 1: SLA -->
-<div id="tab-sla" class="space-y-6">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-<span class="block text-xs font-bold uppercase text-slate-400 mb-1">SLA Target Achieved</span>
-<div class="flex justify-center items-baseline space-x-2 mt-1">
-<span class="text-2xl font-black text-slate-800" id="res-sla-a">0.0%</span>
-<span class="text-xs text-slate-400">vs</span>
-<span class="text-lg font-bold text-indigo-600" id="res-sla-b">0.0%</span>
-</div>
-</div>
-<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-<span class="block text-xs font-bold uppercase text-slate-400 mb-1">Avg Global Queue Delay</span>
-<div class="flex justify-center items-baseline space-x-2 mt-1">
-<span class="text-2xl font-black text-slate-800" id="res-wait-a">0.0m</span>
-<span class="text-xs text-slate-400">vs</span>
-<span class="text-lg font-bold text-indigo-600" id="res-wait-b">0.0m</span>
-</div>
-</div>
-<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-<span class="block text-xs font-bold uppercase text-slate-400 mb-1">Customer Abandonment Rate</span>
-<div class="flex justify-center items-baseline space-x-2 mt-1">
-<span class="text-2xl font-black text-slate-800" id="res-drop-a">0.0%</span>
-<span class="text-xs text-slate-400">vs</span>
-<span class="text-lg font-bold text-rose-600" id="res-drop-b">0.0%</span>
-</div>
-</div>
-</div>
-</div>
-
-<!-- TAB 2: BURNOUT -->
-<div id="tab-burn" class="hidden space-y-6">
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-<div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
-<h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Config A Roster Occupancy</h4>
-<div class="relative pt-1">
-<div class="overflow-hidden h-4 text-xs flex rounded bg-slate-200">
-<div id="bar-occ-a" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-slate-700 font-bold">0%</div>
-</div>
-</div>
-<span class="text-[10px] text-slate-400 mt-1 block">Rostered utilization limit (Target Ceiling: 85%)</span>
-</div>
-<div class="p-4 border border-slate-200 rounded-xl bg-slate-50">
-<h4 class="text-xs font-black uppercase tracking-wider text-slate-500 mb-2">Config B Roster Occupancy</h4>
-<div class="relative pt-1">
-<div class="overflow-hidden h-4 text-xs flex rounded bg-slate-200">
-<div id="bar-occ-b" style="width:0%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-indigo-600 font-bold">0%</div>
-</div>
-</div>
-<span class="text-[10px] text-slate-400 mt-1 block">Rostered utilization limit (Target Ceiling: 85%)</span>
-</div>
-</div>
-</div>
-
-<!-- TAB 3: SKILL ALIGNMENT -->
-<div id="tab-tier" class="hidden space-y-6">
-<div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-<div class="p-4 border border-slate-100 rounded-xl bg-slate-50 text-center">
-<span class="text-xs font-bold text-slate-500 uppercase block">Tier 1 Wait Tracks</span>
-<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-1-metrics">0.0m vs 0.0m</p>
-</div>
-<div class="p-4 border border-slate-100 rounded-xl bg-amber-50/30 text-center">
-<span class="text-xs font-bold text-amber-700 uppercase block">Tier 2 Wait Tracks</span>
-<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-2-metrics">0.0m vs 0.0m</p>
-</div>
-<div class="p-4 border border-slate-100 rounded-xl bg-rose-50/30 text-center">
-<span class="text-xs font-bold text-rose-700 uppercase block">Tier 3 Wait Tracks</span>
-<p class="text-xl font-extrabold text-slate-800 mt-1" id="tier-3-metrics">0.0m vs 0.0m</p>
-</div>
-</div>
-</div>
-
-<!-- DYNAMIC ANALYTICS STRATEGY STRINGS -->
-<div class="mt-6 border-t border-slate-100 pt-6 space-y-4">
-<div class="p-4 border-l-4 border-slate-800 bg-slate-50 rounded-r-xl">
-<h4 class="text-sm font-black text-slate-900 uppercase tracking-tight">System Operational Verdict</h4>
-<p id="verdict-text" class="text-sm text-slate-600 mt-1 leading-relaxed">Evaluating execution metrics...</p>
-</div>
-</div>
-
-<!-- THE EKG QUEUE VISUALIZATION GRAPH -->
-<div class="mt-6 border-t border-slate-100 pt-6">
-<h4 class="text-xs font-black uppercase text-slate-400 tracking-wider mb-2">Minute-by-Minute Live Queue Length Profiles (Average Stress Run)</h4>
-<div class="h-64 w-full relative">
-<canvas id="ekgChart"></canvas>
-</div>
-</div>
-
-<!-- REPORT EXPORT TERMINAL -->
-<div class="mt-8 text-right">
-<button class="px-6 py-3 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-xl shadow transition-all cursor-pointer inline-flex items-center" onclick="triggerPdfDownload()">
-<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-Download Recovery PDF Report
-</button>
-</div>
-</div>
-</section>
-</div>
-
-<!-- HIDDEN RENDER FRAMEWORK FOR PRINT-PERFECT 2-PAGE A4 PDF COMPILATION -->
-<div class="hidden">
-<div id="pdf-document" class="p-12 space-y-8 text-slate-900 bg-white font-sans text-xs max-w-[210mm] min-h-[297mm]">
-<!-- PDF PAGE 1 -->
-<div id="pdf-page-1" class="space-y-6">
-<div class="flex justify-between items-start border-b-2 border-slate-900 pb-4">
-<div>
-<h1 class="text-xl font-black uppercase tracking-tight text-slate-900">Frontline Roster & Tier Resilience Report</h1>
-<p class="text-[10px] text-slate-500 mt-0.5">Simulation: 12-Run Stochastic Poisson Distribution Process</p>
-</div>
-<div class="text-right text-[10px] text-slate-500">
-<p><strong>Generated on:</strong> 2026-07-06 03:04:01 UTC</p>
-<p id="pdf-meta-sla">Target SLA: Wait Time &lt; 3.0 mins</p>
-</div>
-</div>
-
-<div>
-<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">1. Caseflow Complexity Traffic Structure</h3>
-<table class="w-full text-left border-collapse">
-<thead>
-<tr class="bg-slate-100 font-bold border-b border-slate-300">
-<th class="p-2">Complexity Classification</th>
-<th class="p-2">Caseload Weight Proportion</th>
-<th class="p-2">Handling Burden Factor</th>
-<th class="p-2">Intern Access Parameters</th>
-</tr>
-</thead>
-<tbody>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-slate-800">Tier 1 (General Support)</td>
-<td class="p-2" id="pdf-t1-pct">55%</td>
-<td class="p-2">1.0x Baseline Duration</td>
-<td class="p-2">Permitted (Slider Modifiers Apply)</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-slate-800">Tier 2 (Intermediate Escalations)</td>
-<td class="p-2" id="pdf-t2-pct">30%</td>
-<td class="p-2">1.8x Operational Inflation</td>
-<td class="p-2">Permitted (Double Penalty Application)</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-slate-800">Tier 3 (Advanced / VIP Track)</td>
-<td class="p-2" id="pdf-t3-pct">15%</td>
-<td class="p-2">3.5x Technical Scale</td>
-<td class="p-2 text-rose-700 font-bold">Blockage Threshold Active</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div>
-<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">2. Roster Comparison Metrics</h3>
-<table class="w-full text-center border-collapse">
-<thead>
-<tr class="bg-slate-900 text-white font-bold">
-<th class="p-2 text-left">Operational Performance Identifiers</th>
-<th class="p-2">Configuration A (Baseline)</th>
-<th class="p-2">Configuration B (Experimental)</th>
-</tr>
-</thead>
-<tbody class="text-slate-800">
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-left">Rostered Senior Full-Timers</td>
-<td class="p-2" id="pdf-sen-a">0</td>
-<td class="p-2" id="pdf-sen-b">0</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-left">Rostered Junior Interns</td>
-<td class="p-2" id="pdf-int-a">0</td>
-<td class="p-2" id="pdf-int-b">0</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-left">Rostered Supervisors / Leads</td>
-<td class="p-2" id="pdf-sup-a">0</td>
-<td class="p-2" id="pdf-sup-b">0</td>
-</tr>
-<tr class="border-b border-slate-200 bg-slate-50">
-<td class="p-2 font-bold text-left">Simulated SLA Success Rate</td>
-<td class="p-2 font-black text-slate-900" id="pdf-sla-val-a">0%</td>
-<td class="p-2 font-black text-slate-900" id="pdf-sla-val-b">0%</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-left">Average Global Queue Wait</td>
-<td class="p-2" id="pdf-wait-val-a">0.0m</td>
-<td class="p-2" id="pdf-wait-val-b">0.0m</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 font-bold text-left">Interaction Abandonment Rate</td>
-<td class="p-2" id="pdf-drop-val-a">0%</td>
-<td class="p-2" id="pdf-drop-val-b">0%</td>
-</tr>
-<tr class="border-b border-slate-300 bg-slate-50">
-<td class="p-2 font-bold text-left">Average Roster Occupancy Limit</td>
-<td class="p-2 font-bold" id="pdf-occ-val-a">0%</td>
-<td class="p-2 font-bold" id="pdf-occ-val-b">0%</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div class="p-4 border-l-4 border-slate-900 bg-slate-50 rounded-r-xl">
-<h3 class="font-extrabold text-xs uppercase tracking-tight text-slate-900 mb-1">3. Strategic Roster Verdict</h3>
-<p id="pdf-verdict" class="text-slate-600 leading-relaxed text-xs">Awaiting calculation cycle...</p>
-</div>
-</div>
-
-<div class="h-2" style="page-break-after: always;"></div>
-
-<!-- PDF PAGE 2 -->
-<div id="pdf-page-2" class="space-y-6 pt-12">
-<div>
-<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">4. Support Tier Routing Analytics</h3>
-<table class="w-full text-center border-collapse">
-<thead>
-<tr class="bg-slate-100 font-bold border-b border-slate-300">
-<th class="p-2 text-left">Isolated Ticket Category Delays</th>
-<th class="p-2">Configuration A Track (Mins)</th>
-<th class="p-2">Configuration B Track (Mins)</th>
-</tr>
-</thead>
-<tbody>
-<tr class="border-b border-slate-200">
-<td class="p-2 text-left font-bold text-slate-800">Tier 1 Support Line Wait</td>
-<td class="p-2" id="pdf-t1-wait-a">0.0m</td>
-<td class="p-2" id="pdf-t1-wait-b">0.0m</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 text-left font-bold text-slate-800">Tier 2 Escalations Line Wait</td>
-<td class="p-2" id="pdf-t2-wait-a">0.0m</td>
-<td class="p-2" id="pdf-t2-wait-b">0.0m</td>
-</tr>
-<tr class="border-b border-slate-200">
-<td class="p-2 text-left font-bold text-slate-800">Tier 3 Advanced VIP Line Wait</td>
-<td class="p-2" id="pdf-t3-wait-a">0.0m</td>
-<td class="p-2" id="pdf-t3-wait-b">0.0m</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div>
-<h3 class="font-extrabold text-sm border-b border-slate-300 pb-1 mb-2 uppercase text-slate-700">5. Diurnal Break-Window Vulnerability Log</h3>
-<div class="space-y-3 pl-2 border-l-2 border-indigo-600">
-<p class="leading-relaxed"><strong>09:00 AM - 11:59 AM (Opening Influx Window):</strong> Workloads remain within stable capacity envelopes across both architectures. Queue tracking reports minimum friction thresholds.</p>
-<p class="leading-relaxed"><strong>12:00 PM - 02:00 PM (Lunch Break & Surge Window):</strong> The assigned rush multiplier intersects with scheduled shift relief shrinkage. Configuration options utilizing high densities of un-trained junior interns encounter immediate thread stagnation due to compounding notes processing delays.</p>
-<p class="leading-relaxed"><strong>04:00 PM - 05:00 PM (Shift End Drainage):</strong> Structural backlog checking flags clear recovery in high-senior configurations, while skill-deficient rosters run continuous holdover backlogs into subsequent morning cycles.</p>
-</div>
-</div>
-
-<div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
-<h3 class="font-extrabold text-xs text-slate-900 uppercase tracking-tight mb-1">6. Roster Absence Fragility Evaluation</h3>
-<p class="text-slate-600 leading-relaxed">
-This model enforces an internal check scanning for single points of failure via a 10% sick-leave trigger. In runs where a key Senior Full-Timer thread is removed unexpectedly, rosters stripped of experienced anchors experienced an immediate service degradation across all tiers. Slower hands are forced onto technical queues, compressing remaining agent available bandwidth, driving occupancy into critical fatigue redlines (&gt;90%), and increasing baseline customer drops by an order of magnitude.
-</p>
-</div>
-
-<div class="border-t border-slate-300 pt-4 text-[9px] text-slate-400 leading-relaxed space-y-1">
-<p><strong>Stochastic Architecture Disclaimer:</strong> This matrix operates under continuous Erlang-C mathematical variants driven by continuous non-homogeneous Poisson probabilities checked in discrete minute-by-minute steps.</p>
-<p>Calculated data parameters represent algorithmic forecasting approximations. Out-of-bounds metrics like regional server grid failures, software architecture disruptions, or workforce structural changes fall outside model reporting perimeters.</p>
-</div>
-</div>
-</div>
-</div>
-
-<!-- CODE SCRIPTING CONTROLLER ENGINE -->
-<script>
-let globalEkgChart = null;
-let lastSimulationResults = null;
-
-// UI Gate Logic
-const policyCheckbox = document.getElementById('policy-agree');
-const gateButton = document.getElementById('gate-btn');
-const mainInterface = document.getElementById('main-interface');
-const welcomeGate = document.getElementById('welcome-gate');
-
-policyCheckbox.addEventListener('change', () => {
-if (policyCheckbox.checked) {
-gateButton.disabled = false;
-gateButton.classList.remove('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
-gateButton.classList.add('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'cursor-pointer');
-} else {
-gateButton.disabled = true;
-gateButton.classList.remove('bg-indigo-600', 'text-white', 'hover:bg-indigo-700', 'cursor-pointer');
-gateButton.classList.add('bg-slate-300', 'text-slate-500', 'cursor-not-allowed');
-}
-});
-
-function unlockSimulator() {
-welcomeGate.classList.add('opacity-0', 'pointer-events-none');
-setTimeout(() => { welcomeGate.remove(); }, 400);
-mainInterface.classList.remove('blurred-zone');
-mainInterface.classList.add('unblurred-zone');
-}
-
-function toggleAccordion(id) {
-const el = document.getElementById(id);
-const icon = document.getElementById(id + '-icon');
-el.classList.toggle('accordion-open');
-icon.innerText = el.classList.contains('accordion-open') ? '▲' : '▼';
-}
-
-// Real-time slider sync
-document.getElementById('intern-modifier').addEventListener('input', function(e) {
-document.getElementById('intern-mod-val').innerText = parseFloat(e.target.value).toFixed(2) + 'x';
-});
-
-function switchTab(tab) {
-['sla', 'burn', 'tier'].forEach(t => {
-document.getElementById('tab-' + t).classList.add('hidden');
-document.getElementById('tab-' + t + '-btn').classList.remove('bg-indigo-600', 'text-white');
-document.getElementById('tab-' + t + '-btn').classList.add('text-slate-400', 'hover:text-white');
-});
-document.getElementById('tab-' + tab).classList.remove('hidden');
-document.getElementById('tab-' + tab + '-btn').classList.add('bg-indigo-600', 'text-white');
-document.getElementById('tab-' + tab + '-btn').classList.remove('text-slate-400', 'hover:text-white');
-}
-
-// Mathematical Stochastic Engine Implementation
-function executeStochasticEngine() {
-// Rate Limit Logic Gate via LocalStorage
-const todayStr = new Date().toISOString().split('T')[0];
-let runsCount = parseInt(localStorage.getItem('sim_runs_count_' + todayStr) || '0');
-if (runsCount >= 2) {
-alert("Session Guard Notice: You have reached the local daily capacity calculation limits (2 evaluations per browser session). Reset your cache or try again tomorrow.");
-return;
-}
-localStorage.setItem('sim_runs_count_' + todayStr, (runsCount + 1).toString());
-
-// Collect variables
-const chanVol = parseFloat(document.getElementById('chan-vol').value);
-const chanAht = parseFloat(document.getElementById('chan-aht').value);
-const chanWrap = parseFloat(document.getElementById('chan-wrap').value);
-const t1Pct = parseFloat(document.getElementById('tier-1-pct').value) / 100;
-const t2Pct = parseFloat(document.getElementById('tier-2-pct').value) / 100;
-const t3Pct = parseFloat(document.getElementById('tier-3-pct').value) / 100;
-
-const shiftHours = parseInt(document.getElementById('shift-hours').value);
-const slaWaitSec = parseFloat(document.getElementById('sla-wait').value) * 60;
-const peakMultiplier = parseFloat(document.getElementById('peak-multiplier').value);
-const shrinkageMins = parseFloat(document.getElementById('shrinkage-mins').value);
-const absenceProb = parseFloat(document.getElementById('absence-prob').value) / 100;
-const internMod = parseFloat(document.getElementById('intern-modifier').value);
-
-// Fetch Configuration matrices
-const configA = {
-sup: parseInt(document.getElementById('config-a-sup').value),
-sen: parseInt(document.getElementById('config-a-sen').value),
-int: parseInt(document.getElementById('config-a-int').value)
-};
-const configB = {
-sup: parseInt(document.getElementById('config-b-sup').value),
-sen: parseInt(document.getElementById('config-b-sen').value),
-int: parseInt(document.getElementById('config-b-int').value)
-};
-
-const minutesTotal = shiftHours * 60;
-const internPenalty = 2 - internMod;
-
-// Simple Multi-run Simulation modeling
-function runSimulationModel(cfg) {
-let totalHandled = 0;
-let totalSlaPass = 0;
-let totalAbandoned = 0;
-let cumulativeWait = 0;
-let totalBusyMinutes = 0;
-
-let tierWaits = { 1: 0, 2: 0, 3: 0 };
-let tierCounts = { 1: 0, 2: 0, 3: 0 };
-let timelineQueuePoints = new Array(minutesTotal).fill(0);
-
-// Run 12 independent iterations (Stochastic Loops)
-for (let run = 0; run < 12; run++) {
-let activeSeniors = cfg.sen;
-let activeInterns = cfg.int;
-
-// Apply Sick Leave Roulette
-for (let i = 0; i < cfg.sen; i++) if (Math.random() < absenceProb) activeSeniors--;
-for (let i = 0; i < cfg.int; i++) if (Math.random() < absenceProb) activeInterns--;
-let availableThreads = activeSeniors + activeInterns;
-let agentPool = [];
-for(let i=0; i<activeSeniors; i++) agentPool.push({ type: 'senior', busyUntil: 0 });
-for(let i=0; i<activeInterns; i++) agentPool.push({ type: 'intern', busyUntil: 0 });
-
-let backQueue = [];
-
-// Minute by minute chronological processing pipeline
-for (let min = 0; min < minutesTotal; min++) {
-// Check for shrinkage hours window
-let isLunch = (min >= 180 && min <= 300); 
-let localMultiplier = isLunch ? peakMultiplier : 1.0;
-let activeCapacity = isLunch ? Math.ceil(availableThreads * 0.66) : availableThreads;
-
-// Calculate Lambda per minute interval
-let baseLambdaPerMin = chanVol / 60;
-let minLambda = baseLambdaPerMin * localMultiplier;
-
-// Poisson Knuth Seeding process
-let L = Math.exp(-minLambda);
-let k = 0;
-let p = 1;
-do { k++; p *= Math.random(); } while (p > L);
-let arrivals = k - 1;
-
-// Route arrivals into system arrays
-for (let a = 0; a < arrivals; a++) {
-let randTier = Math.random();
-let tier = 1;
-if (randTier > t1Pct && randTier <= (t1Pct + t2Pct)) tier = 2;
-else if (randTier > (t1Pct + t2Pct)) tier = 3;
-
-backQueue.push({ arrivalTime: min, tier: tier });
-}
-
-// Process Queue tracking states
-let freeAgents = agentPool.filter(ag => ag.busyUntil <= min);
-// Dynamic shrinkage reduction modeling
-if (freeAgents.length > activeCapacity) { freeAgents = freeAgents.slice(0, activeCapacity); }
-
-while (backQueue.length > 0 && freeAgents.length > 0) {
-let currentCase = backQueue.shift();
-let assignedAgent = freeAgents.shift();
-
-let waitTime = min - currentCase.arrivalTime;
-cumulativeWait += waitTime;
-tierWaits[currentCase.tier] += waitTime;
-tierCounts[currentCase.tier]++;
-
-if (waitTime * 60 <= slaWaitSec) totalSlaPass++;
-totalHandled++;
-
-// Compute handling duration loads
-let multiplier = 1.0;
-if (currentCase.tier === 2) multiplier = 1.8;
-if (currentCase.tier === 3) multiplier = 3.5;
-
-let baseTaskTime = ((chanAht + chanWrap) / 60) * multiplier;
-if (assignedAgent.type === 'intern') {
-if (currentCase.tier === 3) {
-baseTaskTime *= (internPenalty * 2.0); // Massive penalty on technical tracks
-} else {
-baseTaskTime *= internPenalty;
-}
-}
-
-assignedAgent.busyUntil = min + Math.ceil(baseTaskTime);
-totalBusyMinutes += baseTaskTime;
-}
-
-// Process impatience threshold dropouts
-let originalQueueLength = backQueue.length;
-backQueue = backQueue.filter(caseItem => {
-let itemWait = min - caseItem.arrivalTime;
-if (itemWait > 15) { // 15 Minute patience horizon barrier
-totalAbandoned++;
-return false;
-}
-return true;
-});
-
-timelineQueuePoints[min] += backQueue.length;
-}
-}
-
-// Average profiles out over the 12 loops
-const totalCalculatedCases = totalHandled + totalAbandoned || 1;
-return {
-sla: (totalSlaPass / totalCalculatedCases) * 100,
-avgWait: (cumulativeWait / totalCalculatedCases),
-dropRate: (totalAbandoned / totalCalculatedCases) * 100,
-occupancy: Math.min(((totalBusyMinutes / 12) / (minutesTotal * (cfg.sen + cfg.int || 1))) * 100, 99.2),
-t1Wait: tierCounts[1] ? (tierWaits[1] / tierCounts[1]) : 0,
-t2Wait: tierCounts[2] ? (tierWaits[2] / tierCounts[2]) : 0,
-t3Wait: tierCounts[3] ? (tierWaits[3] / tierCounts[3]) : 0,
-chartData: timelineQueuePoints.map(p => p / 12)
-};
-}
-
-const resultsA = runSimulationModel(configA);
-const resultsB = runSimulationModel(configB);
-lastSimulationResults = { a: resultsA, b: resultsB, metadata: { t1: t1Pct*100, t2: t2Pct*100, t3: t3Pct*100, sla: document.getElementById('sla-wait').value, configA, configB } };
-
-// Update UI Interface elements
-document.getElementById('res-sla-a').innerText = resultsA.sla.toFixed(1) + '%';
-document.getElementById('res-sla-b').innerText = resultsB.sla.toFixed(1) + '%';
-document.getElementById('res-wait-a').innerText = resultsA.avgWait.toFixed(1) + 'm';
-document.getElementById('res-wait-b').innerText = resultsB.avgWait.toFixed(1) + 'm';
-document.getElementById('res-drop-a').innerText = resultsA.dropRate.toFixed(1) + '%';
-document.getElementById('res-drop-b').innerText = resultsB.dropRate.toFixed(1) + '%';
-
-document.getElementById('bar-occ-a').style.width = resultsA.occupancy.toFixed(0) + '%';
-document.getElementById('bar-occ-a').innerText = resultsA.occupancy.toFixed(0) + '%';
-document.getElementById('bar-occ-b').style.width = resultsB.occupancy.toFixed(0) + '%';
-document.getElementById('bar-occ-b').innerText = resultsB.occupancy.toFixed(0) + '%';
-
-document.getElementById('tier-1-metrics').innerText = resultsA.t1Wait.toFixed(1) + 'm vs ' + resultsB.t1Wait.toFixed(1) + 'm';
-document.getElementById('tier-2-metrics').innerText = resultsA.t2Wait.toFixed(1) + 'm vs ' + resultsB.t2Wait.toFixed(1) + 'm';
-document.getElementById('tier-3-metrics').innerText = resultsA.t3Wait.toFixed(1) + 'm vs ' + resultsB.t3Wait.toFixed(1) + 'm';
-
-// Generate Automated Layman Translation Strings
-let verdict = "";
-if (resultsB.sla < resultsA.sla && configB.int > configA.int) {
-verdict = "⚠️ INTERN FRAGILITY TRAP ENCOUNTERED: Your experimental profile increases un-trained junior headcount layers while decreasing full-time slots. While you have more active staff threads, your high proportion of Tier 2 and Tier 3 complex tickets creates immediate bottlenecks. Intern processing times and elongated CRM notes logging windows block frontline channels, forcing simple Tier 1 calls to choke and causing a severe queue backup.";
-} else if (resultsB.occupancy > 88) {
-verdict = "🔥 CRITICAL FRONTLINE REDLINE EXHAUSTION: Configuration B forces your active staff threads into a constant, compounding production ceiling. Staff occupancy exceeds safe barriers, causing post-interaction wrap-up times to get compressed, which guarantees CRM documentation inaccuracies, missed escalations, and high employee attrition loops.";
-} else if (resultsB.sla >= 90) {
-verdict = "⚖ SUSTAINABLE RESOURCE DEPLOYMENT HARMONY: Configuration B hits target performance envelopes effectively. The roster ratio stabilizes service levels, provides safe bandwidth recovery to handle complex escalations, and clears the holding lines cleanly without driving excessive idle capacity constraints.";
-} else {
-verdict = "📋 CONGESTED TRAFFIC PATTERNS DETECTED: The structural mix handles early processing loads but experiences cascading delays during lunch break windows. The team clears queues during low volume loops but remains vulnerable to simple customer abandonment curves under sudden load spikes.";
-}
-document.getElementById('verdict-text').innerText = verdict;
-
-// Render Dynamic Time-Series Chart Data
-renderEkgChart(resultsA.chartData, resultsB.chartData);
-
-// Populating hidden PDF template DOM
-document.getElementById('pdf-meta-sla').innerText = 'Target SLA: Wait Time < ' + document.getElementById('sla-wait').value + '.0 mins';
-document.getElementById('pdf-t1-pct').innerText = (t1Pct*100) + '%';
-document.getElementById('pdf-t2-pct').innerText = (t2Pct*100) + '%';
-document.getElementById('pdf-t3-pct').innerText = (t3Pct*100) + '%';
-document.getElementById('pdf-sup-a').innerText = configA.sup;
-document.getElementById('pdf-sen-a').innerText = configA.sen;
-document.getElementById('pdf-int-a').innerText = configA.int;
-document.getElementById('pdf-sup-b').innerText = configB.sup;
-document.getElementById('pdf-sen-b').innerText = configB.sen;
-document.getElementById('pdf-int-b').innerText = configB.int;
-
-document.getElementById('pdf-sla-val-a').innerText = resultsA.sla.toFixed(1) + '%';
-document.getElementById('pdf-sla-val-b').innerText = resultsB.sla.toFixed(1) + '%';
-document.getElementById('pdf-wait-val-a').innerText = resultsA.avgWait.toFixed(1) + 'm';
-document.getElementById('pdf-wait-val-b').innerText = resultsB.avgWait.toFixed(1) + 'm';
-document.getElementById('pdf-drop-val-a').innerText = resultsA.dropRate.toFixed(1) + '%';
-document.getElementById('pdf-drop-val-b').innerText = resultsB.dropRate.toFixed(1) + '%';
-document.getElementById('pdf-occ-val-a').innerText = resultsA.occupancy.toFixed(1) + '%';
-document.getElementById('pdf-occ-val-b').innerText = resultsB.occupancy.toFixed(1) + '%';
-
-document.getElementById('pdf-t1-wait-a').innerText = resultsA.t1Wait.toFixed(1) + 'm';
-document.getElementById('pdf-t2-wait-a').innerText = resultsA.t2Wait.toFixed(1) + 'm';
-document.getElementById('pdf-t3-wait-a').innerText = resultsA.t3Wait.toFixed(1) + 'm';
-document.getElementById('pdf-t1-wait-b').innerText = resultsB.t1Wait.toFixed(1) + 'm';
-document.getElementById('pdf-t2-wait-b').innerText = resultsB.t2Wait.toFixed(1) + 'm';
-document.getElementById('pdf-t3-wait-b').innerText = resultsB.t3Wait.toFixed(1) + 'm';
-document.getElementById('pdf-verdict').innerText = verdict;
-
-// Reveal hidden scoreboard component
-const scoreboardSection = document.getElementById('scoreboard-section');
-scoreboardSection.classList.remove('hidden');
-scoreboardSection.scrollIntoView({ behavior: 'smooth' });
-}
-
-function renderEkgChart(dataA, dataB) {
-const ctx = document.getElementById('ekgChart').getContext('2d');
-if (globalEkgChart) globalEkgChart.destroy();
-
-// Formulate step markers matching hourly divisions
-let labels = [];
-for(let i=0; i<dataA.length; i++) {
-if(i % 60 === 0) labels.push('Hour ' + (i/60));
-else labels.push('');
-}
-
-globalEkgChart = new Chart(ctx, {
-type: 'line',
-data: {
-labels: labels,
-datasets: [
-{ label: 'Configuration A (Baseline)', data: dataA, borderColor: '#64748b', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 },
-{ label: 'Configuration B (Experimental)', data: dataB, borderColor: '#4f46e5', borderWidth: 2, pointRadius: 0, fill: false, tension: 0.1 }
-]
-},
-options: {
-responsive: true,
-maintainAspectRatio: false,
-scales: {
-y: { beginAtZero: true, title: { display: true, text: 'Pending Holding Queue Count', font: { size: 10, weight: 'bold' } } },
-x: { grid: { display: false } }
-},
-plugins: { legend: { labels: { font: { size: 10, weight: 'bold' } } } }
-}
-});
-}
-
-// PDF Generation Trigger
-function triggerPdfDownload() {
-const element = document.getElementById('pdf-document');
-const opt = {
-margin: 0,
-filename: 'Frontliner_Labs_Capacity_Audit_Report.pdf',
-image: { type: 'jpeg', quality: 0.98 },
-html2canvas: { scale: 2, useCORS: true },
-jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-};
-html2pdf().set(opt).from(element).save();
-}
-</script>
+<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+
+    <header class="bg-indigo-950 text-white shadow-md px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
+        <div>
+            <h1 class="text-2xl font-bold tracking-tight">FMProj CS Capacity Planner</h1>
+            <p class="text-xs text-indigo-200">Multi-Skill Queue, Stochastic Shrinkage & Monte Carlo Stress-Tester</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+            <button onclick="window.print()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-medium text-sm py-2 px-4 rounded transition shadow cursor-pointer">
+                🖨️ Print Report
+            </button>
+            <button onclick="exportSimulationCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-sm py-2 px-4 rounded transition shadow cursor-pointer">
+                📥 Export CSV
+            </button>
+        </div>
+    </header>
+
+    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 xl:grid-cols-4 gap-6">
+        
+        <section class="xl:col-span-1 flex flex-col gap-6 no-print">
+            
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">🎯 SLA Parameters</h2>
+                <div class="grid grid-cols-1 gap-4 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Daily Call Volume</label>
+                        <input type="number" id="paramVolume" value="2500" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">SLA Target (%)</label>
+                            <input type="number" id="paramSlaPct" value="80" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">SLA Time (sec)</label>
+                            <input type="number" id="paramSlaSec" value="20" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Max Patience (s)</label>
+                            <input type="number" id="paramPatience" value="180" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Repetitions</label>
+                            <input type="number" id="paramReps" value="15" min="1" max="100" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Pseudo-Random Seed (Optional)</label>
+                        <input type="text" id="paramSeed" placeholder="Auto-generates if blank" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Arrival Distribution</label>
+                        <select id="paramArrivalMode" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                            <option value="time-weighted">Time-Weighted Inhomogeneous Poisson</option>
+                            <option value="flat">Flat Random Distribution</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">⏱️ Work Handling (Seconds)</h2>
+                <div class="grid grid-cols-1 gap-3 text-sm">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean Talk Time</label>
+                            <input type="number" id="paramAhtTalk" value="240" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">Talk Std Dev</label>
+                            <input type="number" id="paramAhtTalkSd" value="45" class="w-full border rounded p-2">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean ACW</label>
+                            <input type="number" id="paramAhtAcw" value="45" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">ACW Std Dev</label>
+                            <input type="number" id="paramAhtAcwSd" value="10" class="w-full border rounded p-2">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean Recovery</label>
+                            <input type="number" id="paramAhtRec" value="300" class="w-full border rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-600 text-xs mb-1">Recovery Rate</label>
+                            <input type="number" id="paramAhtRecPct" value="15" min="0" max="100" class="w-full border rounded p-2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">📉 Staff Shrinkage Adjustments</h2>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Absenteeism (%)</label>
+                        <input type="number" id="shAbsent" value="6" step="0.1" class="w-full border rounded p-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Training (%)</label>
+                        <input type="number" id="shTraining" value="4" step="0.1" class="w-full border rounded p-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Coaching/Mtgs (%)</label>
+                        <input type="number" id="shMeetings" value="5" step="0.1" class="w-full border rounded p-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Adherence Loss (%)</label>
+                        <input type="number" id="shAdherence" value="7" step="0.1" class="w-full border rounded p-1.5">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Breaks & Personal Unavailability (Min/Shift)</label>
+                        <input type="number" id="shBreaksMins" value="60" class="w-full border rounded p-1.5">
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="executeEnginePipeline()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md cursor-pointer transition text-center uppercase tracking-wide">
+                🚀 Run Monte Carlo Engine
+            </button>
+        </section>
+
+        <section class="xl:col-span-3 flex flex-col gap-6">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 no-print">
+                <div class="bg-white border rounded-xl p-4 flex justify-between items-center shadow-sm">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 uppercase">Interactive Granularity</label>
+                        <select id="uiIntervalSelect" onchange="renderAggregatedOutputs()" class="mt-1 font-bold border rounded p-1.5 bg-slate-50 text-indigo-900 focus:outline-none">
+                            <option value="15m">15 Minutes</option>
+                            <option value="30m" selected>30 Minutes</option>
+                            <option value="1h">1 Hour</option>
+                            <option value="2h">2 Hours</option>
+                            <option value="4h">4 Hours</option>
+                            <option value="daily">Date Level Summary</option>
+                        </select>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-xs text-slate-400 block">Simulation Seed Used</span>
+                        <span id="uiActiveSeed" class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-sm">-</span>
+                    </div>
+                </div>
+
+                <div class="lg:col-span-2 bg-slate-900 text-white border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
+                    <div>
+                        <h3 class="font-bold text-sm flex items-center gap-1.5 text-indigo-400">🤖 Cloudflare Worker AI Insights Layer</h3>
+                        <p class="text-xs text-slate-300 max-w-md">Query your edge proxy worker ecosystem to interpret simulation metrics against targets.</p>
+                    </div>
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <input type="text" id="aiWorkerUrl" value="https://floral-night-9927.raglansocial.workers.dev" class="bg-slate-800 border border-slate-700 text-xs rounded p-2 flex-1 sm:w-64 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono text-indigo-200">
+                        <button onclick="fetchAiNarrativeAnalysis()" id="aiBtn" class="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-xs font-semibold py-2 px-3 rounded whitespace-nowrap transition cursor-pointer">
+                            Analyze Scenarios
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="aiResponseContainer" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-950 rounded-xl p-5 shadow-sm relative transition duration-300">
+                <button onclick="this.parentElement.classList.add('hidden')" class="absolute top-3 right-3 text-indigo-400 hover:text-indigo-700 text-xl font-bold cursor-pointer">&times;</button>
+                <h4 class="font-bold text-base text-indigo-950 flex items-center gap-2 mb-3">✨ Automated Executive Interpretation</h4>
+                <div id="aiContentTarget" class="text-sm space-y-2 leading-relaxed"></div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center justify-between">
+                    <span>👥 Operational Staffing Configurations & Mix Models</span>
+                    <span class="text-xs font-normal text-slate-500 italic no-print">Customize rosters to test distinct matching queues</span>
+                </h2>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-medium">
+                                <th class="p-3 w-1/4">Scenario Model Name</th>
+                                <th class="p-3">Level 1 (Generalists)</th>
+                                <th class="p-3">Level 2 (Advanced)</th>
+                                <th class="p-3">Level 3 (SMEs/Sups)</th>
+                                <th class="p-3 bg-indigo-50 text-indigo-900 font-semibold text-center">Total Baseline Headcount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="scenarioInputRows" class="divide-y divide-slate-100">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">🏆 Multi-Scenario Optimization Analytics Matrix</h2>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead>
+                            <tr class="bg-slate-800 text-slate-200 font-semibold text-xs uppercase tracking-wider">
+                                <th class="p-3">Scenario</th>
+                                <th class="p-3 text-center">SLA % (Within Thr)</th>
+                                <th class="p-3 text-center">SLA 15m %</th>
+                                <th class="p-3 text-center">Abandon Rate %</th>
+                                <th class="p-3 text-center">Avg Speed Answer</th>
+                                <th class="p-3 text-center">p95 Waiting Time</th>
+                                <th class="p-3 text-center">Avg Agent Util %</th>
+                                <th class="p-3 text-center">Recovery Rate %</th>
+                                <th class="p-3 text-center bg-indigo-900 text-white font-bold">Optimization Classification</th>
+                            </tr>
+                        </thead>
+                        <tbody id="optimizationTableBody" class="divide-y divide-slate-200 font-medium text-slate-700">
+                            <tr><td colspan="9" class="p-4 text-center text-slate-400">Execute Monte Carlo simulation to populate analytics.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">📈 Intraday Demand vs Queue Progression</h3>
+                    <div class="relative h-64"><canvas id="chartArrivalsQueue"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">⚖️ Scenario Capability SLA Comparison</h3>
+                    <div class="relative h-64"><canvas id="chartScenarioSla"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">📉 Abandonment Loss & Abandon Rates by Model Scenario</h3>
+                    <div class="relative h-64"><canvas id="chartScenarioAbandonment"></canvas></div>
+                </div>
+                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
+                    <h3 class="text-sm font-bold text-slate-800 mb-2">⚙️ Dynamic Capacity Utilization Profiling (%)</h3>
+                    <div class="relative h-64"><canvas id="chartAgentUtilization"></canvas></div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
+                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">📊 Granular Interval Operational Ledger</h2>
+                <div class="overflow-x-auto custom-scrollbar max-h-96">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm font-bold text-slate-700">
+                            <tr class="border-b border-slate-300">
+                                <th class="p-2.5">Interval Frame</th>
+                                <th class="p-2.5 text-center">Offered Traffic</th>
+                                <th class="p-2.5 text-center">Answered (SLA)</th>
+                                <th class="p-2.5 text-center">Answered (Total)</th>
+                                <th class="p-2.5 text-center">Abandoned Loss</th>
+                                <th class="p-2.5 text-center">Recovery Generated</th>
+                                <th class="p-2.5 text-center">Peak Queue Depth</th>
+                                <th class="p-2.5 text-center">Avg Waiting Time (s)</th>
+                                <th class="p-2.5 text-center">L1 Active %</th>
+                                <th class="p-2.5 text-center">L2 Active %</th>
+                                <th class="p-2.5 text-center">L3 Active %</th>
+                            </tr>
+                        </thead>
+                        <tbody id="intervalLedgerBody" class="divide-y divide-slate-100 text-slate-600 font-mono">
+                            <tr><td colspan="11" class="p-4 text-center font-sans text-slate-400">No active execution dataset mapped.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </main>
+
+    <footer class="bg-slate-100 border-t border-slate-200 text-center py-4 text-xs text-slate-500 no-print mt-auto">
+        FMProj CS Capacity Planner Framework Engine v2.4.1. Powered via Static Client Computing Environment.
+    </footer>
+
+    <script>
+        const DEFAULT_SCENARIOS = [
+            { name: "Baseline Configuration (Minimum Required)", l1: 25, l2: 12, l3: 5 },
+            { name: "Optimized Generalist Core Profile", l1: 38, l2: 8, l3: 4 },
+            { name: "High Competency Advanced Strategy", l1: 15, l2: 24, l3: 6 },
+            { name: "Stress-Test Buffer Configuration", l1: 35, l2: 18, l3: 10 }
+        ];
+
+        const ARRIVAL_PROFILE_30M = [
+            0.005, 0.003, 0.002, 0.002, 0.002, 0.003, 0.005, 0.012, 
+            0.025, 0.045, 0.062, 0.075, 0.068, 0.055, 0.050, 0.058, 
+            0.065, 0.072, 0.060, 0.048, 0.038, 0.032, 0.028, 0.025,
+            0.022, 0.020, 0.018, 0.018, 0.015, 0.012, 0.010, 0.008,
+            0.007, 0.006, 0.005, 0.005, 0.004, 0.004, 0.003, 0.003,
+            0.002, 0.002, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001
+        ];
+
+        let globalSimulationResultsRegistry = {};
+        let activeChartInstancesRegistry = {};
+        let activeDeterministicSeedString = "";
+
+        window.addEventListener("DOMContentLoaded", () => {
+            initializeConfigurationInputsDOM();
+            executeEnginePipeline();
+        });
+
+        function initializeConfigurationInputsDOM() {
+            const container = document.getElementById("scenarioInputRows");
+            container.innerHTML = "";
+            DEFAULT_SCENARIOS.forEach((sc, index) => {
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-semibold text-slate-900">${sc.name}</td>
+                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l1" value="${sc.l1}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
+                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l2" value="${sc.l2}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
+                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l3" value="${sc.l3}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
+                    <td class="p-3 text-center bg-indigo-50 font-bold text-indigo-950 font-mono" id="rowTotalHeadcount_${index}">${sc.l1 + sc.l2 + sc.l3}</td>
+                `;
+                container.appendChild(tr);
+            });
+        }
+
+        function recalculateRowTotals(idx) {
+            const l1 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l1"]`).value) || 0;
+            const l2 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l2"]`).value) || 0;
+            const l3 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l3"]`).value) || 0;
+            document.getElementById(`rowTotalHeadcount_${idx}`).innerText = (l1 + l2 + l3);
+        }
+
+        function createDeterministicPRNG(seedString) {
+            let hash = 0;
+            for (let i = 0; i < seedString.length; i++) {
+                hash = seedString.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            let seed = Math.abs(hash) % 2147483647;
+            if (seed <= 0) seed = 1;
+            return function() {
+                seed = (seed * 16807) % 2147483647;
+                return (seed - 1) / 2147483646;
+            };
+        }
+
+        function sampleNormalDistribution(mean, stdDev, prngFn) {
+            let u = 0, v = 0;
+            while(u === 0) u = prngFn(); 
+            while(v === 0) v = prngFn();
+            let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+            return Math.max(10, Math.floor(num * stdDev + mean)); 
+        }
+
+        function parseInputFormPayload() {
+            const seedRaw = document.getElementById("paramSeed").value.trim();
+            activeDeterministicSeedString = seedRaw ? seedRaw : "SEED_" + Math.floor(Math.random() * 8999999 + 1000000);
+            document.getElementById("uiActiveSeed").innerText = activeDeterministicSeedString;
+
+            const totalShrinkageFactorPct = (
+                parseFloat(document.getElementById("shAbsent").value) +
+                parseFloat(document.getElementById("shTraining").value) +
+                parseFloat(document.getElementById("shMeetings").value) +
+                parseFloat(document.getElementById("shAdherence").value)
+            ) / 100.0;
+
+            const breaksMins = parseFloat(document.getElementById("shBreaksMins").value) || 0;
+            const intradayBreakShrinkagePct = breaksMins / 480.0;
+            const compoundNetShrinkageFactor = 1.0 - ((1.0 - totalShrinkageFactorPct) * (1.0 - intradayBreakShrinkagePct));
+
+            const functionalConfigRows = [];
+            DEFAULT_SCENARIOS.forEach((sc, idx) => {
+                const l1 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l1"]`).value) || 0;
+                const l2 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l2"]`).value) || 0;
+                const l3 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l3"]`).value) || 0;
+                functionalConfigRows.push({ name: sc.name, l1, l2, l3 });
+            });
+
+            return {
+                volume: parseInt(document.getElementById("paramVolume").value) || 1000,
+                slaPctTarget: parseFloat(document.getElementById("paramSlaPct").value) || 80,
+                slaSecThreshold: parseFloat(document.getElementById("paramSlaSec").value) || 20,
+                maxPatienceSec: parseFloat(document.getElementById("paramPatience").value) || 180,
+                repetitions: parseInt(document.getElementById("paramReps").value) || 5,
+                arrivalMode: document.getElementById("paramArrivalMode").value,
+                ahtTalk: parseFloat(document.getElementById("paramAhtTalk").value) || 240,
+                ahtTalkSd: parseFloat(document.getElementById("paramAhtTalkSd").value) || 40,
+                ahtAcw: parseFloat(document.getElementById("paramAhtAcw").value) || 40,
+                ahtAcwSd: parseFloat(document.getElementById("paramAhtAcwSd").value) || 10,
+                ahtRec: parseFloat(document.getElementById("paramAhtRec").value) || 300,
+                ahtRecPct: parseFloat(document.getElementById("paramAhtRecPct").value) || 15,
+                netShrinkage: compoundNetShrinkageFactor,
+                scenarios: functionalConfigRows
+            };
+        }
+
+        function executeEnginePipeline() {
+            const inputs = parseInputFormPayload();
+            const localPrngInstance = createDeterministicPRNG(activeDeterministicSeedString);
+            
+            globalSimulationResultsRegistry = {};
+
+            inputs.scenarios.forEach((scenario, scIdx) => {
+                const intervalSeriesArray = Array.from({length: 48}, (_, i) => ({
+                    intervalIdx: i,
+                    timestampStr: formatIntervalLabel(i * 30, 30),
+                    offered: 0, answeredSla: 0, answeredTotal: 0, abandoned: 0, recoveryTriggered: 0,
+                    peakQueueLength: 0, waitingTimeSum: 0, waitingTimesList: [],
+                    l1UtilizedSeconds: 0, l2UtilizedSeconds: 0, l3UtilizedSeconds: 0,
+                    l1AvailableSeconds: 0, l2AvailableSeconds: 0, l3AvailableSeconds: 0
+                }));
+
+                const activeL1Pool = Math.max(1, Math.round(scenario.l1 * (1.0 - inputs.netShrinkage)));
+                const activeL2Pool = Math.max(0, Math.round(scenario.l2 * (1.0 - inputs.netShrinkage)));
+                const activeL3Pool = Math.max(0, Math.round(scenario.l3 * (1.0 - inputs.netShrinkage)));
+
+                for (let rep = 0; rep < inputs.repetitions; rep++) {
+                    let agentRegistry = [];
+                    for (let i = 0; i < activeL1Pool; i++) agentRegistry.push({ id: `L1_${i}`, tier: 1, availableAt: 0 });
+                    for (let i = 0; i < activeL2Pool; i++) agentRegistry.push({ id: `L2_${i}`, tier: 2, availableAt: 0 });
+                    for (let i = 0; i < activeL3Pool; i++) agentRegistry.push({ id: `L3_${i}`, tier: 3, availableAt: 0 });
+
+                    let assignedIntervalVolumes = [];
+                    if (inputs.arrivalMode === "flat") {
+                        let baseFlatVolume = Math.floor(inputs.volume / 48);
+                        assignedIntervalVolumes = Array(48).fill(baseFlatVolume);
+                    } else {
+                        for (let t = 0; t < 48; t++) {
+                            let calculatedWeightValue = ARRIVAL_PROFILE_30M[t] * inputs.volume;
+                            assignedIntervalVolumes.push(samplePoissonValue(calculatedWeightValue, localPrngInstance));
+                        }
+                    }
+
+                    for (let t = 0; t < 48; t++) {
+                        const intervalObj = intervalSeriesArray[t];
+                        const sliceVolume = assignedIntervalVolumes[t];
+                        const intervalBaseOffsetSeconds = t * 1800;
+
+                        intervalObj.offered += sliceVolume;
+                        intervalObj.l1AvailableSeconds += activeL1Pool * 1800;
+                        intervalObj.l2AvailableSeconds += activeL2Pool * 1800;
+                        intervalObj.l3AvailableSeconds += activeL3Pool * 1800;
+
+                        let currentVirtualQueue = [];
+                        let intervalPeakQueueTracker = 0;
+
+                        for (let c = 0; c < sliceVolume; c++) {
+                            let randomizedArrivalDelta = Math.floor(localPrngInstance() * 1800);
+                            let absoluteArrivalTime = intervalBaseOffsetSeconds + randomizedArrivalDelta;
+                            
+                            let serviceTimeSample = sampleNormalDistribution(inputs.ahtTalk, inputs.ahtTalkSd, localPrngInstance);
+                            let acwTimeSample = sampleNormalDistribution(inputs.ahtAcw, inputs.ahtAcwSd, localPrngInstance);
+                            let theoreticalTotalHandlingTime = serviceTimeSample + acwTimeSample;
+                            
+                            let individualPatienceThreshold = Math.floor(-Math.log(1.0 - localPrngInstance() * 0.95) * inputs.maxPatienceSec);
+                            if (individualPatienceThreshold <= 5) individualPatienceThreshold = inputs.maxPatienceSec;
+
+                            currentVirtualQueue.push({
+                                arriveAt: absoluteArrivalTime,
+                                handlingTime: theoreticalTotalHandlingTime,
+                                patience: individualPatienceThreshold
+                            });
+                        }
+
+                        currentVirtualQueue.sort((a, b) => a.arriveAt - b.arriveAt);
+
+                        currentVirtualQueue.forEach(call => {
+                            let eligibleAgents = agentRegistry.filter(a => a.availableAt <= call.arriveAt);
+                            
+                            if (eligibleAgents.length > 0) {
+                                eligibleAgents.sort((a, b) => {
+                                    if (a.tier !== b.tier) return a.tier - b.tier; 
+                                    return a.availableAt - b.availableAt;
+                                });
+
+                                let selectedAgent = eligibleAgents[0];
+                                selectedAgent.availableAt = call.arriveAt + call.handlingTime;
+
+                                intervalObj.answeredTotal++;
+                                intervalObj.answeredSla++; 
+                                intervalObj.waitingTimeSum += 0;
+                                intervalObj.waitingTimesList.push(0);
+
+                                trackAgentCapacityUtilization(intervalObj, selectedAgent.tier, call.handlingTime);
+                            } else {
+                                agentRegistry.sort((a, b) => a.availableAt - b.availableAt);
+                                let bestSpeedAgent = agentRegistry[0]; 
+                                let trueDelayDuration = bestSpeedAgent.availableAt - call.arriveAt;
+
+                                if (trueDelayDuration <= call.patience) {
+                                    bestSpeedAgent.availableAt = bestSpeedAgent.availableAt + call.handlingTime;
+                                    
+                                    intervalObj.answeredTotal++;
+                                    if (trueDelayDuration <= inputs.slaSecThreshold) {
+                                        intervalObj.answeredSla++;
+                                    }
+                                    intervalObj.waitingTimeSum += trueDelayDuration;
+                                    intervalObj.waitingTimesList.push(trueDelayDuration);
+
+                                    trackAgentCapacityUtilization(intervalObj, bestSpeedAgent.tier, call.handlingTime);
+                                } else {
+                                    intervalObj.abandoned++;
+                                    intervalObj.waitingTimeSum += call.patience;
+                                    intervalObj.waitingTimesList.push(call.patience);
+
+                                    if ((localPrngInstance() * 100) <= inputs.ahtRecPct) {
+                                        intervalObj.recoveryTriggered++;
+                                        let recoveryHandlingDuration = sampleNormalDistribution(inputs.ahtRec, 60, localPrngInstance);
+                                        agentRegistry.sort((a, b) => a.availableAt - b.availableAt);
+                                        let targetRecAgent = agentRegistry[0];
+                                        targetRecAgent.availableAt = Math.max(targetRecAgent.availableAt, call.arriveAt + call.patience) + recoveryHandlingDuration;
+                                        trackAgentCapacityUtilization(intervalObj, targetRecAgent.tier, recoveryHandlingDuration);
+                                    }
+                                    intervalPeakQueueTracker++;
+                                }
+                            }
+                        });
+
+                        if (intervalPeakQueueTracker > intervalObj.peakQueueLength) {
+                            intervalObj.peakQueueLength = intervalPeakQueueTracker;
+                        }
+                    }
+                }
+
+                intervalSeriesArray.forEach(io => {
+                    io.offered = Math.round(io.offered / inputs.repetitions);
+                    io.answeredSla = Math.round(io.answeredSla / inputs.repetitions);
+                    io.answeredTotal = Math.round(io.answeredTotal / inputs.repetitions);
+                    io.abandoned = Math.round(io.abandoned / inputs.repetitions);
+                    io.recoveryTriggered = Math.round(io.recoveryTriggered / inputs.repetitions);
+                    io.peakQueueLength = Math.round(io.peakQueueLength / inputs.repetitions);
+                    io.waitingTimeSum = io.waitingTimeSum / inputs.repetitions;
+                    io.l1UtilizedSeconds = io.l1UtilizedSeconds / inputs.repetitions;
+                    io.l2UtilizedSeconds = io.l2UtilizedSeconds / inputs.repetitions;
+                    io.l3UtilizedSeconds = io.l3UtilizedSeconds / inputs.repetitions;
+                    io.l1AvailableSeconds = io.l1AvailableSeconds / inputs.repetitions;
+                    io.l2AvailableSeconds = io.l2AvailableSeconds / inputs.repetitions;
+                    io.l3AvailableSeconds = io.l3AvailableSeconds / inputs.repetitions;
+                    
+                    io.waitingTimesList.sort((a, b) => a - b);
+                });
+
+                globalSimulationResultsRegistry[scenario.name] = intervalSeriesArray;
+            });
+
+            renderAggregatedOutputs();
+        }
+
+        function trackAgentCapacityUtilization(intervalObj, agentTier, durationSec) {
+            if (agentTier === 1) intervalObj.l1UtilizedSeconds += durationSec;
+            else if (agentTier === 2) intervalObj.l2UtilizedSeconds += durationSec;
+            else if (agentTier === 3) intervalObj.l3UtilizedSeconds += durationSec;
+        }
+
+        function samplePoissonValue(lambda, prngFn) {
+            if (lambda < 30) {
+                let L = Math.exp(-lambda), k = 0, p = 1;
+                do { k++; p *= prngFn(); } while (p > L);
+                return k - 1;
+            } else {
+                let expectedSampleValue = sampleNormalDistribution(lambda, Math.sqrt(lambda), prngFn);
+                return Math.max(0, expectedSampleValue);
+            }
+        }
+
+        function formatIntervalLabel(startMinutes, deltaMinutes) {
+            let startHrs = Math.floor(startMinutes / 60);
+            let startMins = startMinutes % 60;
+            let endHrs = Math.floor((startMinutes + deltaMinutes) / 60);
+            let endMins = (startMinutes + deltaMinutes) % 60;
+            return `${String(startHrs).padStart(2,'0')}:${String(startMins).padStart(2,'0')}-${String(endHrs).padStart(2,'0')}:${String(endMins).padStart(2,'0')}`;
+        }
+
+        function renderAggregatedOutputs() {
+            const grainMode = document.getElementById("uiIntervalSelect").value;
+            const targetScenarioNames = Object.keys(globalSimulationResultsRegistry);
+            if(targetScenarioNames.length === 0) return;
+
+            let structuralAggregationDelta = 30; 
+            let combineCount = 1; 
+            if (grainMode === "15m") { combineCount = 1; }
+            else if (grainMode === "1h") { combineCount = 2; }
+            else if (grainMode === "2h") { combineCount = 4; }
+            else if (grainMode === "4h") { combineCount = 8; }
+            else if (grainMode === "daily") { combineCount = 48; }
+
+            let processedAggregatedScenariosMap = {};
+
+            targetScenarioNames.forEach(name => {
+                const base30mTimeline = globalSimulationResultsRegistry[name];
+                let groupedList = [];
+
+                for (let i = 0; i < base30mTimeline.length; i += combineCount) {
+                    let combinedSlice = base30mTimeline.slice(i, i + combineCount);
+                    if(combinedSlice.length === 0) break;
+
+                    let aggObj = {
+                        timestampStr: grainMode === "daily" ? "Full Operations Summary" : formatIntervalLabel(i * 30, combinedSlice.length * 30),
+                        offered: 0, answeredSla: 0, answeredTotal: 0, abandoned: 0, recoveryTriggered: 0,
+                        peakQueueLength: 0, waitingTimeSum: 0, l1Util: 0, l2Util: 0, l3Util: 0, l1Avail: 0, l2Avail: 0, l3Avail: 0,
+                        allWaitTimesCollected: []
+                    };
+
+                    combinedSlice.forEach(s => {
+                        aggObj.offered += s.offered;
+                        aggObj.answeredSla += s.answeredSla;
+                        aggObj.answeredTotal += s.answeredTotal;
+                        aggObj.abandoned += s.abandoned;
+                        aggObj.recoveryTriggered += s.recoveryTriggered;
+                        aggObj.waitingTimeSum += s.waitingTimeSum;
+                        aggObj.l1Util += s.l1UtilizedSeconds;
+                        aggObj.l2Util += s.l2UtilizedSeconds;
+                        aggObj.l3Util += s.l3UtilizedSeconds;
+                        aggObj.l1Avail += s.l1AvailableSeconds;
+                        aggObj.l2Avail += s.l2AvailableSeconds;
+                        aggObj.l3Avail += s.l3AvailableSeconds;
+                        if(s.peakQueueLength > aggObj.peakQueueLength) aggObj.peakQueueLength = s.peakQueueLength;
+                        aggObj.allWaitTimesCollected.push(...s.waitingTimesList);
+                    });
+
+                    groupedList.push(aggObj);
+                }
+                processedAggregatedScenariosMap[name] = groupedList;
+            });
+
+            populateOptimizationComparisonMatrix(processedAggregatedScenariosMap);
+            renderGranularLedgerRows(processedAggregatedScenariosMap[targetScenarioNames[0]]);
+            renderAnalyticsVisualCharts(processedAggregatedScenariosMap);
+        }
+
+        function populateOptimizationComparisonMatrix(aggregatedDataMap) {
+            const inputs = parseInputFormPayload();
+            const tbody = document.getElementById("optimizationTableBody");
+            tbody.innerHTML = "";
+
+            let strategicMetricsRollupArray = [];
+
+            Object.keys(aggregatedDataMap).forEach(name => {
+                const datasets = aggregatedDataMap[name];
+                let totalOffered = 0, totalAnsSla = 0, totalAns = 0, totalAband = 0, totalRec = 0, totalWaitTimeSum = 0;
+                let totalL1U = 0, totalL2U = 0, totalL3U = 0, totalL1A = 0, totalL2A = 0, totalL3A = 0;
+                let compositeGlobalWaitTimesList = [];
+
+                datasets.forEach(d => {
+                    totalOffered += d.offered;
+                    totalAnsSla += d.answeredSla;
+                    totalAns += d.answeredTotal;
+                    totalAband += d.abandoned;
+                    totalRec += d.recoveryTriggered;
+                    totalWaitTimeSum += d.waitingTimeSum;
+                    totalL1U += d.l1Util; totalL2U += d.l2Util; totalL3U += d.l3Util;
+                    totalL1A += d.l1Avail; totalL2A += d.l2Avail; totalL3A += d.l3Avail;
+                    compositeGlobalWaitTimesList.push(...d.allWaitTimesCollected);
+                });
+
+                let slaPct = totalOffered > 0 ? (totalAnsSla / totalOffered) * 100 : 100;
+                let abandonPct = totalOffered > 0 ? (totalAband / totalOffered) * 100 : 0;
+                let recoveryPct = totalAband > 0 ? (totalRec / totalAband) * 100 : 100;
+                let asa = totalAns > 0 ? (totalWaitTimeSum / totalAns) : 0;
+                
+                compositeGlobalWaitTimesList.sort((a,b) => a - b);
+                let p95Idx = Math.floor(compositeGlobalWaitTimesList.length * 0.95);
+                let p95Wait = compositeGlobalWaitTimesList.length > 0 ? compositeGlobalWaitTimesList[p95Idx] : 0;
+
+                let totalUtilizedSec = totalL1U + totalL2U + totalL3U;
+                let totalAvailableSec = totalL1A + totalL2A + totalL3A;
+                let avgUtilizationPct = totalAvailableSec > 0 ? (totalUtilizedSec / totalAvailableSec) * 100 : 0;
+
+                let match = DEFAULT_SCENARIOS.find(s => s.name === name);
+                let scenarioHeadcountTotal = match ? (match.l1 + match.l2 + match.l3) : 50;
+
+                let periodsMeeting15mSla = 0;
+                datasets.forEach(d => {
+                    let dSla15m = d.allWaitTimesCollected.filter(w => w <= 900).length;
+                    let dTotal = d.allWaitTimesCollected.length;
+                    let pct15m = dTotal > 0 ? (dSla15m / dTotal) * 100 : 100;
+                    if (pct15m >= inputs.slaPctTarget) periodsMeeting15mSla++;
+                });
+                let sla15mScorePct = (periodsMeeting15mSla / datasets.length) * 100;
+
+                strategicMetricsRollupArray.push({
+                    name, slaPct, sla15mScorePct, abandonPct, asa, p95Wait, avgUtilizationPct, recoveryPct,
+                    headcount: scenarioHeadcountTotal, meetsTarget: slaPct >= inputs.slaPctTarget
+                });
+            });
+
+            let lowestHeadcountMeetsSlaObj = strategicMetricsRollupArray
+                .filter(s => s.meetsTarget)
+                .sort((a, b) => a.headcount - b.headcount)[0] || null;
+
+            let bestP95Obj = [...strategicMetricsRollupArray].sort((a,b) => a.p95Wait - b.p95Wait)[0];
+            let lowestAbandonmentObj = [...strategicMetricsRollupArray].sort((a,b) => a.abandonPct - b.abandonPct)[0];
+
+            strategicMetricsRollupArray.forEach(row => {
+                let classificationTagStr = `<span class="text-slate-400 font-normal text-xs">Sub-Optimal Mix Matrix</span>`;
+                let classificationCssStyle = "bg-white text-slate-700";
+
+                if (lowestHeadcountMeetsSlaObj && row.name === lowestHeadcountMeetsSlaObj.name) {
+                    classificationTagStr = `🥇 <b>Most Efficient Target Fit</b>`;
+                    classificationCssStyle = "bg-emerald-50 text-emerald-900 border-l-4 border-emerald-500 font-bold";
+                } else if (row.name === bestP95Obj.name) {
+                    classificationTagStr = `⚡ <b>Best p95 Speed Performance</b>`;
+                    classificationCssStyle = "bg-cyan-50 text-cyan-900 font-semibold";
+                } else if (row.name === lowestAbandonmentObj.name) {
+                    classificationTagStr = `🛡️ <b>Lowest Abandonment Risk</b>`;
+                    classificationCssStyle = "bg-indigo-50 text-indigo-950";
+                }
+
+                const tr = document.createElement("tr");
+                tr.className = `${classificationCssStyle} transition duration-150 text-xs text-center`;
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-left text-slate-900">${row.name} (${row.headcount} Agents)</td>
+                    <td class="p-3 ${row.meetsTarget ? 'text-emerald-700' : 'text-rose-600'} font-bold">${row.slaPct.toFixed(1)}%</td>
+                    <td class="p-3">${row.sla15mScorePct.toFixed(1)}%</td>
+                    <td class="p-3">${row.abandonPct.toFixed(1)}%</td>
+                    <td class="p-3">${row.asa.toFixed(1)}s</td>
+                    <td class="p-3">${row.p95Wait.toFixed(0)}s</td>
+                    <td class="p-3">${row.avgUtilizationPct.toFixed(1)}%</td>
+                    <td class="p-3">${row.recoveryPct.toFixed(1)}%</td>
+                    <td class="p-3 font-medium text-left ${classificationCssStyle}">${classificationTagStr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderGranularLedgerRows(primaryScenarioDataset) {
+            const tbody = document.getElementById("intervalLedgerBody");
+            tbody.innerHTML = "";
+
+            primaryScenarioDataset.forEach(d => {
+                let l1Pct = d.l1Avail > 0 ? (d.l1Util / d.l1Avail) * 100 : 0;
+                let l2Pct = d.l2Avail > 0 ? (d.l2Util / d.l2Avail) * 100 : 0;
+                let l3Pct = d.l3Avail > 0 ? (d.l3Util / d.l3Avail) * 100 : 0;
+                let avgWaitTime = d.answeredTotal > 0 ? (d.waitingTimeSum / d.answeredTotal) : 0;
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition text-center";
+                tr.innerHTML = `
+                    <td class="p-2 text-left font-sans font-medium text-slate-900">${d.timestampStr}</td>
+                    <td class="p-2 font-bold">${d.offered}</td>
+                    <td class="p-2 text-emerald-700">${d.answeredSla}</td>
+                    <td class="p-2">${d.answeredTotal}</td>
+                    <td class="p-2 text-rose-600 font-semibold">${d.abandoned}</td>
+                    <td class="p-2 text-indigo-600">${d.recoveryTriggered}</td>
+                    <td class="p-2 font-bold text-amber-700">${d.peakQueueLength}</td>
+                    <td class="p-2">${avgWaitTime.toFixed(1)}s</td>
+                    <td class="p-2">${l1Pct.toFixed(0)}%</td>
+                    <td class="p-2">${l2Pct.toFixed(0)}%</td>
+                    <td class="p-2">${l3Pct.toFixed(0)}%</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderAnalyticsVisualCharts(aggregatedDataMap) {
+            const firstScenarioName = Object.keys(aggregatedDataMap)[0];
+            const intervalsListLabels = aggregatedDataMap[firstScenarioName].map(d => d.timestampStr);
+
+            if (activeChartInstancesRegistry.arrivalsQueue) activeChartInstancesRegistry.arrivalsQueue.destroy();
+            if (activeChartInstancesRegistry.scenarioSla) activeChartInstancesRegistry.scenarioSla.destroy();
+            if (activeChartInstancesRegistry.scenarioAbandonment) activeChartInstancesRegistry.scenarioAbandonment.destroy();
+            if (activeChartInstancesRegistry.agentUtil) activeChartInstancesRegistry.agentUtil.destroy();
+
+            const ctx1 = document.getElementById("chartArrivalsQueue").getContext("2d");
+            activeChartInstancesRegistry.arrivalsQueue = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: intervalsListLabels,
+                    datasets: [
+                        { label: 'Offered Volume Pattern', data: aggregatedDataMap[firstScenarioName].map(d => d.offered), borderColor: '#4f46e5', tension: 0.2, fill: false },
+                        { label: 'Peak Horizon Queue Depth', data: aggregatedDataMap[firstScenarioName].map(d => d.peakQueueLength), borderColor: '#b45309', borderDash: [4,4], tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+
+            const scenarioLabels = Object.keys(aggregatedDataMap);
+            const slaMetricsArray = [];
+            const abandonMetricsArray = [];
+            const l1UtilSeriesArray = [];
+            const l2UtilSeriesArray = [];
+            const l3UtilSeriesArray = [];
+
+            scenarioLabels.forEach(name => {
+                let scList = aggregatedDataMap[name];
+                let totOffered = 0, totSla = 0, totAband = 0, tL1U = 0, tL1A = 0, tL2U = 0, tL2A = 0, tL3U = 0, tL3A = 0;
+
+                scList.forEach(d => {
+                    totOffered += d.offered; totSla += d.answeredSla; totAband += d.abandoned;
+                    tL1U += d.l1Util; tL1A += d.l1Avail; tL2U += d.l2Util; tL2A += d.l2Avail; tL3U += d.l3Util; tL3A += d.l3Avail;
+                });
+
+                slaMetricsArray.push(totOffered > 0 ? (totSla / totOffered) * 100 : 100);
+                abandonMetricsArray.push(totOffered > 0 ? (totAband / totOffered) * 100 : 0);
+                l1UtilSeriesArray.push(tL1A > 0 ? (tL1U / tL1A) * 100 : 0);
+                l2UtilSeriesArray.push(tL2A > 0 ? (tL2U / tL2A) * 100 : 0);
+                l3UtilSeriesArray.push(tL3A > 0 ? (tL3U / tL3A) * 100 : 0);
+            });
+
+            const ctx2 = document.getElementById("chartScenarioSla").getContext("2d");
+            activeChartInstancesRegistry.scenarioSla = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: scenarioLabels,
+                    datasets: [{ label: 'Global Mean Service Level (%)', data: slaMetricsArray, backgroundColor: '#059669' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
+            });
+
+            const ctx3 = document.getElementById("chartScenarioAbandonment").getContext("2d");
+            activeChartInstancesRegistry.scenarioAbandonment = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: scenarioLabels,
+                    datasets: [{ label: 'Call Abandonment Rate (%)', data: abandonMetricsArray, backgroundColor: '#dc2626' }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            const ctx4 = document.getElementById("chartAgentUtilization").getContext("2d");
+            activeChartInstancesRegistry.agentUtil = new Chart(ctx4, {
+                type: 'bar',
+                data: {
+                    labels: scenarioLabels,
+                    datasets: [
+                        { label: 'Level 1 Generalist Util %', data: l1UtilSeriesArray, backgroundColor: '#6366f1' },
+                        { label: 'Level 2 Advanced Util %', data: l2UtilSeriesArray, backgroundColor: '#3b82f6' },
+                        { label: 'Level 3 Supervisor Util %', data: l3UtilSeriesArray, backgroundColor: '#1e1b4b' }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
+            });
+        }
+
+        function exportSimulationCSV() {
+            const firstScenarioName = Object.keys(globalSimulationResultsRegistry)[0];
+            if (!firstScenarioName) return alert("Execute modeling run before attempting file download.");
+
+            let csvDataString = "Interval Frame,Offered Traffic,Answered Within SLA,Answered Total,Abandoned Loss,Outbound Recovery Runs,Peak Queue Depth\n";
+            globalSimulationResultsRegistry[firstScenarioName].forEach(row => {
+                csvDataString += `"${row.timestampStr}",${row.offered},${row.answeredSla},${row.answeredTotal},${row.abandoned},${row.recoveryTriggered},${row.peakQueueLength}\n`;
+            });
+
+            const blobObject = new Blob([csvDataString], { type: 'text/csv;charset=utf-8;' });
+            const anchorElement = document.createElement("a");
+            anchorElement.href = URL.createObjectURL(blobObject);
+            // Dynamic filename pointing directly to your repository profile
+            anchorElement.setAttribute("download", `FMProj_Capacity_Simulation_${activeDeterministicSeedString}.csv`);
+            document.body.appendChild(anchorElement);
+            anchorElement.click();
+            document.body.removeChild(anchorElement);
+        }
+
+        async function fetchAiNarrativeAnalysis() {
+            const targetUrl = document.getElementById("aiWorkerUrl").value.trim();
+            const actionBtn = document.getElementById("aiBtn");
+            const feedbackContainer = document.getElementById("aiResponseContainer");
+            const textTarget = document.getElementById("aiContentTarget");
+
+            if (!targetUrl) {
+                alert("Provide a valid Cloudflare Worker API Endpoint connection URL.");
+                return;
+            }
+
+            actionBtn.disabled = true;
+            actionBtn.innerText = "Querying Edge...";
+            feedbackContainer.classList.remove("hidden");
+            textTarget.innerHTML = `<p class="italic text-slate-500 animate-pulse">Assembling scenario metadata and preparing edge execution pipeline...</p>`;
+
+            const payload = {
+                seed: activeDeterministicSeedString,
+                timestamp: new Date().toISOString(),
+                slaParameters: {
+                    targetPct: parseFloat(document.getElementById("paramSlaPct").value),
+                    thresholdSec: parseFloat(document.getElementById("paramSlaSec").value),
+                    targetVolume: parseInt(document.getElementById("paramVolume").value)
+                },
+                scenariosTested: DEFAULT_SCENARIOS.map(s => {
+                    let matchData = globalSimulationResultsRegistry[s.name] || [];
+                    let off = 0, ansSla = 0, ab = 0;
+                    matchData.forEach(d => { off += d.offered; ansSla += d.answeredSla; ab += d.abandoned; });
+                    return {
+                        name: s.name,
+                        rosterMix: { L1: s.l1, L2: s.l2, L3: s.l3 },
+                        totalHeadcount: (s.l1 + s.l2 + s.l3),
+                        simulatedSlaPct: off > 0 ? parseFloat(((ansSla / off) * 100).toFixed(1)) : 100,
+                        simulatedAbandonPct: off > 0 ? parseFloat(((ab / off) * 100).toFixed(1)) : 0
+                    };
+                })
+            };
+
+            try {
+                const response = await fetch(targetUrl, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error(`Worker HTTP Server Alert: Standard Error ${response.status}`);
+                
+                const data = await response.json();
+                
+                textTarget.innerHTML = `
+                    <div class="space-y-3">
+                        <p class="font-semibold text-indigo-900 bg-white border border-indigo-100 p-3 rounded-lg shadow-xs">${data.executiveSummary || "No summary returned."}</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg">
+                                <span class="font-bold block text-amber-900">⚠️ Flagged Risk Variables:</span>
+                                <p class="text-amber-950 mt-1">${data.keyRiskFlags || "None detected."}</p>
+                            </div>
+                            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg">
+                                <span class="font-bold block text-emerald-900">🎯 Recommended Actions:</span>
+                                <p class="text-emerald-950 mt-1">${data.recommendedStaffingActions || "Maintain current baseline."}</p>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-2 italic bg-slate-50 p-2 rounded border"><b>Strategic Selection Basis:</b> ${data.selectionExplanation || "None provided."}</p>
+                    </div>
+                `;
+            } catch (err) {
+                console.error(err);
+                textTarget.innerHTML = `
+                    <div class="bg-rose-50 border border-rose-200 text-rose-950 p-3 rounded-lg text-xs space-y-1">
+                        <p class="font-bold">⚠️ Cloudflare Worker AI Layer Offline or Access Denied</p>
+                        <p>The client simulation dashboard operates autonomously. Static rule evaluations indicate that <b>${payload.scenariosTested[0].name}</b> achieved an SLA output of <b>${payload.scenariosTested[0].simulatedSlaPct}%</b> against your operational target framework.</p>
+                        <p class="text-[10px] text-rose-400 mt-2">Error Log Reference: ${err.message}</p>
+                    </div>
+                `;
+            } finally {
+                actionBtn.disabled = false;
+                actionBtn.innerText = "Analyze Scenarios";
+            }
+        }
+    </script>
 </body>
 </html>
