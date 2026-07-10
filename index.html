@@ -3,173 +3,426 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CS Capacity Planner & Simulator</title>
+    <title>CS Capacity Planner</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col">
 
-    <header class="bg-slate-900 text-white px-8 py-5 flex justify-between items-center shadow-xs">
+    <header class="bg-slate-900 text-white px-6 py-4 flex justify-between items-center shadow-xs">
         <div>
-            <h1 class="text-xl font-bold tracking-tight">CS Capacity Planner</h1>
+            <h1 class="text-lg font-bold tracking-tight">CS Capacity Planner</h1>
             <p class="text-xs text-slate-400">Operational staffing simulation based on business metrics</p>
         </div>
-        <div class="flex gap-3">
-            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-2 px-4 rounded border border-slate-700 transition cursor-pointer">🖨️ Print Report</button>
-            <button onclick="exportSimulationCSV()" class="bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold py-2 px-4 rounded transition cursor-pointer">📥 Export Data</button>
+        <div class="flex gap-2">
+            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-2 px-3 rounded border border-slate-700 text-white cursor-pointer">🖨️ Print</button>
+            <button onclick="exportSimulationCSV()" class="bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold py-2 px-3 rounded text-white cursor-pointer">📥 Export</button>
         </div>
     </header>
 
-    <main class="flex-1 p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <main class="flex-1 p-4 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        <section class="lg:col-span-1 flex flex-col gap-6 max-h-[85vh] overflow-y-auto pr-2">
+        <section class="lg:col-span-1 flex flex-col gap-5 max-h-[85vh] overflow-y-auto pr-1">
             
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">1. Scenario Setup</h2>
-                <div class="space-y-3 text-sm">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">1. Scenario Setup</h2>
+                <div class="space-y-2 text-xs">
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Scenario Name</label>
-                        <input type="text" id="cfgName" value="Q3 Peak Season Roster" class="w-full border border-slate-300 rounded p-2 focus:ring-1 focus:ring-indigo-500">
+                        <label class="block font-medium text-slate-700 mb-0.5">Scenario Name</label>
+                        <input type="text" id="cfgName" value="Q3 Peak Season Roster" class="w-full border border-slate-300 rounded p-1.5">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Operating Hours</label>
-                            <input type="text" id="cfgHours" value="08:00 - 00:00" class="w-full border border-slate-300 rounded p-2">
+                            <label class="block font-medium text-slate-700 mb-0.5">Operating Hours</label>
+                            <input type="text" id="cfgHours" value="08:00 - 00:00" class="w-full border border-slate-300 rounded p-1.5">
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Forecast Period</label>
-                            <input type="text" id="cfgPeriod" value="July 2026 Baseline" class="w-full border border-slate-300 rounded p-2">
+                            <label class="block font-medium text-slate-700 mb-0.5">Forecast Period</label>
+                            <input type="text" id="cfgPeriod" value="July 2026 Baseline" class="w-full border border-slate-300 rounded p-1.5">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Interval Weighting</label>
-                            <select id="cfgInterval" class="w-full border border-slate-300 rounded p-2 bg-white">
-                                <option value="30m" selected>30 Minutes</option>
-                                <option value="15m">15 Minutes</option>
-                                <option value="1h">1 Hour</option>
+                            <label class="block font-medium text-slate-700 mb-0.5">Time Interval Choice</label>
+                            <select id="cfgInterval" onchange="updateIntervalTableDOM()" class="w-full border border-slate-300 rounded p-1.5 bg-white">
+                                <option value="1h" selected>1 Hour</option>
+                                <option value="2h">2 Hours</option>
+                                <option value="4h">4 Hours</option>
                                 <option value="daily">Daily Summary</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Simulation Runs</label>
-                            <input type="number" id="cfgReps" value="15" class="w-full border border-slate-300 rounded p-2">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Fixed Control Seed (Optional)</label>
-                        <input type="text" id="cfgSeed" placeholder="Auto-generates random seed" class="w-full border border-slate-300 rounded p-2 text-xs font-mono">
-                    </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">2. Demand Profile</h2>
-                <div class="space-y-3 text-sm">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Average Daily Call Volume</label>
-                        <input type="number" id="demVolume" value="2500" class="w-full border border-slate-300 rounded p-2">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Arrival Pattern Trend</label>
-                        <select id="demPattern" class="w-full border border-slate-300 rounded p-2 bg-white">
-                            <option value="standard">Standard Midday Peak (Normal Curve)</option>
-                            <option value="flat">Flat Distribution (Consistent Stream)</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Primary Peak Window</label>
-                            <input type="text" id="demPeak" value="11:00 - 14:00" class="w-full border border-slate-300 rounded p-2" disabled>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Enquiry Type Mix</label>
-                            <input type="text" id="demMix" value="General (80%) / Tech (20%)" class="w-full border border-slate-300 rounded p-2 text-slate-400" disabled>
+                            <label class="block font-medium text-slate-700 mb-0.5">Simulation Reps</label>
+                            <input type="number" id="cfgReps" value="5" class="w-full border border-slate-300 rounded p-1.5">
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">3. Service Targets</h2>
-                <div class="space-y-3 text-sm">
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Target Answered %</label>
-                            <input type="number" id="tgtPct" value="80" class="w-full border border-slate-300 rounded p-2">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Within Time (Sec)</label>
-                            <input type="number" id="tgtSec" value="20" class="w-full border border-slate-300 rounded p-2">
-                        </div>
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider">2. Demand Profile</h2>
+                    <button onclick="togglePatternEditor()" class="text-[11px] font-bold text-indigo-600 hover:underline cursor-pointer">⚙️ Adjust Volume % Split</button>
+                </div>
+                <div class="space-y-2 text-xs">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-0.5">Average Daily Volume (Total Requests)</label>
+                        <input type="number" id="demVolume" value="1200" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5 font-bold text-indigo-950">
                     </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">Max Abandon Target</label>
-                            <input type="text" id="tgtAbandon" value="< 3%" class="w-full border border-slate-300 rounded p-2" disabled>
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-700 mb-1">p95 Waiting Target</label>
-                            <input type="text" id="tgtP95" value="90 sec" class="w-full border border-slate-300 rounded p-2" disabled>
+                    
+                    <div id="patternEditorContainer" class="hidden bg-slate-50 p-3 rounded-lg border border-slate-200 max-h-48 overflow-y-auto space-y-1.5">
+                        <span class="block text-[10px] font-bold text-slate-500 uppercase tracking-tight">Define Hourly Traffic Weight (% Total must equal 100%)</span>
+                        <div id="dynamicPatternRows" class="grid grid-cols-2 gap-2 text-[11px]">
+                            </div>
+                        <div class="text-[10px] font-bold text-right text-slate-600 pt-1 border-t">
+                            Allocated Total: <span id="patternTotalLabel">100%</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">4. Agent Roster Mix</h2>
-                <div class="grid grid-cols-3 gap-2 text-sm">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">3. Service Targets</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 1 (Gen)</label>
-                        <input type="number" id="agtL1" value="30" class="w-full border border-slate-300 rounded p-2 text-center">
+                        <label class="block font-medium text-slate-700 mb-0.5">Target Answered %</label>
+                        <input type="number" id="tgtPct" value="80" class="w-full border border-slate-300 rounded p-1.5">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 2 (Adv)</label>
-                        <input type="number" id="agtL2" value="15" class="w-full border border-slate-300 rounded p-2 text-center">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 3 (SME)</label>
-                        <input type="number" id="agtL3" value="5" class="w-full border border-slate-300 rounded p-2 text-center">
-                    </div>
-                </div>
-                <p class="text-[11px] text-slate-500 mt-2 italic">Skill Logic: Higher skilled levels automatically assist with lower skill overflow queues.</p>
-            </div>
-
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">5. Workload Times (Seconds)</h2>
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Avg Talk Time (AHT)</label>
-                        <input type="number" id="wrkTalk" value="240" class="w-full border border-slate-300 rounded p-2">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">After-Call Work (ACW)</label>
-                        <input type="number" id="wrkAcw" value="45" class="w-full border border-slate-300 rounded p-2">
+                        <label class="block font-medium text-slate-700 mb-0.5">Within Window (Sec)</label>
+                        <input type="number" id="tgtSec" value="20" class="w-full border border-slate-300 rounded p-1.5">
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">6. Shrinkage & Unavailability</h2>
-                <div class="grid grid-cols-2 gap-3 text-sm">
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">4. Agent Mix</h2>
+                <div class="grid grid-cols-3 gap-2 text-xs">
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Absenteeism & Leave</label>
-                        <input type="number" id="shLeave" value="8" class="w-full border border-slate-300 rounded p-2">
+                        <label class="block font-medium text-slate-600 mb-0.5">L1 Generalist</label>
+                        <input type="number" id="agtL1" value="14" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5 text-center font-bold">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Training & Meetings</label>
-                        <input type="number" id="shAdmin" value="6" class="w-full border border-slate-300 rounded p-2">
+                        <label class="block font-medium text-slate-600 mb-0.5">L2 Advanced</label>
+                        <input type="number" id="agtL2" value="6" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5 text-center font-bold">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 mb-0.5">L3 Supervisor</label>
+                        <input type="number" id="agtL3" value="2" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5 text-center font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">5. Workload Handling Times</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-0.5">Avg Talk Time (Sec)</label>
+                        <input type="number" id="wrkTalk" value="280" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-0.5">Wrap Up / ACW (Sec)</label>
+                        <input type="number" id="wrkAcw" value="40" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">6. Roster Shrinkage Profiles</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-0.5">Absenteeism (%)</label>
+                        <input type="number" id="shLeave" value="7" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-0.5">Meetings/Training (%)</label>
+                        <input type="number" id="shAdmin" value="5" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5">
                     </div>
                     <div class="col-span-2">
-                        <label class="block font-medium text-slate-700 mb-1">Total Breaks/Lunch (Minutes per Shift)</label>
-                        <input type="number" id="shBreaks" value="60" class="w-full border border-slate-300 rounded p-2">
+                        <label class="block font-medium text-slate-700 mb-0.5">Lunch & Daily Breaks (Minutes per Shift)</label>
+                        <input type="number" id="shBreaks" value="60" onchange="runBusinessEngine()" class="w-full border border-slate-300 rounded p-1.5">
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
-                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">7. Queue Patience Metrics</h2>
-                <div class="space-y-3 text-sm">
-                    <div>
-                        <label class="block font-medium text-slate-700 mb-1">Max Acceptable Wait Before Drop Risk</label>
-                        <input type="number" id="quePatience" value="180" class="w-full border border-slate
+            <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-xs font-bold text-indigo-600 uppercase tracking-wider mb-2">7. Queue Patience Parameters</h2>
+                <div class="text-xs">
+                    <label class="block font-medium text-slate-700 mb-0.5">Max Wait Before Drop Risk (Sec)</label>
+                    <input type="number" id="quePatience" value="120" class="w-full border border-slate-300 rounded p-1.5">
+                </div>
+            </div>
+
+            <button onclick="runBusinessEngine()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase tracking-wider cursor-pointer transition">
+                📊 Calculate Staffing Forecast
+            </button>
+        </section>
+
+        <section class="lg:col-span-2 flex flex-col gap-5">
+            
+            <div class="bg-slate-900 text-slate-100 rounded-xl p-3 flex justify-between items-center text-xs">
+                <div class="flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                    <span class="text-slate-400">Worker AI Target:</span>
+                    <input type="text" id="aiEndpoint" value="https://floral-night-9927.raglansocial.workers.dev" class="bg-slate-800 text-indigo-200 px-2 py-0.5 rounded font-mono text-[11px] w-60 border border-slate-700">
+                </div>
+                <button onclick="requestPlainEnglishAnalysis()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-1 px-2.5 rounded transition cursor-pointer">Generate Narrative</button>
+            </div>
+
+            <div id="narrativeContainer" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-950 p-4 rounded-xl text-xs">
+                <h3 class="font-bold text-indigo-900 mb-1">✨ Plain-English Operational Insight</h3>
+                <div id="narrativeContent" class="leading-relaxed"></div>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3">
+                <div class="bg-white border p-4 rounded-xl shadow-xs">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Estimated SLA</span>
+                    <div id="scSla" class="text-2xl font-black mt-0.5 text-indigo-600">-</div>
+                    <p id="scSlaMsg" class="text-[10px] text-slate-400 mt-0.5">Calculating variables...</p>
+                </div>
+                <div class="bg-white border p-4 rounded-xl shadow-xs">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Connections Lost</span>
+                    <div id="scAbandon" class="text-2xl font-black mt-0.5 text-slate-700">-</div>
+                    <p id="scAbandonMsg" class="text-[10px] text-slate-400 mt-0.5">Waiting for data...</p>
+                </div>
+                <div class="bg-white border p-4 rounded-xl shadow-xs">
+                    <span class="text-[10px] font-bold text-slate-500 uppercase block">Net Staff Active</span>
+                    <div id="scNetStaff" class="text-2xl font-black mt-0.5 text-slate-700">-</div>
+                    <p class="text-[10px] text-slate-400 mt-0.5">After total shrinkage</p>
+                </div>
+            </div>
+
+            <div class="bg-white border rounded-xl p-4 shadow-xs">
+                <h3 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Intraday Demand Volume Map</h3>
+                <div class="relative h-48"><canvas id="businessVisualChart"></canvas></div>
+            </div>
+
+            <div class="bg-white border rounded-xl p-4 shadow-xs">
+                <h3 class="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Estimated Interval Roadmap</h3>
+                <div class="overflow-x-auto max-h-48">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead class="bg-slate-50 font-bold border-b border-slate-200 text-slate-600 sticky top-0">
+                            <tr>
+                                <th class="p-2">Time Window</th>
+                                <th class="p-2 text-center">Incoming Demand</th>
+                                <th class="p-2 text-center">Answered Safely</th>
+                                <th class="p-2 text-center">Dropped Volume</th>
+                                <th class="p-2 text-center">Average Delay</th>
+                            </tr>
+                        </thead>
+                        <tbody id="businessTableBody" class="divide-y divide-slate-100 font-medium text-slate-600">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        let latestCalculatedMatrix = [];
+        let visualChartInstance = null;
+
+        // Custom, editable operation distributions across active hours
+        let HOURLY_WEIGHTS = [
+            { time: "08:00", pct: 3 }, { time: "09:00", pct: 5 }, { time: "10:00", pct: 8 },
+            { time: "11:00", pct: 12 }, { time: "12:00", pct: 14 }, { time: "13:00", pct: 10 },
+            { time: "14:00", pct: 9 }, { time: "15:00", pct: 8 }, { time: "16:00", pct: 7 },
+            { time: "17:00", pct: 6 }, { time: "18:00", pct: 5 }, { time: "19:00", pct: 4 },
+            { time: "20:00", pct: 3 }, { time: "21:00", pct: 2 }, { time: "22:00", pct: 2 },
+            { time: "23:00", pct: 2 }
+        ];
+
+        window.addEventListener("DOMContentLoaded", () => {
+            renderPatternEditorRows();
+            runBusinessEngine();
+        });
+
+        function togglePatternEditor() {
+            document.getElementById("patternEditorContainer").classList.toggle("hidden");
+        }
+
+        function renderPatternEditorRows() {
+            const container = document.getElementById("dynamicPatternRows");
+            container.innerHTML = "";
+            HOURLY_WEIGHTS.forEach((item, index) => {
+                const block = document.createElement("div");
+                block.className = "flex items-center justify-between bg-white p-1 rounded border border-slate-200";
+                block.innerHTML = `
+                    <span class="font-mono font-semibold">${item.time}</span>
+                    <div class="flex items-center gap-1">
+                        <input type="number" value="${item.pct}" min="0" max="100" onchange="updateWeightValue(${index}, this.value)" class="w-10 border text-center p-0.5 rounded font-mono font-bold text-indigo-900 bg-slate-50">
+                        <span class="text-slate-400 text-[10px]">%</span>
+                    </div>
+                `;
+                container.appendChild(block);
+            });
+            recalcWeightTotals();
+        }
+
+        function updateWeightValue(index, val) {
+            HOURLY_WEIGHTS[index].pct = Math.max(0, parseFloat(val) || 0);
+            recalcWeightTotals();
+            runBusinessEngine();
+        }
+
+        function recalcWeightTotals() {
+            let sum = HOURLY_WEIGHTS.reduce((acc, curr) => acc + curr.pct, 0);
+            const lbl = document.getElementById("patternTotalLabel");
+            lbl.innerText = `${sum.toFixed(0)}%`;
+            if(Math.abs(sum - 100) > 0.1) {
+                lbl.className = "text-rose-600 font-bold";
+            } else {
+                lbl.className = "text-emerald-600 font-bold";
+            }
+        }
+
+        function runBusinessEngine() {
+            const totalVolume = parseInt(document.getElementById("demVolume").value) || 1000;
+            const targetPct = parseFloat(document.getElementById("tgtPct").value) || 80;
+            const targetSec = parseFloat(document.getElementById("tgtSec").value) || 20;
+
+            const l1 = parseInt(document.getElementById("agtL1").value) || 0;
+            const l2 = parseInt(document.getElementById("agtL2").value) || 0;
+            const l3 = parseInt(document.getElementById("agtL3").value) || 0;
+            
+            const absenceLeavePct = parseFloat(document.getElementById("shLeave").value) || 0;
+            const adminPct = parseFloat(document.getElementById("shAdmin").value) || 0;
+            const breakMins = parseFloat(document.getElementById("shBreaks").value) || 0;
+            
+            const compoundShrinkage = 1 - ((1 - (absenceLeavePct + adminPct)/100) * (1 - breakMins/480));
+            const netAvailableStaffing = Math.max(1, Math.round((l1 + l2 + l3) * (1 - compoundShrinkage)));
+
+            const aggregateHandlingAht = (parseFloat(document.getElementById("wrkTalk").value) || 240) + (parseFloat(document.getElementById("wrkAcw").value) || 45);
+
+            latestCalculatedMatrix = [];
+            let totalOffered = 0, totalAnsSla = 0, totalAns = 0, totalDropped = 0, totalWait = 0;
+
+            let weightSum = HOURLY_WEIGHTS.reduce((s, w) => s + w.pct, 0) || 100;
+
+            HOURLY_WEIGHTS.forEach(hw => {
+                let normWeight = hw.pct / weightSum;
+                let incoming = Math.round(totalVolume * normWeight);
+                
+                let hourCapacity = (netAvailableStaffing * 3600) / aggregateHandlingAht;
+                let ratio = hourCapacity / (incoming + 0.1);
+
+                let ansTotal = 0, ansSla = 0, dropped = 0, delay = 0;
+
+                if (ratio >= 1.1) {
+                    ansTotal = incoming; ansSla = Math.round(incoming * 0.95); dropped = 0; delay = 4;
+                } else if (ratio >= 0.8) {
+                    ansTotal = Math.round(incoming * ratio); ansSla = Math.round(ansTotal * 0.65); dropped = incoming - ansTotal; delay = Math.round(targetSec * 1.5);
+                } else {
+                    ansTotal = Math.round(incoming * ratio); ansSla = Math.round(ansTotal * 0.25); dropped = incoming - ansTotal; delay = 75;
+                }
+
+                latestCalculatedMatrix.push({ time: hw.time, incoming, answeredSla: ansSla, answeredTotal: ansTotal, dropped, delay });
+
+                totalOffered += incoming; totalAnsSla += ansSla; totalAns += ansTotal; totalDropped += dropped; totalWait += (delay * ansTotal);
+            });
+
+            const finSla = totalOffered > 0 ? (totalAnsSla / totalOffered) * 100 : 100;
+            const finAbandon = totalOffered > 0 ? (totalDropped / totalOffered) * 100 : 0;
+
+            document.getElementById("scSla").innerText = `${finSla.toFixed(1)}%`;
+            document.getElementById("scSla").className = finSla >= targetPct ? "text-2xl font-black mt-0.5 text-emerald-600" : "text-2xl font-black mt-0.5 text-rose-600";
+            document.getElementById("scSlaMsg").innerText = finSla >= targetPct ? "🎯 Target achieved" : `⚠️ Short of ${targetPct}%`;
+            document.getElementById("scAbandon").innerText = `${finAbandon.toFixed(1)}%`;
+            document.getElementById("scAbandonMsg").innerText = `${totalDropped} drops logged`;
+            document.getElementById("scNetStaff").innerText = `${netAvailableStaffing} FTE`;
+
+            updateIntervalTableDOM();
+            updateChartGraphics();
+        }
+
+        function updateIntervalTableDOM() {
+            const grain = document.getElementById("cfgInterval").value;
+            const tbody = document.getElementById("businessTableBody");
+            tbody.innerHTML = "";
+
+            let stride = 1;
+            if (grain === "2h") stride = 2;
+            if (grain === "4h") stride = 4;
+            if (grain === "daily") stride = 48;
+
+            for(let i=0; i<latestCalculatedMatrix.length; i+=stride) {
+                let chunk = latestCalculatedMatrix.slice(i, i+stride);
+                if(chunk.length === 0) break;
+
+                let label = grain === "daily" ? "Full Horizon Rollup" : (stride > 1 ? `${chunk[0].time} - ${chunk[chunk.length-1].time}` : chunk[0].time);
+                let inc = 0, ansSla = 0, drop = 0, sumD = 0, countD = 0;
+
+                chunk.forEach(c => {
+                    inc += c.incoming; ansSla += c.answeredSla; drop += c.dropped;
+                    sumD += (c.delay * c.answeredTotal); countD += c.answeredTotal;
+                });
+
+                let finalD = countD > 0 ? Math.round(sumD / countD) : 0;
+
+                const tr = document.createElement("tr");
+                tr.className = "hover:bg-slate-50 transition border-b border-slate-100";
+                tr.innerHTML = `
+                    <td class="p-2 font-semibold text-slate-900">${label}</td>
+                    <td class="p-2 text-center">${inc}</td>
+                    <td class="p-2 text-center text-emerald-600 font-semibold">${ansSla}</td>
+                    <td class="p-2 text-center ${drop > 0 ? 'text-rose-600 font-bold' : 'text-slate-400'}">${drop}</td>
+                    <td class="p-2 text-center">${finalD}s</td>
+                `;
+                tbody.appendChild(tr);
+            }
+        }
+
+        function updateChartGraphics() {
+            const ctx = document.getElementById("businessVisualChart").getContext("2d");
+            if(visualChartInstance) visualChartInstance.destroy();
+
+            visualChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: latestCalculatedMatrix.map(m => m.time),
+                    datasets: [
+                        { label: 'Incoming Traffic', data: latestCalculatedMatrix.map(m => m.incoming), borderColor: '#4f46e5', tension: 0.15, fill: false },
+                        { label: 'Dropped Calls', data: latestCalculatedMatrix.map(m => m.dropped), borderColor: '#dc2626', borderDash: [2, 2], tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
+            });
+        }
+
+        function exportSimulationCSV() {
+            let csv = "Time Period,Incoming Load,Answered SLA,Dropped Calls,Avg Waiting Sec\n";
+            latestCalculatedMatrix.forEach(m => { csv += `"${m.time}",${m.incoming},${m.answeredSla},${m.dropped},${m.delay}\n`; });
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.setAttribute("download", "Roster_Capacity_Plan.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        async function requestPlainEnglishAnalysis() {
+            const endpoint = document.getElementById("aiEndpoint").value.trim();
+            const container = document.getElementById("narrativeContainer");
+            const content = document.getElementById("narrativeContent");
+
+            container.classList.remove("hidden");
+            content.innerHTML = `<p class="italic text-slate-400 animate-pulse">Running analysis parameters against the active distribution curves...</p>`;
+
+            const payload = {
+                meta: { name: document.getElementById("cfgName").value, period: document.getElementById("cfgPeriod").value },
+                performance: { sla: document.getElementById("scSla").innerText, abandon: document.getElementById("scAbandon").innerText, staffActive: document.getElementById("scNetStaff").innerText }
+            };
+
+            try {
+                const res = await fetch(endpoint, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+                if(!res.ok) throw new Error();
+                const data = await res.json();
+                content.innerHTML = `<p class="font-medium text-indigo-900">${data.executiveSummary}</p><p class="mt-1 text-[11px] text-slate-600"><b>Roster Actions:</b> ${data.recommendedStaffingActions}</p>`;
+            } catch {
+                content.innerHTML = `<p>The current setup projects a service score of <b>${payload.performance.sla}</b>. If this trends below requirement, adjust your <b>Section 4 (Agent Mix)</b> parameters upward to increase service velocity during high percentage time frames.</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
