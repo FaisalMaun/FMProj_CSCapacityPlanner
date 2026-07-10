@@ -1,939 +1,175 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WFM Capacity Planner & Stress Tester</title>
+    <title>CS Capacity Planner & Simulator</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @media print {
-            .no-print { display: none !important; }
-            body { background: white; color: black; font-size: 10pt; }
-            .card { border: 1px solid #ccc; box-shadow: none !important; break-inside: avoid; }
-        }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-    </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans antialiased min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col">
 
-    <header class="bg-indigo-950 text-white shadow-md px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4 no-print">
+    <header class="bg-slate-900 text-white px-8 py-5 flex justify-between items-center shadow-xs">
         <div>
-            <h1 class="text-2xl font-bold tracking-tight">FMProj CS Capacity Planner</h1>
-            <p class="text-xs text-indigo-200">Multi-Skill Queue, Stochastic Shrinkage & Monte Carlo Stress-Tester</p>
+            <h1 class="text-xl font-bold tracking-tight">CS Capacity Planner</h1>
+            <p class="text-xs text-slate-400">Operational staffing simulation based on business metrics</p>
         </div>
-        <div class="flex flex-wrap items-center gap-3">
-            <button onclick="window.print()" class="bg-indigo-800 hover:bg-indigo-700 text-white font-medium text-sm py-2 px-4 rounded transition shadow cursor-pointer">
-                🖨️ Print Report
-            </button>
-            <button onclick="exportSimulationCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-sm py-2 px-4 rounded transition shadow cursor-pointer">
-                📥 Export CSV
-            </button>
+        <div class="flex gap-3">
+            <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-xs font-semibold py-2 px-4 rounded border border-slate-700 transition cursor-pointer">🖨️ Print Report</button>
+            <button onclick="exportSimulationCSV()" class="bg-indigo-600 hover:bg-indigo-500 text-xs font-semibold py-2 px-4 rounded transition cursor-pointer">📥 Export Data</button>
         </div>
     </header>
 
-    <main class="flex-1 p-4 md:p-6 grid grid-cols-1 xl:grid-cols-4 gap-6">
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
         
-        <section class="xl:col-span-1 flex flex-col gap-6 no-print">
+        <section class="lg:col-span-1 flex flex-col gap-6 max-h-[85vh] overflow-y-auto pr-2">
             
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">🎯 SLA Parameters</h2>
-                <div class="grid grid-cols-1 gap-4 text-sm">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">1. Scenario Setup</h2>
+                <div class="space-y-3 text-sm">
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Daily Call Volume</label>
-                        <input type="number" id="paramVolume" value="2500" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        <label class="block font-medium text-slate-700 mb-1">Scenario Name</label>
+                        <input type="text" id="cfgName" value="Q3 Peak Season Roster" class="w-full border border-slate-300 rounded p-2 focus:ring-1 focus:ring-indigo-500">
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">SLA Target (%)</label>
-                            <input type="number" id="paramSlaPct" value="80" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                            <label class="block font-medium text-slate-700 mb-1">Operating Hours</label>
+                            <input type="text" id="cfgHours" value="08:00 - 00:00" class="w-full border border-slate-300 rounded p-2">
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">SLA Time (sec)</label>
-                            <input type="number" id="paramSlaSec" value="20" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                            <label class="block font-medium text-slate-700 mb-1">Forecast Period</label>
+                            <input type="text" id="cfgPeriod" value="July 2026 Baseline" class="w-full border border-slate-300 rounded p-2">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Max Patience (s)</label>
-                            <input type="number" id="paramPatience" value="180" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                            <label class="block font-medium text-slate-700 mb-1">Interval Weighting</label>
+                            <select id="cfgInterval" class="w-full border border-slate-300 rounded p-2 bg-white">
+                                <option value="30m" selected>30 Minutes</option>
+                                <option value="15m">15 Minutes</option>
+                                <option value="1h">1 Hour</option>
+                                <option value="daily">Daily Summary</option>
+                            </select>
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-700 mb-1">Repetitions</label>
-                            <input type="number" id="paramReps" value="15" min="1" max="100" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                            <label class="block font-medium text-slate-700 mb-1">Simulation Runs</label>
+                            <input type="number" id="cfgReps" value="15" class="w-full border border-slate-300 rounded p-2">
                         </div>
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Pseudo-Random Seed (Optional)</label>
-                        <input type="text" id="paramSeed" placeholder="Auto-generates if blank" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
+                        <label class="block font-medium text-slate-700 mb-1">Fixed Control Seed (Optional)</label>
+                        <input type="text" id="cfgSeed" placeholder="Auto-generates random seed" class="w-full border border-slate-300 rounded p-2 text-xs font-mono">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">2. Demand Profile</h2>
+                <div class="space-y-3 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Average Daily Call Volume</label>
+                        <input type="number" id="demVolume" value="2500" class="w-full border border-slate-300 rounded p-2">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-700 mb-1">Arrival Distribution</label>
-                        <select id="paramArrivalMode" class="w-full border rounded p-2 focus:ring-2 focus:ring-indigo-500">
-                            <option value="time-weighted">Time-Weighted Inhomogeneous Poisson</option>
-                            <option value="flat">Flat Random Distribution</option>
+                        <label class="block font-medium text-slate-700 mb-1">Arrival Pattern Trend</label>
+                        <select id="demPattern" class="w-full border border-slate-300 rounded p-2 bg-white">
+                            <option value="standard">Standard Midday Peak (Normal Curve)</option>
+                            <option value="flat">Flat Distribution (Consistent Stream)</option>
                         </select>
                     </div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">⏱️ Work Handling (Seconds)</h2>
-                <div class="grid grid-cols-1 gap-3 text-sm">
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean Talk Time</label>
-                            <input type="number" id="paramAhtTalk" value="240" class="w-full border rounded p-2">
+                            <label class="block font-medium text-slate-700 mb-1">Primary Peak Window</label>
+                            <input type="text" id="demPeak" value="11:00 - 14:00" class="w-full border border-slate-300 rounded p-2" disabled>
                         </div>
                         <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">Talk Std Dev</label>
-                            <input type="number" id="paramAhtTalkSd" value="45" class="w-full border rounded p-2">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean ACW</label>
-                            <input type="number" id="paramAhtAcw" value="45" class="w-full border rounded p-2">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">ACW Std Dev</label>
-                            <input type="number" id="paramAhtAcwSd" value="10" class="w-full border rounded p-2">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2">
-                        <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">Mean Recovery</label>
-                            <input type="number" id="paramAhtRec" value="300" class="w-full border rounded p-2">
-                        </div>
-                        <div>
-                            <label class="block font-medium text-slate-600 text-xs mb-1">Recovery Rate</label>
-                            <input type="number" id="paramAhtRecPct" value="15" min="0" max="100" class="w-full border rounded p-2">
+                            <label class="block font-medium text-slate-700 mb-1">Enquiry Type Mix</label>
+                            <input type="text" id="demMix" value="General (80%) / Tech (20%)" class="w-full border border-slate-300 rounded p-2 text-slate-400" disabled>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center gap-2">📉 Staff Shrinkage Adjustments</h2>
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">3. Service Targets</h2>
+                <div class="space-y-3 text-sm">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Target Answered %</label>
+                            <input type="number" id="tgtPct" value="80" class="w-full border border-slate-300 rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Within Time (Sec)</label>
+                            <input type="number" id="tgtSec" value="20" class="w-full border border-slate-300 rounded p-2">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Max Abandon Target</label>
+                            <input type="text" id="tgtAbandon" value="< 3%" class="w-full border border-slate-300 rounded p-2" disabled>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">p95 Waiting Target</label>
+                            <input type="text" id="tgtP95" value="90 sec" class="w-full border border-slate-300 rounded p-2" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">4. Agent Roster Mix</h2>
+                <div class="grid grid-cols-3 gap-2 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 1 (Gen)</label>
+                        <input type="number" id="agtL1" value="30" class="w-full border border-slate-300 rounded p-2 text-center">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 2 (Adv)</label>
+                        <input type="number" id="agtL2" value="15" class="w-full border border-slate-300 rounded p-2 text-center">
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-600 text-xs mb-1">Level 3 (SME)</label>
+                        <input type="number" id="agtL3" value="5" class="w-full border border-slate-300 rounded p-2 text-center">
+                    </div>
+                </div>
+                <p class="text-[11px] text-slate-500 mt-2 italic">Skill Logic: Higher skilled levels automatically assist with lower skill overflow queues.</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">5. Workload Times (Seconds)</h2>
                 <div class="grid grid-cols-2 gap-3 text-sm">
                     <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Absenteeism (%)</label>
-                        <input type="number" id="shAbsent" value="6" step="0.1" class="w-full border rounded p-1.5">
+                        <label class="block font-medium text-slate-700 mb-1">Avg Talk Time (AHT)</label>
+                        <input type="number" id="wrkTalk" value="240" class="w-full border border-slate-300 rounded p-2">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Training (%)</label>
-                        <input type="number" id="shTraining" value="4" step="0.1" class="w-full border rounded p-1.5">
+                        <label class="block font-medium text-slate-700 mb-1">After-Call Work (ACW)</label>
+                        <input type="number" id="wrkAcw" value="45" class="w-full border border-slate-300 rounded p-2">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">6. Shrinkage & Unavailability</h2>
+                <div class="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Absenteeism & Leave</label>
+                        <input type="number" id="shLeave" value="8" class="w-full border border-slate-300 rounded p-2">
                     </div>
                     <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Coaching/Mtgs (%)</label>
-                        <input type="number" id="shMeetings" value="5" step="0.1" class="w-full border rounded p-1.5">
-                    </div>
-                    <div>
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Adherence Loss (%)</label>
-                        <input type="number" id="shAdherence" value="7" step="0.1" class="w-full border rounded p-1.5">
+                        <label class="block font-medium text-slate-700 mb-1">Training & Meetings</label>
+                        <input type="number" id="shAdmin" value="6" class="w-full border border-slate-300 rounded p-2">
                     </div>
                     <div class="col-span-2">
-                        <label class="block font-medium text-slate-600 text-xs mb-1">Breaks & Personal Unavailability (Min/Shift)</label>
-                        <input type="number" id="shBreaksMins" value="60" class="w-full border rounded p-1.5">
+                        <label class="block font-medium text-slate-700 mb-1">Total Breaks/Lunch (Minutes per Shift)</label>
+                        <input type="number" id="shBreaks" value="60" class="w-full border border-slate-300 rounded p-2">
                     </div>
                 </div>
             </div>
 
-            <button onclick="executeEnginePipeline()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md cursor-pointer transition text-center uppercase tracking-wide">
-                🚀 Run Monte Carlo Engine
-            </button>
-        </section>
-
-        <section class="xl:col-span-3 flex flex-col gap-6">
-            
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 no-print">
-                <div class="bg-white border rounded-xl p-4 flex justify-between items-center shadow-sm">
+            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-xs">
+                <h2 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-3 text-indigo-600">7. Queue Patience Metrics</h2>
+                <div class="space-y-3 text-sm">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-500 uppercase">Interactive Granularity</label>
-                        <select id="uiIntervalSelect" onchange="renderAggregatedOutputs()" class="mt-1 font-bold border rounded p-1.5 bg-slate-50 text-indigo-900 focus:outline-none">
-                            <option value="15m">15 Minutes</option>
-                            <option value="30m" selected>30 Minutes</option>
-                            <option value="1h">1 Hour</option>
-                            <option value="2h">2 Hours</option>
-                            <option value="4h">4 Hours</option>
-                            <option value="daily">Date Level Summary</option>
-                        </select>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-xs text-slate-400 block">Simulation Seed Used</span>
-                        <span id="uiActiveSeed" class="font-mono font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded text-sm">-</span>
-                    </div>
-                </div>
-
-                <div class="lg:col-span-2 bg-slate-900 text-white border rounded-xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md">
-                    <div>
-                        <h3 class="font-bold text-sm flex items-center gap-1.5 text-indigo-400">🤖 Cloudflare Worker AI Insights Layer</h3>
-                        <p class="text-xs text-slate-300 max-w-md">Query your edge proxy worker ecosystem to interpret simulation metrics against targets.</p>
-                    </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <input type="text" id="aiWorkerUrl" value="https://floral-night-9927.raglansocial.workers.dev" class="bg-slate-800 border border-slate-700 text-xs rounded p-2 flex-1 sm:w-64 placeholder-slate-500 focus:outline-none focus:border-indigo-500 font-mono text-indigo-200">
-                        <button onclick="fetchAiNarrativeAnalysis()" id="aiBtn" class="bg-indigo-600 hover:bg-indigo-500 disabled:bg-slate-700 text-xs font-semibold py-2 px-3 rounded whitespace-nowrap transition cursor-pointer">
-                            Analyze Scenarios
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div id="aiResponseContainer" class="hidden bg-indigo-50 border border-indigo-200 text-indigo-950 rounded-xl p-5 shadow-sm relative transition duration-300">
-                <button onclick="this.parentElement.classList.add('hidden')" class="absolute top-3 right-3 text-indigo-400 hover:text-indigo-700 text-xl font-bold cursor-pointer">&times;</button>
-                <h4 class="font-bold text-base text-indigo-950 flex items-center gap-2 mb-3">✨ Automated Executive Interpretation</h4>
-                <div id="aiContentTarget" class="text-sm space-y-2 leading-relaxed"></div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4 flex items-center justify-between">
-                    <span>👥 Operational Staffing Configurations & Mix Models</span>
-                    <span class="text-xs font-normal text-slate-500 italic no-print">Customize rosters to test distinct matching queues</span>
-                </h2>
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="border-b border-slate-200 bg-slate-50 text-slate-600 font-medium">
-                                <th class="p-3 w-1/4">Scenario Model Name</th>
-                                <th class="p-3">Level 1 (Generalists)</th>
-                                <th class="p-3">Level 2 (Advanced)</th>
-                                <th class="p-3">Level 3 (SMEs/Sups)</th>
-                                <th class="p-3 bg-indigo-50 text-indigo-900 font-semibold text-center">Total Baseline Headcount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="scenarioInputRows" class="divide-y divide-slate-100">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">🏆 Multi-Scenario Optimization Analytics Matrix</h2>
-                <div class="overflow-x-auto custom-scrollbar">
-                    <table class="w-full text-left text-sm border-collapse">
-                        <thead>
-                            <tr class="bg-slate-800 text-slate-200 font-semibold text-xs uppercase tracking-wider">
-                                <th class="p-3">Scenario</th>
-                                <th class="p-3 text-center">SLA % (Within Thr)</th>
-                                <th class="p-3 text-center">SLA 15m %</th>
-                                <th class="p-3 text-center">Abandon Rate %</th>
-                                <th class="p-3 text-center">Avg Speed Answer</th>
-                                <th class="p-3 text-center">p95 Waiting Time</th>
-                                <th class="p-3 text-center">Avg Agent Util %</th>
-                                <th class="p-3 text-center">Recovery Rate %</th>
-                                <th class="p-3 text-center bg-indigo-900 text-white font-bold">Optimization Classification</th>
-                            </tr>
-                        </thead>
-                        <tbody id="optimizationTableBody" class="divide-y divide-slate-200 font-medium text-slate-700">
-                            <tr><td colspan="9" class="p-4 text-center text-slate-400">Execute Monte Carlo simulation to populate analytics.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">📈 Intraday Demand vs Queue Progression</h3>
-                    <div class="relative h-64"><canvas id="chartArrivalsQueue"></canvas></div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">⚖️ Scenario Capability SLA Comparison</h3>
-                    <div class="relative h-64"><canvas id="chartScenarioSla"></canvas></div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">📉 Abandonment Loss & Abandon Rates by Model Scenario</h3>
-                    <div class="relative h-64"><canvas id="chartScenarioAbandonment"></canvas></div>
-                </div>
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-slate-200">
-                    <h3 class="text-sm font-bold text-slate-800 mb-2">⚙️ Dynamic Capacity Utilization Profiling (%)</h3>
-                    <div class="relative h-64"><canvas id="chartAgentUtilization"></canvas></div>
-                </div>
-            </div>
-
-            <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200">
-                <h2 class="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">📊 Granular Interval Operational Ledger</h2>
-                <div class="overflow-x-auto custom-scrollbar max-h-96">
-                    <table class="w-full text-left text-xs border-collapse">
-                        <thead class="sticky top-0 bg-slate-100 z-10 shadow-sm font-bold text-slate-700">
-                            <tr class="border-b border-slate-300">
-                                <th class="p-2.5">Interval Frame</th>
-                                <th class="p-2.5 text-center">Offered Traffic</th>
-                                <th class="p-2.5 text-center">Answered (SLA)</th>
-                                <th class="p-2.5 text-center">Answered (Total)</th>
-                                <th class="p-2.5 text-center">Abandoned Loss</th>
-                                <th class="p-2.5 text-center">Recovery Generated</th>
-                                <th class="p-2.5 text-center">Peak Queue Depth</th>
-                                <th class="p-2.5 text-center">Avg Waiting Time (s)</th>
-                                <th class="p-2.5 text-center">L1 Active %</th>
-                                <th class="p-2.5 text-center">L2 Active %</th>
-                                <th class="p-2.5 text-center">L3 Active %</th>
-                            </tr>
-                        </thead>
-                        <tbody id="intervalLedgerBody" class="divide-y divide-slate-100 text-slate-600 font-mono">
-                            <tr><td colspan="11" class="p-4 text-center font-sans text-slate-400">No active execution dataset mapped.</td></tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-        </section>
-    </main>
-
-    <footer class="bg-slate-100 border-t border-slate-200 text-center py-4 text-xs text-slate-500 no-print mt-auto">
-        FMProj CS Capacity Planner Framework Engine v2.4.1. Powered via Static Client Computing Environment.
-    </footer>
-
-    <script>
-        const DEFAULT_SCENARIOS = [
-            { name: "Baseline Configuration (Minimum Required)", l1: 25, l2: 12, l3: 5 },
-            { name: "Optimized Generalist Core Profile", l1: 38, l2: 8, l3: 4 },
-            { name: "High Competency Advanced Strategy", l1: 15, l2: 24, l3: 6 },
-            { name: "Stress-Test Buffer Configuration", l1: 35, l2: 18, l3: 10 }
-        ];
-
-        const ARRIVAL_PROFILE_30M = [
-            0.005, 0.003, 0.002, 0.002, 0.002, 0.003, 0.005, 0.012, 
-            0.025, 0.045, 0.062, 0.075, 0.068, 0.055, 0.050, 0.058, 
-            0.065, 0.072, 0.060, 0.048, 0.038, 0.032, 0.028, 0.025,
-            0.022, 0.020, 0.018, 0.018, 0.015, 0.012, 0.010, 0.008,
-            0.007, 0.006, 0.005, 0.005, 0.004, 0.004, 0.003, 0.003,
-            0.002, 0.002, 0.001, 0.001, 0.001, 0.001, 0.001, 0.001
-        ];
-
-        let globalSimulationResultsRegistry = {};
-        let activeChartInstancesRegistry = {};
-        let activeDeterministicSeedString = "";
-
-        window.addEventListener("DOMContentLoaded", () => {
-            initializeConfigurationInputsDOM();
-            executeEnginePipeline();
-        });
-
-        function initializeConfigurationInputsDOM() {
-            const container = document.getElementById("scenarioInputRows");
-            container.innerHTML = "";
-            DEFAULT_SCENARIOS.forEach((sc, index) => {
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="p-3 font-semibold text-slate-900">${sc.name}</td>
-                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l1" value="${sc.l1}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
-                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l2" value="${sc.l2}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
-                    <td class="p-3"><input type="number" data-idx="${index}" data-tier="l3" value="${sc.l3}" onchange="recalculateRowTotals(${index})" class="w-20 border rounded p-1 text-center font-mono"></td>
-                    <td class="p-3 text-center bg-indigo-50 font-bold text-indigo-950 font-mono" id="rowTotalHeadcount_${index}">${sc.l1 + sc.l2 + sc.l3}</td>
-                `;
-                container.appendChild(tr);
-            });
-        }
-
-        function recalculateRowTotals(idx) {
-            const l1 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l1"]`).value) || 0;
-            const l2 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l2"]`).value) || 0;
-            const l3 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l3"]`).value) || 0;
-            document.getElementById(`rowTotalHeadcount_${idx}`).innerText = (l1 + l2 + l3);
-        }
-
-        function createDeterministicPRNG(seedString) {
-            let hash = 0;
-            for (let i = 0; i < seedString.length; i++) {
-                hash = seedString.charCodeAt(i) + ((hash << 5) - hash);
-            }
-            let seed = Math.abs(hash) % 2147483647;
-            if (seed <= 0) seed = 1;
-            return function() {
-                seed = (seed * 16807) % 2147483647;
-                return (seed - 1) / 2147483646;
-            };
-        }
-
-        function sampleNormalDistribution(mean, stdDev, prngFn) {
-            let u = 0, v = 0;
-            while(u === 0) u = prngFn(); 
-            while(v === 0) v = prngFn();
-            let num = Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
-            return Math.max(10, Math.floor(num * stdDev + mean)); 
-        }
-
-        function parseInputFormPayload() {
-            const seedRaw = document.getElementById("paramSeed").value.trim();
-            activeDeterministicSeedString = seedRaw ? seedRaw : "SEED_" + Math.floor(Math.random() * 8999999 + 1000000);
-            document.getElementById("uiActiveSeed").innerText = activeDeterministicSeedString;
-
-            const totalShrinkageFactorPct = (
-                parseFloat(document.getElementById("shAbsent").value) +
-                parseFloat(document.getElementById("shTraining").value) +
-                parseFloat(document.getElementById("shMeetings").value) +
-                parseFloat(document.getElementById("shAdherence").value)
-            ) / 100.0;
-
-            const breaksMins = parseFloat(document.getElementById("shBreaksMins").value) || 0;
-            const intradayBreakShrinkagePct = breaksMins / 480.0;
-            const compoundNetShrinkageFactor = 1.0 - ((1.0 - totalShrinkageFactorPct) * (1.0 - intradayBreakShrinkagePct));
-
-            const functionalConfigRows = [];
-            DEFAULT_SCENARIOS.forEach((sc, idx) => {
-                const l1 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l1"]`).value) || 0;
-                const l2 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l2"]`).value) || 0;
-                const l3 = parseInt(document.querySelector(`input[data-idx="${idx}"][data-tier="l3"]`).value) || 0;
-                functionalConfigRows.push({ name: sc.name, l1, l2, l3 });
-            });
-
-            return {
-                volume: parseInt(document.getElementById("paramVolume").value) || 1000,
-                slaPctTarget: parseFloat(document.getElementById("paramSlaPct").value) || 80,
-                slaSecThreshold: parseFloat(document.getElementById("paramSlaSec").value) || 20,
-                maxPatienceSec: parseFloat(document.getElementById("paramPatience").value) || 180,
-                repetitions: parseInt(document.getElementById("paramReps").value) || 5,
-                arrivalMode: document.getElementById("paramArrivalMode").value,
-                ahtTalk: parseFloat(document.getElementById("paramAhtTalk").value) || 240,
-                ahtTalkSd: parseFloat(document.getElementById("paramAhtTalkSd").value) || 40,
-                ahtAcw: parseFloat(document.getElementById("paramAhtAcw").value) || 40,
-                ahtAcwSd: parseFloat(document.getElementById("paramAhtAcwSd").value) || 10,
-                ahtRec: parseFloat(document.getElementById("paramAhtRec").value) || 300,
-                ahtRecPct: parseFloat(document.getElementById("paramAhtRecPct").value) || 15,
-                netShrinkage: compoundNetShrinkageFactor,
-                scenarios: functionalConfigRows
-            };
-        }
-
-        function executeEnginePipeline() {
-            const inputs = parseInputFormPayload();
-            const localPrngInstance = createDeterministicPRNG(activeDeterministicSeedString);
-            
-            globalSimulationResultsRegistry = {};
-
-            inputs.scenarios.forEach((scenario, scIdx) => {
-                const intervalSeriesArray = Array.from({length: 48}, (_, i) => ({
-                    intervalIdx: i,
-                    timestampStr: formatIntervalLabel(i * 30, 30),
-                    offered: 0, answeredSla: 0, answeredTotal: 0, abandoned: 0, recoveryTriggered: 0,
-                    peakQueueLength: 0, waitingTimeSum: 0, waitingTimesList: [],
-                    l1UtilizedSeconds: 0, l2UtilizedSeconds: 0, l3UtilizedSeconds: 0,
-                    l1AvailableSeconds: 0, l2AvailableSeconds: 0, l3AvailableSeconds: 0
-                }));
-
-                const activeL1Pool = Math.max(1, Math.round(scenario.l1 * (1.0 - inputs.netShrinkage)));
-                const activeL2Pool = Math.max(0, Math.round(scenario.l2 * (1.0 - inputs.netShrinkage)));
-                const activeL3Pool = Math.max(0, Math.round(scenario.l3 * (1.0 - inputs.netShrinkage)));
-
-                for (let rep = 0; rep < inputs.repetitions; rep++) {
-                    let agentRegistry = [];
-                    for (let i = 0; i < activeL1Pool; i++) agentRegistry.push({ id: `L1_${i}`, tier: 1, availableAt: 0 });
-                    for (let i = 0; i < activeL2Pool; i++) agentRegistry.push({ id: `L2_${i}`, tier: 2, availableAt: 0 });
-                    for (let i = 0; i < activeL3Pool; i++) agentRegistry.push({ id: `L3_${i}`, tier: 3, availableAt: 0 });
-
-                    let assignedIntervalVolumes = [];
-                    if (inputs.arrivalMode === "flat") {
-                        let baseFlatVolume = Math.floor(inputs.volume / 48);
-                        assignedIntervalVolumes = Array(48).fill(baseFlatVolume);
-                    } else {
-                        for (let t = 0; t < 48; t++) {
-                            let calculatedWeightValue = ARRIVAL_PROFILE_30M[t] * inputs.volume;
-                            assignedIntervalVolumes.push(samplePoissonValue(calculatedWeightValue, localPrngInstance));
-                        }
-                    }
-
-                    for (let t = 0; t < 48; t++) {
-                        const intervalObj = intervalSeriesArray[t];
-                        const sliceVolume = assignedIntervalVolumes[t];
-                        const intervalBaseOffsetSeconds = t * 1800;
-
-                        intervalObj.offered += sliceVolume;
-                        intervalObj.l1AvailableSeconds += activeL1Pool * 1800;
-                        intervalObj.l2AvailableSeconds += activeL2Pool * 1800;
-                        intervalObj.l3AvailableSeconds += activeL3Pool * 1800;
-
-                        let currentVirtualQueue = [];
-                        let intervalPeakQueueTracker = 0;
-
-                        for (let c = 0; c < sliceVolume; c++) {
-                            let randomizedArrivalDelta = Math.floor(localPrngInstance() * 1800);
-                            let absoluteArrivalTime = intervalBaseOffsetSeconds + randomizedArrivalDelta;
-                            
-                            let serviceTimeSample = sampleNormalDistribution(inputs.ahtTalk, inputs.ahtTalkSd, localPrngInstance);
-                            let acwTimeSample = sampleNormalDistribution(inputs.ahtAcw, inputs.ahtAcwSd, localPrngInstance);
-                            let theoreticalTotalHandlingTime = serviceTimeSample + acwTimeSample;
-                            
-                            let individualPatienceThreshold = Math.floor(-Math.log(1.0 - localPrngInstance() * 0.95) * inputs.maxPatienceSec);
-                            if (individualPatienceThreshold <= 5) individualPatienceThreshold = inputs.maxPatienceSec;
-
-                            currentVirtualQueue.push({
-                                arriveAt: absoluteArrivalTime,
-                                handlingTime: theoreticalTotalHandlingTime,
-                                patience: individualPatienceThreshold
-                            });
-                        }
-
-                        currentVirtualQueue.sort((a, b) => a.arriveAt - b.arriveAt);
-
-                        currentVirtualQueue.forEach(call => {
-                            let eligibleAgents = agentRegistry.filter(a => a.availableAt <= call.arriveAt);
-                            
-                            if (eligibleAgents.length > 0) {
-                                eligibleAgents.sort((a, b) => {
-                                    if (a.tier !== b.tier) return a.tier - b.tier; 
-                                    return a.availableAt - b.availableAt;
-                                });
-
-                                let selectedAgent = eligibleAgents[0];
-                                selectedAgent.availableAt = call.arriveAt + call.handlingTime;
-
-                                intervalObj.answeredTotal++;
-                                intervalObj.answeredSla++; 
-                                intervalObj.waitingTimeSum += 0;
-                                intervalObj.waitingTimesList.push(0);
-
-                                trackAgentCapacityUtilization(intervalObj, selectedAgent.tier, call.handlingTime);
-                            } else {
-                                agentRegistry.sort((a, b) => a.availableAt - b.availableAt);
-                                let bestSpeedAgent = agentRegistry[0]; 
-                                let trueDelayDuration = bestSpeedAgent.availableAt - call.arriveAt;
-
-                                if (trueDelayDuration <= call.patience) {
-                                    bestSpeedAgent.availableAt = bestSpeedAgent.availableAt + call.handlingTime;
-                                    
-                                    intervalObj.answeredTotal++;
-                                    if (trueDelayDuration <= inputs.slaSecThreshold) {
-                                        intervalObj.answeredSla++;
-                                    }
-                                    intervalObj.waitingTimeSum += trueDelayDuration;
-                                    intervalObj.waitingTimesList.push(trueDelayDuration);
-
-                                    trackAgentCapacityUtilization(intervalObj, bestSpeedAgent.tier, call.handlingTime);
-                                } else {
-                                    intervalObj.abandoned++;
-                                    intervalObj.waitingTimeSum += call.patience;
-                                    intervalObj.waitingTimesList.push(call.patience);
-
-                                    if ((localPrngInstance() * 100) <= inputs.ahtRecPct) {
-                                        intervalObj.recoveryTriggered++;
-                                        let recoveryHandlingDuration = sampleNormalDistribution(inputs.ahtRec, 60, localPrngInstance);
-                                        agentRegistry.sort((a, b) => a.availableAt - b.availableAt);
-                                        let targetRecAgent = agentRegistry[0];
-                                        targetRecAgent.availableAt = Math.max(targetRecAgent.availableAt, call.arriveAt + call.patience) + recoveryHandlingDuration;
-                                        trackAgentCapacityUtilization(intervalObj, targetRecAgent.tier, recoveryHandlingDuration);
-                                    }
-                                    intervalPeakQueueTracker++;
-                                }
-                            }
-                        });
-
-                        if (intervalPeakQueueTracker > intervalObj.peakQueueLength) {
-                            intervalObj.peakQueueLength = intervalPeakQueueTracker;
-                        }
-                    }
-                }
-
-                intervalSeriesArray.forEach(io => {
-                    io.offered = Math.round(io.offered / inputs.repetitions);
-                    io.answeredSla = Math.round(io.answeredSla / inputs.repetitions);
-                    io.answeredTotal = Math.round(io.answeredTotal / inputs.repetitions);
-                    io.abandoned = Math.round(io.abandoned / inputs.repetitions);
-                    io.recoveryTriggered = Math.round(io.recoveryTriggered / inputs.repetitions);
-                    io.peakQueueLength = Math.round(io.peakQueueLength / inputs.repetitions);
-                    io.waitingTimeSum = io.waitingTimeSum / inputs.repetitions;
-                    io.l1UtilizedSeconds = io.l1UtilizedSeconds / inputs.repetitions;
-                    io.l2UtilizedSeconds = io.l2UtilizedSeconds / inputs.repetitions;
-                    io.l3UtilizedSeconds = io.l3UtilizedSeconds / inputs.repetitions;
-                    io.l1AvailableSeconds = io.l1AvailableSeconds / inputs.repetitions;
-                    io.l2AvailableSeconds = io.l2AvailableSeconds / inputs.repetitions;
-                    io.l3AvailableSeconds = io.l3AvailableSeconds / inputs.repetitions;
-                    
-                    io.waitingTimesList.sort((a, b) => a - b);
-                });
-
-                globalSimulationResultsRegistry[scenario.name] = intervalSeriesArray;
-            });
-
-            renderAggregatedOutputs();
-        }
-
-        function trackAgentCapacityUtilization(intervalObj, agentTier, durationSec) {
-            if (agentTier === 1) intervalObj.l1UtilizedSeconds += durationSec;
-            else if (agentTier === 2) intervalObj.l2UtilizedSeconds += durationSec;
-            else if (agentTier === 3) intervalObj.l3UtilizedSeconds += durationSec;
-        }
-
-        function samplePoissonValue(lambda, prngFn) {
-            if (lambda < 30) {
-                let L = Math.exp(-lambda), k = 0, p = 1;
-                do { k++; p *= prngFn(); } while (p > L);
-                return k - 1;
-            } else {
-                let expectedSampleValue = sampleNormalDistribution(lambda, Math.sqrt(lambda), prngFn);
-                return Math.max(0, expectedSampleValue);
-            }
-        }
-
-        function formatIntervalLabel(startMinutes, deltaMinutes) {
-            let startHrs = Math.floor(startMinutes / 60);
-            let startMins = startMinutes % 60;
-            let endHrs = Math.floor((startMinutes + deltaMinutes) / 60);
-            let endMins = (startMinutes + deltaMinutes) % 60;
-            return `${String(startHrs).padStart(2,'0')}:${String(startMins).padStart(2,'0')}-${String(endHrs).padStart(2,'0')}:${String(endMins).padStart(2,'0')}`;
-        }
-
-        function renderAggregatedOutputs() {
-            const grainMode = document.getElementById("uiIntervalSelect").value;
-            const targetScenarioNames = Object.keys(globalSimulationResultsRegistry);
-            if(targetScenarioNames.length === 0) return;
-
-            let structuralAggregationDelta = 30; 
-            let combineCount = 1; 
-            if (grainMode === "15m") { combineCount = 1; }
-            else if (grainMode === "1h") { combineCount = 2; }
-            else if (grainMode === "2h") { combineCount = 4; }
-            else if (grainMode === "4h") { combineCount = 8; }
-            else if (grainMode === "daily") { combineCount = 48; }
-
-            let processedAggregatedScenariosMap = {};
-
-            targetScenarioNames.forEach(name => {
-                const base30mTimeline = globalSimulationResultsRegistry[name];
-                let groupedList = [];
-
-                for (let i = 0; i < base30mTimeline.length; i += combineCount) {
-                    let combinedSlice = base30mTimeline.slice(i, i + combineCount);
-                    if(combinedSlice.length === 0) break;
-
-                    let aggObj = {
-                        timestampStr: grainMode === "daily" ? "Full Operations Summary" : formatIntervalLabel(i * 30, combinedSlice.length * 30),
-                        offered: 0, answeredSla: 0, answeredTotal: 0, abandoned: 0, recoveryTriggered: 0,
-                        peakQueueLength: 0, waitingTimeSum: 0, l1Util: 0, l2Util: 0, l3Util: 0, l1Avail: 0, l2Avail: 0, l3Avail: 0,
-                        allWaitTimesCollected: []
-                    };
-
-                    combinedSlice.forEach(s => {
-                        aggObj.offered += s.offered;
-                        aggObj.answeredSla += s.answeredSla;
-                        aggObj.answeredTotal += s.answeredTotal;
-                        aggObj.abandoned += s.abandoned;
-                        aggObj.recoveryTriggered += s.recoveryTriggered;
-                        aggObj.waitingTimeSum += s.waitingTimeSum;
-                        aggObj.l1Util += s.l1UtilizedSeconds;
-                        aggObj.l2Util += s.l2UtilizedSeconds;
-                        aggObj.l3Util += s.l3UtilizedSeconds;
-                        aggObj.l1Avail += s.l1AvailableSeconds;
-                        aggObj.l2Avail += s.l2AvailableSeconds;
-                        aggObj.l3Avail += s.l3AvailableSeconds;
-                        if(s.peakQueueLength > aggObj.peakQueueLength) aggObj.peakQueueLength = s.peakQueueLength;
-                        aggObj.allWaitTimesCollected.push(...s.waitingTimesList);
-                    });
-
-                    groupedList.push(aggObj);
-                }
-                processedAggregatedScenariosMap[name] = groupedList;
-            });
-
-            populateOptimizationComparisonMatrix(processedAggregatedScenariosMap);
-            renderGranularLedgerRows(processedAggregatedScenariosMap[targetScenarioNames[0]]);
-            renderAnalyticsVisualCharts(processedAggregatedScenariosMap);
-        }
-
-        function populateOptimizationComparisonMatrix(aggregatedDataMap) {
-            const inputs = parseInputFormPayload();
-            const tbody = document.getElementById("optimizationTableBody");
-            tbody.innerHTML = "";
-
-            let strategicMetricsRollupArray = [];
-
-            Object.keys(aggregatedDataMap).forEach(name => {
-                const datasets = aggregatedDataMap[name];
-                let totalOffered = 0, totalAnsSla = 0, totalAns = 0, totalAband = 0, totalRec = 0, totalWaitTimeSum = 0;
-                let totalL1U = 0, totalL2U = 0, totalL3U = 0, totalL1A = 0, totalL2A = 0, totalL3A = 0;
-                let compositeGlobalWaitTimesList = [];
-
-                datasets.forEach(d => {
-                    totalOffered += d.offered;
-                    totalAnsSla += d.answeredSla;
-                    totalAns += d.answeredTotal;
-                    totalAband += d.abandoned;
-                    totalRec += d.recoveryTriggered;
-                    totalWaitTimeSum += d.waitingTimeSum;
-                    totalL1U += d.l1Util; totalL2U += d.l2Util; totalL3U += d.l3Util;
-                    totalL1A += d.l1Avail; totalL2A += d.l2Avail; totalL3A += d.l3Avail;
-                    compositeGlobalWaitTimesList.push(...d.allWaitTimesCollected);
-                });
-
-                let slaPct = totalOffered > 0 ? (totalAnsSla / totalOffered) * 100 : 100;
-                let abandonPct = totalOffered > 0 ? (totalAband / totalOffered) * 100 : 0;
-                let recoveryPct = totalAband > 0 ? (totalRec / totalAband) * 100 : 100;
-                let asa = totalAns > 0 ? (totalWaitTimeSum / totalAns) : 0;
-                
-                compositeGlobalWaitTimesList.sort((a,b) => a - b);
-                let p95Idx = Math.floor(compositeGlobalWaitTimesList.length * 0.95);
-                let p95Wait = compositeGlobalWaitTimesList.length > 0 ? compositeGlobalWaitTimesList[p95Idx] : 0;
-
-                let totalUtilizedSec = totalL1U + totalL2U + totalL3U;
-                let totalAvailableSec = totalL1A + totalL2A + totalL3A;
-                let avgUtilizationPct = totalAvailableSec > 0 ? (totalUtilizedSec / totalAvailableSec) * 100 : 0;
-
-                let match = DEFAULT_SCENARIOS.find(s => s.name === name);
-                let scenarioHeadcountTotal = match ? (match.l1 + match.l2 + match.l3) : 50;
-
-                let periodsMeeting15mSla = 0;
-                datasets.forEach(d => {
-                    let dSla15m = d.allWaitTimesCollected.filter(w => w <= 900).length;
-                    let dTotal = d.allWaitTimesCollected.length;
-                    let pct15m = dTotal > 0 ? (dSla15m / dTotal) * 100 : 100;
-                    if (pct15m >= inputs.slaPctTarget) periodsMeeting15mSla++;
-                });
-                let sla15mScorePct = (periodsMeeting15mSla / datasets.length) * 100;
-
-                strategicMetricsRollupArray.push({
-                    name, slaPct, sla15mScorePct, abandonPct, asa, p95Wait, avgUtilizationPct, recoveryPct,
-                    headcount: scenarioHeadcountTotal, meetsTarget: slaPct >= inputs.slaPctTarget
-                });
-            });
-
-            let lowestHeadcountMeetsSlaObj = strategicMetricsRollupArray
-                .filter(s => s.meetsTarget)
-                .sort((a, b) => a.headcount - b.headcount)[0] || null;
-
-            let bestP95Obj = [...strategicMetricsRollupArray].sort((a,b) => a.p95Wait - b.p95Wait)[0];
-            let lowestAbandonmentObj = [...strategicMetricsRollupArray].sort((a,b) => a.abandonPct - b.abandonPct)[0];
-
-            strategicMetricsRollupArray.forEach(row => {
-                let classificationTagStr = `<span class="text-slate-400 font-normal text-xs">Sub-Optimal Mix Matrix</span>`;
-                let classificationCssStyle = "bg-white text-slate-700";
-
-                if (lowestHeadcountMeetsSlaObj && row.name === lowestHeadcountMeetsSlaObj.name) {
-                    classificationTagStr = `🥇 <b>Most Efficient Target Fit</b>`;
-                    classificationCssStyle = "bg-emerald-50 text-emerald-900 border-l-4 border-emerald-500 font-bold";
-                } else if (row.name === bestP95Obj.name) {
-                    classificationTagStr = `⚡ <b>Best p95 Speed Performance</b>`;
-                    classificationCssStyle = "bg-cyan-50 text-cyan-900 font-semibold";
-                } else if (row.name === lowestAbandonmentObj.name) {
-                    classificationTagStr = `🛡️ <b>Lowest Abandonment Risk</b>`;
-                    classificationCssStyle = "bg-indigo-50 text-indigo-950";
-                }
-
-                const tr = document.createElement("tr");
-                tr.className = `${classificationCssStyle} transition duration-150 text-xs text-center`;
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-left text-slate-900">${row.name} (${row.headcount} Agents)</td>
-                    <td class="p-3 ${row.meetsTarget ? 'text-emerald-700' : 'text-rose-600'} font-bold">${row.slaPct.toFixed(1)}%</td>
-                    <td class="p-3">${row.sla15mScorePct.toFixed(1)}%</td>
-                    <td class="p-3">${row.abandonPct.toFixed(1)}%</td>
-                    <td class="p-3">${row.asa.toFixed(1)}s</td>
-                    <td class="p-3">${row.p95Wait.toFixed(0)}s</td>
-                    <td class="p-3">${row.avgUtilizationPct.toFixed(1)}%</td>
-                    <td class="p-3">${row.recoveryPct.toFixed(1)}%</td>
-                    <td class="p-3 font-medium text-left ${classificationCssStyle}">${classificationTagStr}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderGranularLedgerRows(primaryScenarioDataset) {
-            const tbody = document.getElementById("intervalLedgerBody");
-            tbody.innerHTML = "";
-
-            primaryScenarioDataset.forEach(d => {
-                let l1Pct = d.l1Avail > 0 ? (d.l1Util / d.l1Avail) * 100 : 0;
-                let l2Pct = d.l2Avail > 0 ? (d.l2Util / d.l2Avail) * 100 : 0;
-                let l3Pct = d.l3Avail > 0 ? (d.l3Util / d.l3Avail) * 100 : 0;
-                let avgWaitTime = d.answeredTotal > 0 ? (d.waitingTimeSum / d.answeredTotal) : 0;
-
-                const tr = document.createElement("tr");
-                tr.className = "hover:bg-slate-50 transition text-center";
-                tr.innerHTML = `
-                    <td class="p-2 text-left font-sans font-medium text-slate-900">${d.timestampStr}</td>
-                    <td class="p-2 font-bold">${d.offered}</td>
-                    <td class="p-2 text-emerald-700">${d.answeredSla}</td>
-                    <td class="p-2">${d.answeredTotal}</td>
-                    <td class="p-2 text-rose-600 font-semibold">${d.abandoned}</td>
-                    <td class="p-2 text-indigo-600">${d.recoveryTriggered}</td>
-                    <td class="p-2 font-bold text-amber-700">${d.peakQueueLength}</td>
-                    <td class="p-2">${avgWaitTime.toFixed(1)}s</td>
-                    <td class="p-2">${l1Pct.toFixed(0)}%</td>
-                    <td class="p-2">${l2Pct.toFixed(0)}%</td>
-                    <td class="p-2">${l3Pct.toFixed(0)}%</td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function renderAnalyticsVisualCharts(aggregatedDataMap) {
-            const firstScenarioName = Object.keys(aggregatedDataMap)[0];
-            const intervalsListLabels = aggregatedDataMap[firstScenarioName].map(d => d.timestampStr);
-
-            if (activeChartInstancesRegistry.arrivalsQueue) activeChartInstancesRegistry.arrivalsQueue.destroy();
-            if (activeChartInstancesRegistry.scenarioSla) activeChartInstancesRegistry.scenarioSla.destroy();
-            if (activeChartInstancesRegistry.scenarioAbandonment) activeChartInstancesRegistry.scenarioAbandonment.destroy();
-            if (activeChartInstancesRegistry.agentUtil) activeChartInstancesRegistry.agentUtil.destroy();
-
-            const ctx1 = document.getElementById("chartArrivalsQueue").getContext("2d");
-            activeChartInstancesRegistry.arrivalsQueue = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels: intervalsListLabels,
-                    datasets: [
-                        { label: 'Offered Volume Pattern', data: aggregatedDataMap[firstScenarioName].map(d => d.offered), borderColor: '#4f46e5', tension: 0.2, fill: false },
-                        { label: 'Peak Horizon Queue Depth', data: aggregatedDataMap[firstScenarioName].map(d => d.peakQueueLength), borderColor: '#b45309', borderDash: [4,4], tension: 0.1 }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
-            });
-
-            const scenarioLabels = Object.keys(aggregatedDataMap);
-            const slaMetricsArray = [];
-            const abandonMetricsArray = [];
-            const l1UtilSeriesArray = [];
-            const l2UtilSeriesArray = [];
-            const l3UtilSeriesArray = [];
-
-            scenarioLabels.forEach(name => {
-                let scList = aggregatedDataMap[name];
-                let totOffered = 0, totSla = 0, totAband = 0, tL1U = 0, tL1A = 0, tL2U = 0, tL2A = 0, tL3U = 0, tL3A = 0;
-
-                scList.forEach(d => {
-                    totOffered += d.offered; totSla += d.answeredSla; totAband += d.abandoned;
-                    tL1U += d.l1Util; tL1A += d.l1Avail; tL2U += d.l2Util; tL2A += d.l2Avail; tL3U += d.l3Util; tL3A += d.l3Avail;
-                });
-
-                slaMetricsArray.push(totOffered > 0 ? (totSla / totOffered) * 100 : 100);
-                abandonMetricsArray.push(totOffered > 0 ? (totAband / totOffered) * 100 : 0);
-                l1UtilSeriesArray.push(tL1A > 0 ? (tL1U / tL1A) * 100 : 0);
-                l2UtilSeriesArray.push(tL2A > 0 ? (tL2U / tL2A) * 100 : 0);
-                l3UtilSeriesArray.push(tL3A > 0 ? (tL3U / tL3A) * 100 : 0);
-            });
-
-            const ctx2 = document.getElementById("chartScenarioSla").getContext("2d");
-            activeChartInstancesRegistry.scenarioSla = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: scenarioLabels,
-                    datasets: [{ label: 'Global Mean Service Level (%)', data: slaMetricsArray, backgroundColor: '#059669' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
-            });
-
-            const ctx3 = document.getElementById("chartScenarioAbandonment").getContext("2d");
-            activeChartInstancesRegistry.scenarioAbandonment = new Chart(ctx3, {
-                type: 'bar',
-                data: {
-                    labels: scenarioLabels,
-                    datasets: [{ label: 'Call Abandonment Rate (%)', data: abandonMetricsArray, backgroundColor: '#dc2626' }]
-                },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
-
-            const ctx4 = document.getElementById("chartAgentUtilization").getContext("2d");
-            activeChartInstancesRegistry.agentUtil = new Chart(ctx4, {
-                type: 'bar',
-                data: {
-                    labels: scenarioLabels,
-                    datasets: [
-                        { label: 'Level 1 Generalist Util %', data: l1UtilSeriesArray, backgroundColor: '#6366f1' },
-                        { label: 'Level 2 Advanced Util %', data: l2UtilSeriesArray, backgroundColor: '#3b82f6' },
-                        { label: 'Level 3 Supervisor Util %', data: l3UtilSeriesArray, backgroundColor: '#1e1b4b' }
-                    ]
-                },
-                options: { responsive: true, maintainAspectRatio: false, scales: { y: { min: 0, max: 100 } } }
-            });
-        }
-
-        function exportSimulationCSV() {
-            const firstScenarioName = Object.keys(globalSimulationResultsRegistry)[0];
-            if (!firstScenarioName) return alert("Execute modeling run before attempting file download.");
-
-            let csvDataString = "Interval Frame,Offered Traffic,Answered Within SLA,Answered Total,Abandoned Loss,Outbound Recovery Runs,Peak Queue Depth\n";
-            globalSimulationResultsRegistry[firstScenarioName].forEach(row => {
-                csvDataString += `"${row.timestampStr}",${row.offered},${row.answeredSla},${row.answeredTotal},${row.abandoned},${row.recoveryTriggered},${row.peakQueueLength}\n`;
-            });
-
-            const blobObject = new Blob([csvDataString], { type: 'text/csv;charset=utf-8;' });
-            const anchorElement = document.createElement("a");
-            anchorElement.href = URL.createObjectURL(blobObject);
-            // Dynamic filename pointing directly to your repository profile
-            anchorElement.setAttribute("download", `FMProj_Capacity_Simulation_${activeDeterministicSeedString}.csv`);
-            document.body.appendChild(anchorElement);
-            anchorElement.click();
-            document.body.removeChild(anchorElement);
-        }
-
-        async function fetchAiNarrativeAnalysis() {
-            const targetUrl = document.getElementById("aiWorkerUrl").value.trim();
-            const actionBtn = document.getElementById("aiBtn");
-            const feedbackContainer = document.getElementById("aiResponseContainer");
-            const textTarget = document.getElementById("aiContentTarget");
-
-            if (!targetUrl) {
-                alert("Provide a valid Cloudflare Worker API Endpoint connection URL.");
-                return;
-            }
-
-            actionBtn.disabled = true;
-            actionBtn.innerText = "Querying Edge...";
-            feedbackContainer.classList.remove("hidden");
-            textTarget.innerHTML = `<p class="italic text-slate-500 animate-pulse">Assembling scenario metadata and preparing edge execution pipeline...</p>`;
-
-            const payload = {
-                seed: activeDeterministicSeedString,
-                timestamp: new Date().toISOString(),
-                slaParameters: {
-                    targetPct: parseFloat(document.getElementById("paramSlaPct").value),
-                    thresholdSec: parseFloat(document.getElementById("paramSlaSec").value),
-                    targetVolume: parseInt(document.getElementById("paramVolume").value)
-                },
-                scenariosTested: DEFAULT_SCENARIOS.map(s => {
-                    let matchData = globalSimulationResultsRegistry[s.name] || [];
-                    let off = 0, ansSla = 0, ab = 0;
-                    matchData.forEach(d => { off += d.offered; ansSla += d.answeredSla; ab += d.abandoned; });
-                    return {
-                        name: s.name,
-                        rosterMix: { L1: s.l1, L2: s.l2, L3: s.l3 },
-                        totalHeadcount: (s.l1 + s.l2 + s.l3),
-                        simulatedSlaPct: off > 0 ? parseFloat(((ansSla / off) * 100).toFixed(1)) : 100,
-                        simulatedAbandonPct: off > 0 ? parseFloat(((ab / off) * 100).toFixed(1)) : 0
-                    };
-                })
-            };
-
-            try {
-                const response = await fetch(targetUrl, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) throw new Error(`Worker HTTP Server Alert: Standard Error ${response.status}`);
-                
-                const data = await response.json();
-                
-                textTarget.innerHTML = `
-                    <div class="space-y-3">
-                        <p class="font-semibold text-indigo-900 bg-white border border-indigo-100 p-3 rounded-lg shadow-xs">${data.executiveSummary || "No summary returned."}</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div class="bg-amber-50 border border-amber-200 p-3 rounded-lg">
-                                <span class="font-bold block text-amber-900">⚠️ Flagged Risk Variables:</span>
-                                <p class="text-amber-950 mt-1">${data.keyRiskFlags || "None detected."}</p>
-                            </div>
-                            <div class="bg-emerald-50 border border-emerald-200 p-3 rounded-lg">
-                                <span class="font-bold block text-emerald-900">🎯 Recommended Actions:</span>
-                                <p class="text-emerald-950 mt-1">${data.recommendedStaffingActions || "Maintain current baseline."}</p>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 mt-2 italic bg-slate-50 p-2 rounded border"><b>Strategic Selection Basis:</b> ${data.selectionExplanation || "None provided."}</p>
-                    </div>
-                `;
-            } catch (err) {
-                console.error(err);
-                textTarget.innerHTML = `
-                    <div class="bg-rose-50 border border-rose-200 text-rose-950 p-3 rounded-lg text-xs space-y-1">
-                        <p class="font-bold">⚠️ Cloudflare Worker AI Layer Offline or Access Denied</p>
-                        <p>The client simulation dashboard operates autonomously. Static rule evaluations indicate that <b>${payload.scenariosTested[0].name}</b> achieved an SLA output of <b>${payload.scenariosTested[0].simulatedSlaPct}%</b> against your operational target framework.</p>
-                        <p class="text-[10px] text-rose-400 mt-2">Error Log Reference: ${err.message}</p>
-                    </div>
-                `;
-            } finally {
-                actionBtn.disabled = false;
-                actionBtn.innerText = "Analyze Scenarios";
-            }
-        }
-    </script>
-</body>
-</html>
+                        <label class="block font-medium text-slate-700 mb-1">Max Acceptable Wait Before Drop Risk</label>
+                        <input type="number" id="quePatience" value="180" class="w-full border border-slate
