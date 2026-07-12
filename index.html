@@ -3,226 +3,563 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Workload Configuration Manager</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 40px auto;
-            max-width: 600px;
-            padding: 20px;
-            background-color: #f7fafc;
-        }
-        .form-card {
-            background: #ffffff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05), 0 1px 3px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-        h2 { margin-top: 0; color: #2d3748; font-size: 1.4rem; }
-        .fieldset-group {
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            padding: 15px;
-            margin-bottom: 20px;
-        }
-        legend { font-weight: 600; color: #4a5568; padding: 0 5px; }
-        .input-field {
-            margin-bottom: 12px;
-        }
-        .input-field:last-child { margin-bottom: 0; }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-size: 0.9rem;
-            color: #4a5568;
-        }
-        input[type="number"] {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #cbd5e0;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 0.95rem;
-        }
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #3182ce;
-            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5);
-        }
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #3182ce;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-        button:hover { background-color: #2b6cb0; }
-        
-        /* Status Alerts */
-        #statusMessage {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 4px;
-            display: none;
-            font-size: 0.9rem;
-        }
-        .error { background-color: #fed7d7; color: #9b2c2c; border: 1px solid #feb2b2; }
-        .success { background-color: #c6f6d5; color: #22543d; border: 1px solid #9ae6b4; }
-
-        /* AI Section Styling */
-        .ai-card {
-            background: #ebf8ff;
-            border: 1px solid #bee3f8;
-            padding: 20px;
-            border-radius: 8px;
-            display: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .ai-title {
-            display: flex;
-            align-items: center;
-            font-weight: 700;
-            color: #2b6cb0;
-            margin-bottom: 10px;
-        }
-        .ai-title span {
-            margin-right: 8px;
-        }
-        .ai-content {
-            color: #2d3748;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            white-space: pre-line; /* Keeps formatting neat */
-        }
-    </style>
+    <title>CS Capacity Planner & Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
-<body>
+<body class="bg-slate-100 text-slate-900 font-sans min-h-screen p-4 flex flex-col gap-4">
 
-<div class="form-card">
-    <h2>Configuration Settings</h2>
-    
-    <form id="configForm">
-        <fieldset class="fieldset-group">
-            <legend>5. Workload Service Windows (Minutes)</legend>
-            
-            <div class="input-field">
-                <label for="minWindow">Minimum Minutes</label>
-                <input type="number" id="minWindow" name="min" min="0" required placeholder="e.g. 15">
+    <div id="errorModal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6 border border-slate-200">
+            <div class="flex items-center gap-3 text-rose-600 mb-3">
+                <span class="text-2xl">⚠️</span>
+                <h4 class="text-sm font-bold uppercase tracking-wider">Volume Allocation Error</h4>
             </div>
-            
-            <div class="input-field">
-                <label for="maxWindow">Maximum Minutes</label>
-                <input type="number" id="maxWindow" name="max" min="0" required placeholder="e.g. 120">
+            <p id="modalErrorMessage" class="text-xs text-slate-600 leading-relaxed"></p>
+            <div class="mt-4 flex justify-end">
+                <button onclick="closeErrorModal()" class="bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs py-2 px-4 rounded transition cursor-pointer">Adjust Inputs</button>
             </div>
-            
-            <div class="input-field">
-                <label for="avgWindow">Average Minutes</label>
-                <input type="number" id="avgWindow" name="average" min="0" required placeholder="e.g. 45">
-            </div>
-        </fieldset>
-
-        <button type="submit" id="submitBtn">Submit & Analyze</button>
-    </form>
-
-    <div id="statusMessage"></div>
-</div>
-
-<div class="ai-card" id="aiContainer">
-    <div class="ai-title">
-        <span>🤖</span> AI Optimization Analysis
+        </div>
     </div>
-    <div class="ai-content" id="aiOutput"></div>
-</div>
 
-<script>
-document.getElementById('configForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const statusDiv = document.getElementById('statusMessage');
-    const aiContainer = document.getElementById('aiContainer');
-    const aiOutput = document.getElementById('aiOutput');
-    const submitBtn = document.getElementById('submitBtn');
+    <header class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-md">
+        <div>
+            <h1 class="text-xl font-bold tracking-tight">CS Capacity Planner & Stress Simulator</h1>
+            <p class="text-xs text-slate-400">Generic Service Request Modeling Platform</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-xs text-right bg-slate-800 p-2 rounded border border-slate-700">
+                <span class="text-slate-400 block font-mono text-[10px]">WORKER ENDPOINT</span>
+                <input type="text" id="aiEndpoint" value="https://floral-night-9927.raglansocial.workers.dev" class="bg-transparent text-indigo-300 font-mono text-xs focus:outline-none w-64">
+            </div>
+            <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold py-2 px-4 rounded text-white cursor-pointer transition">🖨️ Print Report</button>
+        </div>
+    </header>
 
-    // Reset UI State
-    statusDiv.style.display = 'none';
-    aiContainer.style.display = 'none';
-    aiOutput.innerText = '';
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start flex-1">
+        
+        <aside class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-5 max-h-[85vh] overflow-y-auto">
+            <h2 class="text-sm font-black text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-200">Simulation Variables</h2>
 
-    // 1. Extract values as clean numbers
-    const minVal = Number(document.getElementById('minWindow').value);
-    const maxVal = Number(document.getElementById('maxWindow').value);
-    const avgVal = Number(document.getElementById('avgWindow').value);
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">1. Scenario Setup</h3>
+                <div class="space-y-2 text-xs">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Scenario Name</label>
+                        <input type="text" id="cfgName" value="Q3 Load Roster Test" class="w-full border border-slate-300 rounded p-2 focus:ring-1 focus:ring-indigo-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Daily Operating Hours</label>
+                            <select id="cfgHours" onchange="generateIntervalInputs()" class="w-full border border-slate-300 rounded p-2 bg-white">
+                                <option value="8" selected>8 Hours</option>
+                                <option value="10">10 Hours</option>
+                                <option value="12">12 Hours</option>
+                                <option value="24">24 Hours</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Time Interval Choice</label>
+                            <select id="cfgInterval" onchange="generateIntervalInputs()" class="w-full border border-slate-300 rounded p-2 bg-white">
+                                <option value="1h" selected>1 Hour</option>
+                                <option value="2h">2 Hours</option>
+                                <option value="4h">4 Hours</option>
+                                <option value="30m">30 Minutes</option>
+                                <option value="15m">15 Minutes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-400 mb-1">Simulation Repetitions (Strictly Capped)</label>
+                        <input type="number" value="5" disabled class="w-full border border-slate-200 bg-slate-50 text-slate-400 rounded p-2 font-bold text-center">
+                    </div>
+                </div>
+            </div>
 
-    // 2. Client-side Mathematical Validations
-    if (minVal > maxVal) {
-        showStatus("Error: Minimum window cannot be greater than Maximum window.", "error");
-        return;
-    }
+            <hr class="border-slate-100">
 
-    if (avgVal < minVal || avgVal > maxVal) {
-        showStatus(`Error: The average number (${avgVal} mins) shouldn't be less than min (${minVal} mins) or more than max (${maxVal} mins).`, "error");
-        return;
-    }
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">2. Demand Profile</h3>
+                <div class="space-y-2 text-xs">
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Average Daily Service Request Volume</label>
+                        <input type="number" id="demVolume" value="1500" class="w-full border border-slate-300 rounded p-2 font-bold text-slate-900">
+                    </div>
 
-    // 3. Package JSON structure matching the Worker's parsing rules
-    const payload = {
-        workloadServiceWindows: {
-            min: minVal,
-            max: maxVal,
-            average: avgVal
-        }
-    };
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block font-medium text-slate-700">Service Request Complexity Mix (%)</label>
+                            <span id="mixVolLabel" class="text-[10px] font-mono font-bold text-slate-500">Calculated: 0/1500</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[11px]">
+                            <div class="bg-emerald-50 p-1.5 rounded border border-emerald-200">
+                                <span class="block text-emerald-800 font-semibold">Basic</span>
+                                <input type="number" id="mixBasic" value="50" class="w-full text-center bg-white border rounded mt-1 font-bold">
+                            </div>
+                            <div class="bg-amber-50 p-1.5 rounded border border-amber-200">
+                                <span class="block text-amber-800 font-semibold">Intermediate</span>
+                                <input type="number" id="mixInter" value="35" class="w-full text-center bg-white border rounded mt-1 font-bold">
+                            </div>
+                            <div class="bg-rose-50 p-1.5 rounded border border-rose-200">
+                                <span class="block text-rose-800 font-semibold">Complex</span>
+                                <input type="number" id="mixComplex" value="15" class="w-full text-center bg-white border rounded mt-1 font-bold">
+                            </div>
+                        </div>
+                    </div>
 
-    const workerUrl = "https://floral-night-9927.raglansocial.workers.dev/";
+                    <div class="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1.5">
+                        <label class="flex items-center gap-2 font-medium text-slate-700 cursor-pointer">
+                            <input type="checkbox" id="cfgSeedToggle" onchange="toggleSeedInput()">
+                            <span>Enforce Fixed Control Seed</span>
+                        </label>
+                        <input type="text" id="cfgSeedValue" value="SEED_85756LS" disabled class="w-full border border-slate-200 bg-slate-100 text-slate-400 rounded p-1.5 font-mono text-[11px]">
+                    </div>
 
-    try {
-        submitBtn.disabled = true;
-        submitBtn.innerText = "Processing & Running AI Analysis...";
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Max Customer Patience Target (Waiting Mins)</label>
+                        <input type="number" id="demPatience" value="3" class="w-full border border-slate-300 rounded p-2 font-semibold">
+                    </div>
 
-        const response = await fetch(workerUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(payload)
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-slate-700 tracking-tight block">Period Arrival Weight (%)</span>
+                            <span id="weightTotalBadge" class="text-[11px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">100%</span>
+                        </div>
+                        <div id="dynamicIntervalRowsContainer" class="space-y-1.5 max-h-48 overflow-y-auto text-[11px]">
+                            </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">3. Service Targets (KPI Benchmarks)</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Target Engagement %</label>
+                            <input type="number" id="tgtEngage" value="85" class="w-full border border-slate-300 rounded p-2 text-center font-bold text-indigo-600">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Max Acceptable Abandon %</label>
+                            <input type="number" id="tgtAbandon" value="4" class="w-full border border-slate-300 rounded p-2 text-center font-bold text-rose-600">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Choose Percentile Target</label>
+                            <select id="tgtPercentile" class="w-full border border-slate-300 rounded p-2 bg-white">
+                                <option value="25">p25</option>
+                                <option value="50">p50</option>
+                                <option value="75">p75</option>
+                                <option value="80">p80</option>
+                                <option value="85">p85</option>
+                                <option value="90">p90</option>
+                                <option value="95" selected>p95</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Target Delay (Mins)</label>
+                            <input type="number" id="tgtWaitMin" value="2" class="w-full border border-slate-300 rounded p-2 text-center font-bold">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">4. Agent Mix & Skill Allocation</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="grid grid-cols-3 gap-1.5 text-center">
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-semibold">Novice Count</label>
+                            <input type="number" id="agtNovice" value="12" class="w-full border border-slate-300 rounded p-2 text-center font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-semibold">Experienced</label>
+                            <input type="number" id="agtExp" value="8" class="w-full border border-slate-300 rounded p-2 text-center font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-semibold">Supervisor</label>
+                            <input type="number" id="agtSuper" value="3" class="w-full border border-slate-300 rounded p-2 text-center font-bold">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">5. Workload Service Windows (Minutes)</h3>
+                <div class="space-y-3 text-xs">
+                    <div class="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1">
+                        <span class="block font-bold text-slate-700 text-[11px]">Basic Requests Handling Time</span>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[11px]">
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Avg</span><input type="number" id="hndBasicAvg" value="4" class="w-full border rounded p-1 text-center bg-white font-semibold"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Min</span><input type="number" id="hndBasicMin" value="2" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Max</span><input type="number" id="hndBasicMax" value="8" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1">
+                        <span class="block font-bold text-slate-700 text-[11px]">Intermediate Requests Handling Time</span>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[11px]">
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Avg</span><input type="number" id="hndInterAvg" value="8" class="w-full border rounded p-1 text-center bg-white font-semibold"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Min</span><input type="number" id="hndInterMin" value="4" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Max</span><input type="number" id="hndInterMax" value="15" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                        </div>
+                    </div>
+                    <div class="bg-slate-50 p-2.5 rounded border border-slate-200 space-y-1">
+                        <span class="block font-bold text-slate-700 text-[11px]">Complex Requests Handling Time</span>
+                        <div class="grid grid-cols-3 gap-1 text-center text-[11px]">
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Avg</span><input type="number" id="hndCompAvg" value="15" class="w-full border rounded p-1 text-center bg-white font-semibold"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Min</span><input type="number" id="hndCompMin" value="8" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                            <div><span class="block text-[9px] text-slate-400 font-medium uppercase">Max</span><input type="number" id="hndCompMax" value="30" class="w-full border rounded p-1 text-center bg-white text-slate-600"></div>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block font-medium text-slate-700 mb-1">Average After-Service Request Work Time (ACW Mins)</label>
+                        <input type="number" id="wrkAcwMin" value="1" class="w-full border border-slate-300 rounded p-2">
+                    </div>
+                </div>
+            </div>
+
+            <hr class="border-slate-100">
+
+            <div class="space-y-3">
+                <h3 class="text-xs font-bold text-indigo-600 uppercase">6. Shrinkage & Unavailability Profiles</h3>
+                <div class="space-y-2 text-xs">
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Lunch Duration (Mins)</label>
+                            <input type="number" id="shLunchLen" value="60" class="w-full border border-slate-300 rounded p-2">
+                        </div>
+                        <div>
+                            <label class="block font-medium text-slate-700 mb-1">Lunch Window (Hours)</label>
+                            <input type="text" id="shLunchWin" value="12:00 - 14:00" class="w-full border border-slate-300 rounded p-2 font-mono text-center">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-1.5 text-center">
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Min Breaks</label>
+                            <input type="number" id="shBreakMin" value="2" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Max Breaks</label>
+                            <input type="number" id="shBreakMax" value="3" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Avg Break Mins</label>
+                            <input type="number" id="shBreakDur" value="15" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="runStressSimulationEngine()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-4 rounded-xl shadow-md transition uppercase text-xs tracking-wider cursor-pointer">
+                ⚡ Recalculate & Run Stress Engine
+            </button>
+        </aside>
+
+        <section class="lg:col-span-2 flex flex-col gap-4">
+            
+            <article class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="text-xs font-black uppercase text-slate-500 tracking-wider">KPI Benchmarks Set by Planner</h3>
+                    <span class="text-[10px] font-mono px-2 py-0.5 bg-slate-100 rounded text-slate-600">Operational Target Thresholds</span>
+                </div>
+                <div class="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+                    <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase block">Target Engagement</span>
+                        <div id="kpiTargetEngage" class="text-xl font-black mt-0.5 text-indigo-700">-</div>
+                    </div>
+                    <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase block">Max Abandon %</span>
+                        <div id="kpiTargetAbandon" class="text-xl font-black mt-0.5 text-rose-700">-</div>
+                    </div>
+                    <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase block">Worst-Case Wait Goal</span>
+                        <div id="kpiTargetP" class="text-xl font-black mt-0.5 text-slate-800">-</div>
+                    </div>
+                    <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase block">Target Occupancy</span>
+                        <div class="text-xl font-black mt-0.5 text-slate-800">85.0%</div>
+                    </div>
+                    <div class="bg-indigo-50/50 p-3 rounded-lg border border-indigo-100">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase block">Inherent Shrinkage</span>
+                        <div id="kpiTargetShrinkage" class="text-xl font-black mt-0.5 text-slate-800">-</div>
+                    </div>
+                </div>
+            </article>
+
+            <div id="simulationRunsContainer" class="space-y-4">
+                </div>
+
+            <article class="bg-indigo-950 text-indigo-50 border border-slate-800 p-6 rounded-xl shadow-md space-y-4">
+                <div class="flex justify-between items-center pb-2 border-b border-indigo-900">
+                    <h3 class="text-xs font-black uppercase tracking-wider text-indigo-300 flex items-center gap-2">✨ Deep Consulting & Capacity Risk Analysis</h3>
+                    <button onclick="fetchOperationalNarrative()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-1.5 px-4 rounded text-[11px] cursor-pointer transition">Request Deep AI Interpretation</button>
+                </div>
+                <div id="narrativeTargetBlock" class="text-xs leading-relaxed space-y-4 text-indigo-200 font-light">
+                    <div>Click the button above to synthesize the operational limits, staffing balance profiles, and textbook framework mitigation vectors.</div>
+                </div>
+            </article>
+
+        </section>
+    </div>
+
+    <script>
+        let calculatedRunSummaries = [];
+
+        window.addEventListener("DOMContentLoaded", () => {
+            generateIntervalInputs();
+            runStressSimulationEngine();
         });
 
-        const result = await response.json();
+        function openErrorModal(msg) {
+            document.getElementById("modalErrorMessage").innerText = msg;
+            document.getElementById("errorModal").classList.remove("hidden");
+        }
 
-        if (!response.ok) {
-            showStatus(`Server Error: ${result.error || 'Invalid configuration payload.'}`, "error");
-        } else {
-            showStatus("Configuration processed successfully!", "success");
+        function closeErrorModal() {
+            document.getElementById("errorModal").classList.add("hidden");
+        }
+
+        // Restored complete Seed toggle listener logic
+        function toggleSeedInput() {
+            const active = document.getElementById("cfgSeedToggle").checked;
+            const seedField = document.getElementById("cfgSeedValue");
+            seedField.disabled = !active;
+            seedField.className = active 
+                ? "w-full border border-slate-300 bg-white text-slate-900 rounded p-1.5 font-mono text-[11px]"
+                : "w-full border border-slate-200 bg-slate-100 text-slate-400 rounded p-1.5 font-mono text-[11px]";
+        }
+
+        function generateIntervalInputs() {
+            const hrs = parseInt(document.getElementById("cfgHours").value) || 8;
+            const grain = document.getElementById("cfgInterval").value;
+            const container = document.getElementById("dynamicIntervalRowsContainer");
+            container.innerHTML = "";
+
+            let stepsPerHour = grain === "30m" ? 2 : grain === "15m" ? 4 : grain === "2h" ? 0.5 : grain === "4h" ? 0.25 : 1;
+            const totalIntervalsCount = Math.max(1, Math.round(hrs * stepsPerHour));
+            let basicCurve = [12, 16, 20, 14, 10, 8, 6, 4, 3, 2, 2, 3];
             
-            // 4. Render the returned AI Analysis property cleanly
-            if (result.aiAnalysis) {
-                aiOutput.innerText = result.aiAnalysis;
-                aiContainer.style.display = 'block';
+            for (let i = 0; i < totalIntervalsCount; i++) {
+                let defaultWeight = basicCurve[i % basicCurve.length] || 5;
+                let div = document.createElement("div");
+                div.className = "flex items-center justify-between bg-white p-1 rounded border border-slate-200";
+                div.innerHTML = `
+                    <span class="font-semibold text-slate-700 text-xs">Period ${i + 1}</span>
+                    <div class="flex items-center gap-1">
+                        <input type="number" value="${defaultWeight}" class="interval-weight-field w-12 text-center p-1 rounded border font-mono font-bold bg-slate-50 text-indigo-950">
+                        <span class="text-slate-400 text-[10px]">%</span>
+                    </div>
+                `;
+                container.appendChild(div);
+            }
+            updateWeightBadgeSummaryOnly();
+        }
+
+        function updateWeightBadgeSummaryOnly() {
+            const inputs = document.querySelectorAll(".interval-weight-field");
+            let total = 0;
+            inputs.forEach(input => total += (parseFloat(input.value) || 0));
+            const badge = document.getElementById("weightTotalBadge");
+            badge.innerText = `${total.toFixed(0)}% Total`;
+            badge.className = Math.abs(total - 100) > 0.5 
+                ? "text-[11px] font-bold px-1.5 py-0.5 rounded bg-rose-100 text-rose-800"
+                : "text-[11px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800";
+        }
+
+        function checkComplexityVolumeGuardrail() {
+            const totalDailyVolume = parseInt(document.getElementById("demVolume").value) || 0;
+            const bPct = parseFloat(document.getElementById("mixBasic").value) || 0;
+            const iPct = parseFloat(document.getElementById("mixInter").value) || 0;
+            const cPct = parseFloat(document.getElementById("mixComplex").value) || 0;
+            const generatedVolumeUnits = Math.round(((bPct + iPct + cPct) / 100) * totalDailyVolume);
+            document.getElementById("mixVolLabel").innerText = `Calculated: ${generatedVolumeUnits}/${totalDailyVolume}`;
+
+            if (generatedVolumeUnits > totalDailyVolume) {
+                openErrorModal(`Complexity combined volume allocation (${generatedVolumeUnits} units) exceeds total explicit volume cap (${totalDailyVolume} units).`);
+                return false;
+            }
+            return true;
+        }
+
+        function runStressSimulationEngine() {
+            updateWeightBadgeSummaryOnly();
+            if (!checkComplexityVolumeGuardrail()) return;
+
+            const rawVol = parseInt(document.getElementById("demVolume").value) || 1000;
+            const patienceMins = parseFloat(document.getElementById("demPatience").value) || 3;
+            const targetEngagePct = parseFloat(document.getElementById("tgtEngage").value) || 85;
+            const targetAbandonPct = parseFloat(document.getElementById("tgtAbandon").value) || 4;
+            const chosenP = document.getElementById("tgtPercentile").value;
+            const targetWaitMins = parseFloat(document.getElementById("tgtWaitMin").value) || 2;
+
+            document.getElementById("kpiTargetEngage").innerText = `${targetEngagePct.toFixed(0)}%`;
+            document.getElementById("kpiTargetAbandon").innerText = `< ${targetAbandonPct.toFixed(0)}%`;
+            document.getElementById("kpiTargetP").innerText = `${targetWaitMins}m (${chosenP}th)`;
+
+            const noviceCount = parseInt(document.getElementById("agtNovice").value) || 0;
+            const expCount = parseInt(document.getElementById("agtExp").value) || 0;
+            const superCount = parseInt(document.getElementById("agtSuper").value) || 0;
+            const grossRosterHeadcount = noviceCount + expCount + superCount;
+
+            // Restored calculations leveraging completed break profiles from Section 6
+            const lunchMinutes = parseFloat(document.getElementById("shLunchLen").value) || 60;
+            const minB = parseFloat(document.getElementById("shBreakMin").value) || 2;
+            const maxB = parseFloat(document.getElementById("shBreakMax").value) || 3;
+            const breakDur = parseFloat(document.getElementById("shBreakDur").value) || 15;
+            const breakCountAvg = (minB + maxB) / 2;
+            const totalDailyHoursPlanned = parseFloat(document.getElementById("cfgHours").value) || 8;
+
+            const shrinkageMinutesFraction = (lunchMinutes + (breakCountAvg * breakDur)) / (totalDailyHoursPlanned * 60);
+            const compoundingFactor = Math.min(0.9, shrinkageMinutesFraction + 0.08); 
+            document.getElementById("kpiTargetShrinkage").innerText = `${(compoundingFactor * 100).toFixed(1)}%`;
+            const effectiveNetStaffingPool = Math.max(1, Math.round(grossRosterHeadcount * (1 - compoundingFactor)));
+
+            const bPct = parseFloat(document.getElementById("mixBasic").value) || 50;
+            const iPct = parseFloat(document.getElementById("mixInter").value) || 35;
+            const cPct = parseFloat(document.getElementById("mixComplex").value) || 15;
+            const sumMix = bPct + iPct + cPct || 100;
+
+            const dynamicBlendedAhtMins = (((bPct/sumMix)*(parseFloat(document.getElementById("hndBasicAvg").value)||4)) + ((iPct/sumMix)*(parseFloat(document.getElementById("hndInterAvg").value)||8)) + ((cPct/sumMix)*(parseFloat(document.getElementById("hndCompAvg").value)||15))) + (parseFloat(document.getElementById("wrkAcwMin").value)||1);
+
+            calculatedRunSummaries = [];
+            const seedForced = document.getElementById("cfgSeedToggle").checked;
+            const seedVal = document.getElementById("cfgSeedValue").value;
+            
+            const listContainer = document.getElementById("simulationRunsContainer");
+            listContainer.innerHTML = "";
+
+            for (let r = 1; r <= 5; r++) {
+                let currentRunActiveSeed = seedForced ? `${seedVal}_R${r}` : `RAND_${Math.floor(Math.random() * 89999 + 10000)}`;
+                let varianceModifier = seedForced ? (1 + (Math.sin(r) * 0.08)) : (0.88 + Math.random() * 0.24);
+                let simulatedOffered = Math.round(rawVol * (0.96 + (varianceModifier * 0.06)));
+                
+                let volumeRatioLoad = ((effectiveNetStaffingPool * 60) / dynamicBlendedAhtMins) / ((simulatedOffered / totalDailyHoursPlanned) + 0.1);
+
+                let runEngagePct = 0, runAbandonPct = 0, runPValueMins = 0, runOccupancyPct = 0;
+                if (volumeRatioLoad >= 1.15) {
+                    runEngagePct = Math.min(100, 94 + (varianceModifier * 4)); runAbandonPct = Math.max(0, 1.2 - (varianceModifier * 0.5)); runPValueMins = Math.max(0.4, 1.2 / varianceModifier); runOccupancyPct = Math.min(95, 76 + (varianceModifier * 5));
+                } else if (volumeRatioLoad >= 0.90) {
+                    runEngagePct = 78 + (varianceModifier * 7); runAbandonPct = Math.max(1, 6.5 - (varianceModifier * 2)); runPValueMins = targetWaitMins * (1.3 / varianceModifier); runOccupancyPct = Math.min(98, 88 + (varianceModifier * 3));
+                } else {
+                    runEngagePct = Math.max(30, 48 + (varianceModifier * 8)); runAbandonPct = 100 - runEngagePct; runPValueMins = patienceMins * 0.92; runOccupancyPct = 99.5;
+                }
+
+                let waitAvg = runPValueMins * 0.45;
+                let waitMin = Math.max(0.0, runPValueMins * 0.05);
+                let waitMax = Math.max(runPValueMins, runPValueMins * 2.1);
+                
+                let underKpiRate = runEngagePct;
+                let overKpiRate = 100 - runEngagePct;
+
+                let runPassedSla = (runEngagePct >= targetEngagePct && runAbandonPct <= targetAbandonPct && runPValueMins <= targetWaitMins);
+                calculatedRunSummaries.push({ runIndex: r, seed: currentRunActiveSeed, engage: runEngagePct, abandon: runAbandonPct, pWait: runPValueMins, occupancy: runOccupancyPct, passed: runPassedSla });
+
+                let runArticle = document.createElement("article");
+                runArticle.className = "bg-white border border-slate-200 rounded-xl p-5 shadow-sm border-l-4 " + (runPassedSla ? 'border-l-emerald-500':'border-l-rose-500');
+                runArticle.innerHTML = `
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="text-xs font-bold text-slate-800 uppercase flex items-center gap-2">🔄 Stochastic Simulation Run #${r} <span class="text-[10px] font-mono font-normal text-slate-400">[Seed: ${currentRunActiveSeed}]</span></h4>
+                        <span class="text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-tight ${runPassedSla ? 'bg-emerald-100 text-emerald-800':'bg-rose-100 text-rose-800'}">${runPassedSla ? "🎯 Target Cleared" : "⚠️ Stress Blockage"}</span>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center text-xs mb-4">
+                        <div class="bg-slate-50 p-2 rounded">
+                            <span class="text-slate-400 block text-[9px] uppercase font-semibold">Engagement Rate</span>
+                            <span class="font-bold text-sm ${runEngagePct >= targetEngagePct ? 'text-emerald-600':'text-rose-600'}">${runEngagePct.toFixed(1)}%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded">
+                            <span class="text-slate-400 block text-[9px] uppercase font-semibold">Abandon Rate</span>
+                            <span class="font-bold text-sm text-slate-700">${runAbandonPct.toFixed(1)}%</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded">
+                            <span class="text-slate-400 block text-[9px] uppercase font-semibold">Worst-Case Wait (${chosenP})</span>
+                            <span class="font-bold text-sm ${runPValueMins <= targetWaitMins ? 'text-slate-700':'text-rose-600'}">${runPValueMins.toFixed(2)}m</span>
+                        </div>
+                        <div class="bg-slate-50 p-2 rounded">
+                            <span class="text-slate-400 block text-[9px] uppercase font-semibold">Agent Occupancy</span>
+                            <span class="font-bold text-slate-800 text-sm">${runOccupancyPct.toFixed(1)}%</span>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-slate-100 pt-3">
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 tracking-wide">1) Operational Waiting Performance Profile</span>
+                            <div class="grid grid-cols-3 gap-2 text-center text-[11px]">
+                                <div class="bg-slate-50 p-1.5 rounded border border-slate-200">
+                                    <span class="text-slate-400 block text-[9px] font-medium">Average Wait</span>
+                                    <span class="font-bold text-slate-900 block">${waitAvg.toFixed(2)}m</span>
+                                    <span class="text-[9px] text-slate-400 font-mono">${(bPct).toFixed(0)}% mix</span>
+                                </div>
+                                <div class="bg-slate-50 p-1.5 rounded border border-slate-200">
+                                    <span class="text-slate-400 block text-[9px] font-medium">Min Wait</span>
+                                    <span class="font-bold text-slate-900 block">${waitMin.toFixed(2)}m</span>
+                                    <span class="text-[9px] text-slate-400 font-mono">${(iPct).toFixed(0)}% mix</span>
+                                </div>
+                                <div class="bg-slate-50 p-1.5 rounded border border-slate-200">
+                                    <span class="text-slate-400 block text-[9px] font-medium">Max Wait</span>
+                                    <span class="font-bold text-rose-600 block">${waitMax.toFixed(2)}m</span>
+                                    <span class="text-[9px] text-slate-400 font-mono">${(cPct).toFixed(0)}% mix</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="block text-[10px] font-bold text-slate-400 uppercase mb-1.5 tracking-wide">2) KPI Bound Fulfillment Rates</span>
+                            <div class="space-y-1.5 text-xs">
+                                <div class="flex items-center justify-between bg-emerald-50 text-emerald-900 p-1.5 rounded border border-emerald-200/50">
+                                    <span class="font-medium">✨ Rate under target delay limit</span>
+                                    <span class="font-mono font-black">${underKpiRate.toFixed(1)}%</span>
+                                </div>
+                                <div class="flex items-center justify-between bg-rose-50 text-rose-900 p-1.5 rounded border border-rose-200/50">
+                                    <span class="font-medium">⚠️ Rate over target delay limit</span>
+                                    <span class="font-mono font-black">${overKpiRate.toFixed(1)}%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                listContainer.appendChild(runArticle);
             }
         }
 
-    } catch (error) {
-        showStatus("Network or connection error. Please verify your worker status.", "error");
-        console.error("Fetch Error:", error);
-    } finally {
-        submitBtn.disabled = false;
-        submitBtn.innerText = "Submit & Analyze";
-    }
-});
+        // CRASH IMMUNE PLAIN-TEXT INTERPRETER ENGINE INTERACTION
+        async function fetchOperationalNarrative() {
+            const targetUrl = document.getElementById("aiEndpoint").value.trim();
+            const targetDiv = document.getElementById("narrativeTargetBlock");
+            targetDiv.innerHTML = `<span class="italic text-slate-400 animate-pulse block p-4">Connecting to Cloudflare Worker edge engine... Processing deep operational load limits and consulting insights...</span>`;
 
-function showStatus(message, type) {
-    const statusDiv = document.getElementById('statusMessage');
-    statusDiv.innerText = message;
-    statusDiv.className = type;
-    statusDiv.style.display = 'block';
-}
-</script>
+            const cleanPayloadStructure = {
+                meta: { scenarioName: document.getElementById("cfgName").value, hoursWorkedDay: document.getElementById("cfgHours").value, chosenInterval: document.getElementById("cfgInterval").value },
+                benchmarksSet: { engagementTarget: document.getElementById("tgtEngage").value + "%", maxAbandonAllowed: document.getElementById("tgtAbandon").value + "%" },
+                individualRunSummaries: calculatedRunSummaries
+            };
 
+            try {
+                const response = await fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cleanPayloadStructure) });
+                if (!response.ok) throw new Error("Worker fallback trigger.");
+                
+                // Read response directly as robust plain text instead of rigid JSON structures
+                const rawParagraphText = await response.text(); 
+                
+                targetDiv.innerHTML = `
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40 text-xs leading-relaxed text-indigo-200 whitespace-pre-line font-light">
+                        ${rawParagraphText}
+                    </div>`;
+            } catch (error) {
+                let totalFails = calculatedRunSummaries.filter(x => !x.passed).length;
+                targetDiv.innerHTML = `
+                    <div class="bg-slate-900/80 p-4 rounded-xl border border-amber-500/30 text-slate-300">
+                        <p class="font-bold text-amber-400">⚠️ Local Simulation Analysis Fallback Summary:</p>
+                        <p class="mt-2 text-xs">Out of your 5 stochastic stress tests, exactly <b>${totalFails} out of 5 simulation attempts failed</b> to clear your performance criteria.</p>
+                    </div>`;
+            }
+        }
+    </script>
 </body>
 </html>
