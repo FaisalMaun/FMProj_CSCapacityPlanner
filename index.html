@@ -326,7 +326,6 @@
             document.getElementById("errorModal").classList.add("hidden");
         }
 
-        // Restored complete Seed toggle listener logic
         function toggleSeedInput() {
             const active = document.getElementById("cfgSeedToggle").checked;
             const seedField = document.getElementById("cfgSeedValue");
@@ -388,9 +387,39 @@
             return true;
         }
 
+        // NEW: Handles validation thresholds for handling window entries
+        function validateWorkloadServiceWindows() {
+            const tiers = [
+                { name: "Basic", avg: "hndBasicAvg", min: "hndBasicMin", max: "hndBasicMax" },
+                { name: "Intermediate", avg: "hndInterAvg", min: "hndInterMin", max: "hndInterMax" },
+                { name: "Complex", avg: "hndCompAvg", min: "hndCompMin", max: "hndCompMax" }
+            ];
+
+            for (let tier of tiers) {
+                const avgVal = parseFloat(document.getElementById(tier.avg).value) || 0;
+                const minVal = parseFloat(document.getElementById(tier.min).value) || 0;
+                const maxVal = parseFloat(document.getElementById(tier.max).value) || 0;
+
+                if (avgVal < minVal) {
+                    openErrorModal(`Invalid Handling Time for ${tier.name} Requests: Average window (${avgVal}m) cannot be less than the Minimum window (${minVal}m).`);
+                    return false;
+                }
+                if (avgVal > maxVal) {
+                    openErrorModal(`Invalid Handling Time for ${tier.name} Requests: Average window (${avgVal}m) cannot be greater than the Maximum window (${maxVal}m).`);
+                    return false;
+                }
+                if (minVal > maxVal) {
+                    openErrorModal(`Invalid Handling Time for ${tier.name} Requests: Minimum window (${minVal}m) cannot be greater than the Maximum window (${maxVal}m).`);
+                    return false;
+                }
+            }
+            return true;
+        }
+
         function runStressSimulationEngine() {
             updateWeightBadgeSummaryOnly();
             if (!checkComplexityVolumeGuardrail()) return;
+            if (!validateWorkloadServiceWindows()) return; // Halts simulation loop if handling parameters violate boundaries
 
             const rawVol = parseInt(document.getElementById("demVolume").value) || 1000;
             const patienceMins = parseFloat(document.getElementById("demPatience").value) || 3;
@@ -408,7 +437,6 @@
             const superCount = parseInt(document.getElementById("agtSuper").value) || 0;
             const grossRosterHeadcount = noviceCount + expCount + superCount;
 
-            // Restored calculations leveraging completed break profiles from Section 6
             const lunchMinutes = parseFloat(document.getElementById("shLunchLen").value) || 60;
             const minB = parseFloat(document.getElementById("shBreakMin").value) || 2;
             const maxB = parseFloat(document.getElementById("shBreakMax").value) || 3;
@@ -528,7 +556,6 @@
             }
         }
 
-        // CRASH IMMUNE PLAIN-TEXT INTERPRETER ENGINE INTERACTION
         async function fetchOperationalNarrative() {
             const targetUrl = document.getElementById("aiEndpoint").value.trim();
             const targetDiv = document.getElementById("narrativeTargetBlock");
@@ -544,7 +571,6 @@
                 const response = await fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cleanPayloadStructure) });
                 if (!response.ok) throw new Error("Worker fallback trigger.");
                 
-                // Read response directly as robust plain text instead of rigid JSON structures
                 const rawParagraphText = await response.text(); 
                 
                 targetDiv.innerHTML = `
