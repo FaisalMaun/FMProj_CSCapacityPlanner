@@ -22,16 +22,14 @@
         </div>
     </div>
 
-    <header class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-md">
+<header class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-md">
         <div>
             <h1 class="text-xl font-bold tracking-tight">CS Capacity Planner & Stress Simulator</h1>
             <p class="text-xs text-slate-400">Generic Service Request Modeling Platform</p>
         </div>
         <div class="flex items-center gap-3">
-            <div class="text-xs text-right bg-slate-800 p-2 rounded border border-slate-700">
-                <span class="text-slate-400 block font-mono text-[10px]">WORKER ENDPOINT</span>
-                <input type="text" id="aiEndpoint" value="https://floral-night-9927.raglansocial.workers.dev" class="bg-transparent text-indigo-300 font-mono text-xs focus:outline-none w-64">
-            </div>
+            <input type="hidden" id="aiEndpoint" value="https://floral-night-9927.raglansocial.workers.dev">
+            
             <button onclick="window.print()" class="bg-slate-700 hover:bg-slate-600 text-xs font-bold py-2 px-4 rounded text-white cursor-pointer transition">🖨️ Print Report</button>
         </div>
     </header>
