@@ -100,3 +100,129 @@
             line-height: 1.6;
             white-space: pre-line; /* Keeps formatting neat */
         }
+    </style>
+</head>
+<body>
+
+<div class="form-card">
+    <h2>Configuration Settings</h2>
+    
+    <form id="configForm">
+        <fieldset class="fieldset-group">
+            <legend>5. Workload Service Windows (Minutes)</legend>
+            
+            <div class="input-field">
+                <label for="minWindow">Minimum Minutes</label>
+                <input type="number" id="minWindow" name="min" min="0" required placeholder="e.g. 15">
+            </div>
+            
+            <div class="input-field">
+                <label for="maxWindow">Maximum Minutes</label>
+                <input type="number" id="maxWindow" name="max" min="0" required placeholder="e.g. 120">
+            </div>
+            
+            <div class="input-field">
+                <label for="avgWindow">Average Minutes</label>
+                <input type="number" id="avgWindow" name="average" min="0" required placeholder="e.g. 45">
+            </div>
+        </fieldset>
+
+        <button type="submit" id="submitBtn">Submit & Analyze</button>
+    </form>
+
+    <div id="statusMessage"></div>
+</div>
+
+<div class="ai-card" id="aiContainer">
+    <div class="ai-title">
+        <span>🤖</span> AI Optimization Analysis
+    </div>
+    <div class="ai-content" id="aiOutput"></div>
+</div>
+
+<script>
+document.getElementById('configForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const statusDiv = document.getElementById('statusMessage');
+    const aiContainer = document.getElementById('aiContainer');
+    const aiOutput = document.getElementById('aiOutput');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // Reset UI State
+    statusDiv.style.display = 'none';
+    aiContainer.style.display = 'none';
+    aiOutput.innerText = '';
+
+    // 1. Extract values as clean numbers
+    const minVal = Number(document.getElementById('minWindow').value);
+    const maxVal = Number(document.getElementById('maxWindow').value);
+    const avgVal = Number(document.getElementById('avgWindow').value);
+
+    // 2. Client-side Mathematical Validations
+    if (minVal > maxVal) {
+        showStatus("Error: Minimum window cannot be greater than Maximum window.", "error");
+        return;
+    }
+
+    if (avgVal < minVal || avgVal > maxVal) {
+        showStatus(`Error: The average number (${avgVal} mins) shouldn't be less than min (${minVal} mins) or more than max (${maxVal} mins).`, "error");
+        return;
+    }
+
+    // 3. Package JSON structure matching the Worker's parsing rules
+    const payload = {
+        workloadServiceWindows: {
+            min: minVal,
+            max: maxVal,
+            average: avgVal
+        }
+    };
+
+    const workerUrl = "https://floral-night-9927.raglansocial.workers.dev/";
+
+    try {
+        submitBtn.disabled = true;
+        submitBtn.innerText = "Processing & Running AI Analysis...";
+
+        const response = await fetch(workerUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            showStatus(`Server Error: ${result.error || 'Invalid configuration payload.'}`, "error");
+        } else {
+            showStatus("Configuration processed successfully!", "success");
+            
+            // 4. Render the returned AI Analysis property cleanly
+            if (result.aiAnalysis) {
+                aiOutput.innerText = result.aiAnalysis;
+                aiContainer.style.display = 'block';
+            }
+        }
+
+    } catch (error) {
+        showStatus("Network or connection error. Please verify your worker status.", "error");
+        console.error("Fetch Error:", error);
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerText = "Submit & Analyze";
+    }
+});
+
+function showStatus(message, type) {
+    const statusDiv = document.getElementById('statusMessage');
+    statusDiv.innerText = message;
+    statusDiv.className = type;
+    statusDiv.style.display = 'block';
+}
+</script>
+
+</body>
+</html>
