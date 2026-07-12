@@ -240,6 +240,20 @@
                             <input type="text" id="shLunchWin" value="12:00 - 14:00" class="w-full border border-slate-300 rounded p-2 font-mono text-center">
                         </div>
                     </div>
+                    <div class="grid grid-cols-3 gap-1.5 text-center">
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Min Breaks</label>
+                            <input type="number" id="shBreakMin" value="2" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Max Breaks</label>
+                            <input type="number" id="shBreakMax" value="3" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-600 text-[10px] mb-1 font-medium">Avg Break Mins</label>
+                            <input type="number" id="shBreakDur" value="15" class="w-full border border-slate-300 rounded p-1.5 text-center font-semibold">
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -312,9 +326,14 @@
             document.getElementById("errorModal").classList.add("hidden");
         }
 
+        // Restored complete Seed toggle listener logic
         function toggleSeedInput() {
             const active = document.getElementById("cfgSeedToggle").checked;
-            document.getElementById("cfgSeedValue").disabled = !active;
+            const seedField = document.getElementById("cfgSeedValue");
+            seedField.disabled = !active;
+            seedField.className = active 
+                ? "w-full border border-slate-300 bg-white text-slate-900 rounded p-1.5 font-mono text-[11px]"
+                : "w-full border border-slate-200 bg-slate-100 text-slate-400 rounded p-1.5 font-mono text-[11px]";
         }
 
         function generateIntervalInputs() {
@@ -389,7 +408,15 @@
             const superCount = parseInt(document.getElementById("agtSuper").value) || 0;
             const grossRosterHeadcount = noviceCount + expCount + superCount;
 
-            const shrinkageMinutesFraction = ((parseFloat(document.getElementById("shLunchLen").value) || 60) + 37.5) / ((parseFloat(document.getElementById("cfgHours").value) || 8) * 60);
+            // Restored calculations leveraging completed break profiles from Section 6
+            const lunchMinutes = parseFloat(document.getElementById("shLunchLen").value) || 60;
+            const minB = parseFloat(document.getElementById("shBreakMin").value) || 2;
+            const maxB = parseFloat(document.getElementById("shBreakMax").value) || 3;
+            const breakDur = parseFloat(document.getElementById("shBreakDur").value) || 15;
+            const breakCountAvg = (minB + maxB) / 2;
+            const totalDailyHoursPlanned = parseFloat(document.getElementById("cfgHours").value) || 8;
+
+            const shrinkageMinutesFraction = (lunchMinutes + (breakCountAvg * breakDur)) / (totalDailyHoursPlanned * 60);
             const compoundingFactor = Math.min(0.9, shrinkageMinutesFraction + 0.08); 
             document.getElementById("kpiTargetShrinkage").innerText = `${(compoundingFactor * 100).toFixed(1)}%`;
             const effectiveNetStaffingPool = Math.max(1, Math.round(grossRosterHeadcount * (1 - compoundingFactor)));
@@ -413,7 +440,7 @@
                 let varianceModifier = seedForced ? (1 + (Math.sin(r) * 0.08)) : (0.88 + Math.random() * 0.24);
                 let simulatedOffered = Math.round(rawVol * (0.96 + (varianceModifier * 0.06)));
                 
-                let volumeRatioLoad = ((effectiveNetStaffingPool * 60) / dynamicBlendedAhtMins) / ((simulatedOffered / (parseFloat(document.getElementById("cfgHours").value) || 8)) + 0.1);
+                let volumeRatioLoad = ((effectiveNetStaffingPool * 60) / dynamicBlendedAhtMins) / ((simulatedOffered / totalDailyHoursPlanned) + 0.1);
 
                 let runEngagePct = 0, runAbandonPct = 0, runPValueMins = 0, runOccupancyPct = 0;
                 if (volumeRatioLoad >= 1.15) {
@@ -424,7 +451,6 @@
                     runEngagePct = Math.max(30, 48 + (varianceModifier * 8)); runAbandonPct = 100 - runEngagePct; runPValueMins = patienceMins * 0.92; runOccupancyPct = 99.5;
                 }
 
-                // Calculations matching request boundaries
                 let waitAvg = runPValueMins * 0.45;
                 let waitMin = Math.max(0.0, runPValueMins * 0.05);
                 let waitMax = Math.max(runPValueMins, runPValueMins * 2.1);
@@ -502,7 +528,8 @@
             }
         }
 
-async function fetchOperationalNarrative() {
+        // CRASH IMMUNE PLAIN-TEXT INTERPRETER ENGINE INTERACTION
+        async function fetchOperationalNarrative() {
             const targetUrl = document.getElementById("aiEndpoint").value.trim();
             const targetDiv = document.getElementById("narrativeTargetBlock");
             targetDiv.innerHTML = `<span class="italic text-slate-400 animate-pulse block p-4">Connecting to Cloudflare Worker edge engine... Processing deep operational load limits and consulting insights...</span>`;
@@ -514,23 +541,16 @@ async function fetchOperationalNarrative() {
             };
 
             try {
-                const response = await fetch(targetUrl, { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" }, 
-                    body: JSON.stringify(cleanPayloadStructure) 
-                });
-                
+                const response = await fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cleanPayloadStructure) });
                 if (!response.ok) throw new Error("Worker fallback trigger.");
                 
-                // Read the response as raw text instead of JSON
+                // Read response directly as robust plain text instead of rigid JSON structures
                 const rawParagraphText = await response.text(); 
                 
-                // Display the entire 150-word analysis in a clean, readable text block
                 targetDiv.innerHTML = `
                     <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40 text-xs leading-relaxed text-indigo-200 whitespace-pre-line font-light">
                         ${rawParagraphText}
                     </div>`;
-                    
             } catch (error) {
                 let totalFails = calculatedRunSummaries.filter(x => !x.passed).length;
                 targetDiv.innerHTML = `
