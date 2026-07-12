@@ -502,7 +502,7 @@
             }
         }
 
-        async function fetchOperationalNarrative() {
+async function fetchOperationalNarrative() {
             const targetUrl = document.getElementById("aiEndpoint").value.trim();
             const targetDiv = document.getElementById("narrativeTargetBlock");
             targetDiv.innerHTML = `<span class="italic text-slate-400 animate-pulse block p-4">Connecting to Cloudflare Worker edge engine... Processing deep operational load limits and consulting insights...</span>`;
@@ -514,15 +514,23 @@
             };
 
             try {
-                const response = await fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cleanPayloadStructure) });
+                const response = await fetch(targetUrl, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify(cleanPayloadStructure) 
+                });
+                
                 if (!response.ok) throw new Error("Worker fallback trigger.");
-                const data = await response.json();
+                
+                // Read the response as raw text instead of JSON
+                const rawParagraphText = await response.text(); 
+                
+                // Display the entire 150-word analysis in a clean, readable text block
                 targetDiv.innerHTML = `
-                    <div class="space-y-4 text-slate-200">
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40"><h4 class="font-bold text-indigo-400 text-xs uppercase tracking-wider mb-2">📋 Executive SLA Balance Profile</h4><p class="whitespace-pre-line">${data.executiveSummary || "Evaluation completed."}</p></div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40"><h4 class="font-bold text-rose-400 text-xs uppercase tracking-wider mb-2">⚠️ Capacity Risks & Bottleneck Flags</h4><p class="whitespace-pre-line">${data.keyRiskFlags || "Targets sustained."}</p></div>
-                        <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40"><h4 class="font-bold text-emerald-400 text-xs uppercase tracking-wider mb-2">💡 Manning Strategy & Optimization Levers</h4><p class="whitespace-pre-line">${data.recommendedStaffingActions || "Optimized."}</p></div>
+                    <div class="bg-slate-900/60 p-4 rounded-xl border border-indigo-900/40 text-xs leading-relaxed text-indigo-200 whitespace-pre-line font-light">
+                        ${rawParagraphText}
                     </div>`;
+                    
             } catch (error) {
                 let totalFails = calculatedRunSummaries.filter(x => !x.passed).length;
                 targetDiv.innerHTML = `
