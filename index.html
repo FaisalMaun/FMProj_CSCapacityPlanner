@@ -556,20 +556,40 @@
             }
         }
 
-        async function fetchOperationalNarrative() {
+async function fetchOperationalNarrative() {
             const targetUrl = document.getElementById("aiEndpoint").value.trim();
             const targetDiv = document.getElementById("narrativeTargetBlock");
+            
+            // 1. FORCE a recalculation immediately to guarantee data exists
+            runStressSimulationEngine(); 
+
             targetDiv.innerHTML = `<span class="italic text-slate-400 animate-pulse block p-4">Connecting to Cloudflare Worker edge engine... Processing deep operational load limits and consulting insights...</span>`;
 
             const cleanPayloadStructure = {
-                meta: { scenarioName: document.getElementById("cfgName").value, hoursWorkedDay: document.getElementById("cfgHours").value, chosenInterval: document.getElementById("cfgInterval").value },
-                benchmarksSet: { engagementTarget: document.getElementById("tgtEngage").value + "%", maxAbandonAllowed: document.getElementById("tgtAbandon").value + "%" },
+                meta: { 
+                    scenarioName: document.getElementById("cfgName").value, 
+                    hoursWorkedDay: document.getElementById("cfgHours").value, 
+                    chosenInterval: document.getElementById("cfgInterval").value 
+                },
+                benchmarksSet: { 
+                    engagementTarget: document.getElementById("tgtEngage").value + "%", 
+                    maxAbandonAllowed: document.getElementById("tgtAbandon").value + "%" 
+                },
                 individualRunSummaries: calculatedRunSummaries
             };
 
             try {
-                const response = await fetch(targetUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cleanPayloadStructure) });
-                if (!response.ok) throw new Error("Worker fallback trigger.");
+                const response = await fetch(targetUrl, { 
+                    method: "POST", 
+                    headers: { "Content-Type": "application/json" }, 
+                    body: JSON.stringify(cleanPayloadStructure) 
+                });
+                
+                // 2. Clearer error handling if the backend returns a 500 error
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    throw new Error(`Server returned status ${response.status}: ${errorText}`);
+                }
                 
                 const rawParagraphText = await response.text(); 
                 
@@ -578,11 +598,14 @@
                         ${rawParagraphText}
                     </div>`;
             } catch (error) {
+                // Display the REAL error for debugging instead of hiding it
+                console.error("AI Fetch Failure:", error);
                 let totalFails = calculatedRunSummaries.filter(x => !x.passed).length;
                 targetDiv.innerHTML = `
                     <div class="bg-slate-900/80 p-4 rounded-xl border border-amber-500/30 text-slate-300">
                         <p class="font-bold text-amber-400">⚠️ Local Simulation Analysis Fallback Summary:</p>
                         <p class="mt-2 text-xs">Out of your 5 stochastic stress tests, exactly <b>${totalFails} out of 5 simulation attempts failed</b> to clear your performance criteria.</p>
+                        <p class="mt-2 text-[10px] text-slate-500 font-mono bg-slate-950 p-1.5 rounded">Debug Info: ${error.message}</p>
                     </div>`;
             }
         }
